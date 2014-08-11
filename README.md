@@ -8,6 +8,9 @@ Student-Professor Appointment Maker
 Description:
 This web application simplifies the creation/agreement of appointments between a student and professor. (More description to be added.)
 
+Important!!!
+For group members please read the file "confirmation.txt" and supply the required information.
+
 Directory Structure:
 ======================
 | Name          | Type            | Description                              |
@@ -19,3 +22,8 @@ Directory Structure:
 | scripts       | Directory       | contains the .py files                   |
 | README.md     | File(Markdown)  | project                                  |
 | index.html    | File(HyperText Markup Language) | .html file of the web    |
+
+Development Conventions:
+=========================
+SQL Keywords: ALL CAPS (CREATE)
+DB Table Prefix: "pc"  (pc_tablename)
