@@ -10,22 +10,16 @@ This web application simplifies the creation/agreement of appointments between a
 
 Directory Structure:
 =============
-|-(D)db_script
-|     //this contains the .sql files for the database
-|
-|-(D)css
-|     //.css files
-|
-|-(D)picture
-|     //all images
-|
-|-(D)javascript
-|     //javascripts
-|
-|-(D)scripts
-|     //.py files
-|
-|-(F)README.txt
-|     //Project information, 
-|
-|-(F)index.html
+(D)db_script - this contains the .sql files for the database
+=============
+(D)css - .css files
+=============
+(D)picture - all images
+=============
+(D)javascript - javascripts
+=============
+(D)scripts - .py files
+=============
+(F)README.txt - Project information, 
+=============
+(F)index.html - .html file for the web application
