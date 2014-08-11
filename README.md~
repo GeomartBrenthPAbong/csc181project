@@ -26,5 +26,4 @@ Directory Structure:
 Development Conventions:
 =========================
 SQL Keywords: ALL CAPS (CREATE)
-
 DB Table Prefix: "pc"  (pc_tablename)
