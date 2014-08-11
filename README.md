@@ -7,8 +7,11 @@ Student-Professor Appointment Maker
 Description:
 This web application simplifies the creation/agreement of appointments between a student and professor. (More description to be added.)
 
-Directory Structure:
-=============
+| Name | Type | Description                 |
+| :------------ |:---------------:| -----:|
+| db_script    | Directory | $1600 |
+| col 2 is      | centered        |   $12 |
+| zebra stripes | are neat        |    $1 |
 (D)db_script - this contains the .sql files for the database
 (D)css - .css files
 (D)picture - all images
