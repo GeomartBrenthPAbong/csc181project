@@ -9,15 +9,12 @@ This web application simplifies the creation/agreement of appointments between a
 
 Directory Structure:
 ======================
-| Name | Type | Description                 |
-| :------------ |:---------------:|:----- |
-| db_script    | Directory | this contains the .sql files for the database |
-| col 2 is      | centered        |   $12 |
-| zebra stripes | are neat        |    $1 |
-(D)db_script - this contains the .sql files for the database
-(D)css - .css files
-(D)picture - all images
-(D)javascript - javascripts
-(D)scripts - .py files
-(F)README.txt - Project information, 
-(F)index.html - .html file for the web application
+| Name          | Type            | Description                              |
+| :------------ |:---------------:|:---------------------------------------- |
+| db_script     | Directory       | contains the .sql files for the database |
+| css           | Directory       | contains the .css files for the web      |
+| picture       | Directory       | contains all the images of the project   |
+| javascript    | Directory       | contains all the javascripts used        |
+| scripts       | Directory       | contains the .py files                   |
+| README.md     | File(Markdown)  | project                                  |
+| index.html    | File(HyperText Markup Language) | .html file of the web    |
