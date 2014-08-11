@@ -1,4 +1,0 @@
-Hello guys. I will host the repository of our project. This is just a test file to confirm that you have access to this repository. Please modify this file and add your name below. Thank you.
-
-
-Christopher Clint B. Pacillos	- repository host
