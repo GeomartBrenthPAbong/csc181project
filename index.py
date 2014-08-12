@@ -1,10 +1,12 @@
 import sys
-sys.path.insert(0, 'scripts')
-from preprocessor import *
+import os
 
 def index(req, cmd=None, args=None):
 	if (cmd == None and args == None):
-		print test
+		sys.path.append(os.path.dirname(__file__) + '/scripts')
+		#var = os.path.dirname(__file__) + 'scripts'
+		from preprocessor import *
+		return "hello"
 	else:
 		print "This is another page."
 
