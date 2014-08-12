@@ -1,0 +1,1 @@
+globals.g_str_body = '<div id="sample-template">sample template ' + g_str_content + '</div>'
