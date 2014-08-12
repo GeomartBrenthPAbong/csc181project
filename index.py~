@@ -1,0 +1,10 @@
+import sys
+from preprocessor import *
+
+def index(req, cmd=None, args=None):
+	if (cmd == None and args == None):
+		sys.path.insert(0, 'scripts')
+		import preprocessor
+	else:
+		print "This is another page."
+
