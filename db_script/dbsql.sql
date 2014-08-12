@@ -163,3 +163,69 @@ CREATE OR REPLACE
   END;
   $$
   LANGUAGE 'plpgsql';
+  
+  ---------------------------------- STUDENT TABLE SCRIPT
+  create table student (
+     student_id int primary key,
+     student_name varchar(50),
+     phone_number varchar(15),
+     student_email varchar(100),
+	 student_pass varchar(100)
+     
+     
+);
+
+-- @desc Use this function for storing new student details or updating an existing student details
+-- @var p_student_id the primary key
+-- @var p_student_name the student name
+-- @var p_phone_number the student phone number (Philippines local number)
+-- @var p_student_email the student email
+-- @var p_student_pass the student pass
+
+create or replace 
+    function setobj1(p_student_id int, 
+	                 p_student_name varchar, 
+					 p_phone_number varchar, 
+					 p_student_email varchar, 
+					 p_student_pass varchar) 
+    returns text as
+$$
+  declare
+     v_student_id int;
+  begin
+      select into v_student_id student_id from student
+         where student_id = p_student_id;
+         
+      if v_student_id isnull then
+          insert into student(student_id, 
+		                       student_name, 
+							   phone_number, 
+							   student_email, 
+							   student_pass) 
+							   
+					   values (p_student_id,
+							   p_student_name, 
+							   p_phone_number, 
+							   p_student_email, 
+							   p_student_pass);
+      else
+          update student 
+            set student_name = p_student_name
+            where student_id = p_student_id;
+      end if;   
+         
+      return 'OK';
+  end;
+$$
+  language 'plpgsql'; 
+  
+-- @desc Use this function to view the created table
+create or replace function 
+    get_object_perid(in int, in varchar, out int, out varchar, out varchar, out varchar, out varchar) 
+returns setof record as
+$$ 
+     select * from student
+     where student_id = $1;
+     
+$$
+ language 'sql';
