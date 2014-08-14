@@ -1,3 +1,3 @@
-import global_variables
+import scripts.global_variables
 
-global_variables.g_str_body = '<div id="sample-template">sample template ' + global_variables.g_str_content + '</div>'
+scripts.global_variables.g_str_body = '<div id="sample-template">sample template ' + scripts.global_variables.g_str_content + '</div>'

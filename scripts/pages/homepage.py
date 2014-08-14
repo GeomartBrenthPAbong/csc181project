@@ -1,4 +1,6 @@
-import global_variables
+import scripts.global_variables
 
-global_variables.g_str_content = "This is the homepage. okay?"
-global_variables.g_str_template = 'home_template'
+scripts.global_variables.g_content.setTitle('Homepage')
+scripts.global_variables.g_content.setContent('Hello World!')
+scripts.global_variables.g_content.setPageTemplate('default')
+
