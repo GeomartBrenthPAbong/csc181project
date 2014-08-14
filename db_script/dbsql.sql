@@ -1,179 +1,193 @@
+----------------------------------	TABLES
+
+
+-- @desc Creating PROFESSOR Table
+
+CREATE TABLE pc_professor(
+	prof_id SERIAL PRIMARY KEY,
+    prof_first_name VARCHAR,
+    prof_last_name VARCHAR,
+	prof_email_add VARCHAR,
+	prof_phone_number VARCHAR,
+	sched_id INT FOREIGN KEY
+);
+
+
+-- @desc Creating SCHEDULE Table
+
+CREATE TABLE pc_schedule(
+	sched_id SERIAL PRIMARY KEY,
+    sched_from_time TIME,
+    sched_to_time TIME,
+    sched_day VARCHAR
+	prof_id INT FOREIGN KEY
+);
+
+
+-- @desc Creating STUDENT Table
+
+create table pc_student(
+     stud_id SERIAL PRIMARY KEY,
+     stud_name VARCHAR(50),
+     stud_phone_number VARCHAR(15),
+     stud_email VARCHAR(100),
+	 stud_password VARCHAR(100)
+);
+
+
+
 ---------------------------------- PROFESSOR TABLE SCRIPT
 
+
 -- @desc Use this function for storing new professor details or updating an existing professor details
--- @var p_str_first_name the first name
--- @var p_str_last_name the last name
--- @var p_str_email_address the email address
--- @var p_pn_phone_number a philippine specific phone number
+-- @var p_professor_id the professor id 
+-- @var p_first_name the first name
+-- @var p_last_name the last name
+-- @var p_email_add the email address
+-- @var p_phone_number a Philippine specific phone number
 -- @returns TEXT
 
 CREATE OR REPLACE
-  FUNCTION setProfessor(p_str_first_name VARCHAR,
-                        p_str_last_name VARCHAR,
-                        p_str_email_address VARCHAR,
-                        p_pn_phone_number VARCHAR)
-  RETURNS TEXT AS
-  $$
-  DECLARE
-    v_professor_instance;
-  BEGIN
-    SELECT INTO v_professor_instance email_address FROM pc_professor WHERE email_address = p_str_email_address;
+	FUNCTION setProfessor(p_professor_id SERIAL
+						  p_first_name VARCHAR,
+						  p_last_name VARCHAR,
+                          p_email_add VARCHAR,
+                          p_phone_number VARCHAR)
+	RETURNS TEXT AS
+	$$
+		DECLARE
+			v_professor_instance;
+		BEGIN
+		SELECT INTO v_professor_instance prof_email_add FROM pc_professor 
+		WHERE prof_email_add = p_email_add;
 
-    IF v_professor_instance ISNULL THEN
-      INSERT INTO pc_professor(first_name, last_name, email_address, phone_number) VALUES
-                              (p_str_first_name, p_str_last_name, p_str_email_address, p_int_schedule_id, p_pn_phone_number);
-    ELSE
-      UPDATE pc_professor
-        SET first_name = p_str_first_name,
-            last_name = p_str_last_name,
-            phone_number = p_pn_phone_number
-        WHERE email_address = p_str_email_address
-    END IF;
+		IF v_professor_instance ISNULL THEN
+			INSERT INTO pc_professor(prof_id, prof_first_name, prof_last_name, prof_email_add, prof_phone_number) VALUES
+									(p_professor_id, p_first_name, p_last_name, p_email_add, p_phone_number);
+		ELSE
+			UPDATE pc_professor
+			SET prof_id = p_professor_id
+				prof_first_name = p_first_name,
+				prof_last_name = p_last_name,
+				prof_phone_number = p_phone_number
+			WHERE prof_email_add = p_email_add
+		END IF;
     RETURN 'OK';
-  END;
-  $$
-  LANGUAGE 'plpgsql';
+	END;
+	$$
+ LANGUAGE 'plpgsql';
 
--- @desc Use this function for adding a schedule for a certain professor or updating the specific schedule of a certain professor
--- @var p_int_professor_id the unique id of the professor
--- @var p_int_schedule_id the unique id of the schedule
--- @returns TEXT
-CREATE OR REPLACE
-  FUNCTION addScheduleToProfessor(p_int_professor_id INT,
-                       p_int_schedule_id INT)
-  RETURNS TEXT AS
-  $$
-  DECLARE
-    v_prof_sched_instance
-  BEGIN
-    SELECT INTO v_prof_sched_instance professor_id FROM pc_professor_schedule
-      WHERE professor_id = p_int_professor_id AND schedule_id = p_int_schedule_id;
-
-    IF v_prof_sched_instance ISNULL THEN
-      INSERT INTO pc_professor_schedule(professor_id, schedule_id) VALUES
-                                       (p_int_professor_id, p_int_schedule_id);
-    ELSE
-      UPDATE pc_professor_schedule
-        SET schedule_id = p_int_schedule_id
-        WHERE professor_id = p_int_schedule_id
-    END IF;
-    RETURN 'OK';
-  END;
-  $$
-  LANGUAGE 'plpgsql';
-
+  
 -- @desc Use this function to extract information of a certain professor
--- @var p_str_email_address is the email address of the professor
+-- @var p_email_add is the email address of the professor
 -- @returns SETOF RECORD a set of professor details except the schedule
-CREATE OR REPLACE
-  FUNCTION extractProfessorInfoPerEmail(IN p_str_email_address,
-                               OUT id INT,
-                               OUT first_name VARCHAR,
-                               OUT last_name VARCHAR,
-                               OUT email_address VARCHAR,
-                               OUT phone_number VARCHAR)
-  RETURNS SETOF RECORD AS
-  $$
-    SELECT id,
-           first_name,
-           last_name,
-           email_address,
-           phone_number
-    FROM pc_professor
-    WHERE email_address = p_str_email_address
-  $$
-  LANGUAGE 'sql';
 
--- @desc Use this function to get the schedules of a certain professor
--- @var p_int_professor_id is the professor id
--- @returns SETOF INT a list of schedule ids
 CREATE OR REPLACE
-  FUNCTION getSchedules(IN p_int_professor_id INT,
-                        OUT schedule_id INT)
-  RETURNS SETOF INT AS
-  $$
-    SELECT schedule_id
-    FROM pc_professor_schedule
-    WHERE professor_id = p_int_professor_id
-  $$
-  LANGUAGE 'sql';
+	FUNCTION extractProfessorInfoPerEmail(IN p_email_add VARCHAR,
+										  OUT professor_id INT,
+										  OUT first_name VARCHAR,
+										  OUT last_name VARCHAR,
+										  OUT email_address VARCHAR,
+										  OUT phone_number VARCHAR)
+	RETURNS SETOF RECORD AS
+	$$
+		SELECT 
+			prof_id,
+			prof_first_name,
+			prof_last_name,
+			prof_email_add,
+			prof_phone_number
+		FROM 
+			pc_professor
+		WHERE 
+			prof_email_add = p_email_add
+	$$
+LANGUAGE 'sql';
+
+
 
 ---------------------------------- SCHEDULE TABLE SCRIPT
+
+
+-- @desc Use this function to create a schedule. If the schedule already exists, the function does nothing
+-- @var p_from_time
+-- @var p_to_time
+-- @var p_schedule_day
+-- RETURNS TEXT
+
+CREATE OR REPLACE
+	FUNCTION createSchedule(p_schedule_id SERIAL, p_from_time TIME, p_to_time TIME, p_schedule_day VARCHAR)
+	RETURNS TEXT AS
+	$$
+		DECLARE
+			v_schedule_instance INT;
+		BEGIN
+			SELECT INTO v_schedule_instance p_sched_id FROM pc_schedule
+			WHERE sched_from_time = p_time_from 
+			AND sched_to_time = p_to_time 
+			AND sched_day = p_schedule_day ;
+
+		IF v_schedule_instance ISNULL THEN
+			INSERT INTO pc_schedule(sched_id, sched_from_time, sched_to_time, sched_day) 
+			VALUES (p_schedule_id, p_from_time, p_to_time, p_schedule_day);
+		END IF;
+		RETURN 'OK';
+		END;
+	$$
+LANGUAGE 'plpgsql';
+
+
+-- @desc Use this function to edit an existing schedule.
+-- @var p_schedule_id the id of the schedule
+-- @var p_from_time the new from time
+-- @var p_to_time the new to time
+-- @var p_schedule_day the new schedule day
+
+CREATE OR REPLACE
+	FUNCTION editSchedule(p_schedule_id INT, p_from_time TIME, p_to_time TIME, p_schedule_day VARCHAR)
+	RETURNS TEXT AS
+	$$
+	DECLARE
+		v_schedule_instance INT;
+	BEGIN
+		SELECT INTO v_schedule_instance sched_id FROM pc_schedule
+		WHERE sched_id = p_schedule_id;
+
+		IF v_schedule_instance ISNULL THEN
+			RETURN 'NO INSTANCE';
+		ELSE
+			UPDATE pc_schedule
+				SET sched_from_time = p_from_time,
+					sched_to_time = p_to_time,
+					sched_day = p_schedule_day
+				WHERE sched_id = p_schedule_id;
+			RETURN 'OK';
+		END IF;
+	END;
+	$$
+LANGUAGE 'plpgsql';
+
 
 -- @desc Use this function to get schedule information given the id
 -- @var p_int_schedule the schedule id
 -- @returns SETOF RECORD a list of time range
 CREATE OR REPLACE
-  FUNCTION extractScheduleInfoFromID(IN p_int_schedule_id INT,
-                                     OUT from_time TIME,
-                                     OUT to_time TIME)
+  FUNCTION extractScheduleInfoFromID(IN INT,
+                                     OUT TIME,
+                                     OUT TIME,
+                                     OUT VARCHAR)
   RETURNS SETOF RECORD AS
   $$
     SELECT from_time,
-           to_time
-    FROM pc_schedule
-    WHERE id = p_int_schedule_id
+           to_time,
+           day_sched
+    FROM pc_sched
+    WHERE int_schedule_id = $1;
   $$
   LANGUAGE 'sql';
-
--- @desc Use this function to create a schedule. If the schedule already exists, the function does nothing
--- @var p_time_from
--- @var p_time_to
--- RETURNS TEXT
-CREATE OR REPLACE
-  FUNCTION createSchedule(p_time_from TIME, p_time_to TIME)
-  RETURNS TEXT AS
-  $$
-  DECLARE
-    v_schedule_instance
-  BEGIN
-    SELECT INTO v_schedule_instance id FROM pc_schedule WHERE from_time = p_time_from AND to_time = p_time_to;
-
-    IF v_schedule_instance ISNULL THEN
-      INSERT INTO pc_schedule(from_time, to_time) VALUES
-                             (p_time_from, p_time_to);
-    END IF;
-    RETURN 'OK';
-  END;
-  $$
-  LANGUAGE 'plpgsql';
-
--- @desc Use this function to edit an existing schedule.
--- @var p_int_schedule_id the id of the schedule
--- @var p_time_from the new from time
--- @var p_time_to the new to time
-CREATE OR REPLACE
-  FUNCTION editSchedule(p_int_schedule_id INT, p_time_from TIME, p_time_to TIME)
-  RETURNS TEXT AS
-  $$
-  DECLARE
-    v_schedule_instance
-  BEGIN
-    SELECT INTO v_schedule_instance id FROM pc_schedule WHERE id = p_int_schedule_id;
-
-    IF v_schedule_instance ISNULL THEN
-      RETURN 'NO INSTANCE';
-    ELSE
-      UPDATE pc_schedule
-      SET from_time = p_time_from,
-          to_time = p_time_to
-      WHERE id = p_int_schedule_id
-      RETURN 'OK'
-    END IF;
-  END;
-  $$
-  LANGUAGE 'plpgsql';
   
   ---------------------------------- STUDENT TABLE SCRIPT
-  create table student (
-     student_id int primary key,
-     student_name varchar(50),
-     phone_number varchar(15),
-     student_email varchar(100),
-	 student_pass varchar(100)
-     
-     
-);
+  
 
 -- @desc Use this function for storing new student details or updating an existing student details
 -- @var p_student_id the primary key
@@ -229,3 +243,55 @@ $$
      
 $$
  language 'sql';
+
+ 
+ 
+ ---------------------------------------------------------------------------------------------------------------------------------------
+-- @desc Use this function for adding a schedule for a certain professor or updating the specific schedule of a certain professor
+-- @var p_professor_id the unique id of the professor
+-- @var p_schedule_id the unique id of the schedule
+-- @returns TEXT
+
+CREATE OR REPLACE
+	FUNCTION addScheduleToProfessor(p_professor_id INT,
+									p_schedule_id INT)
+	RETURNS TEXT AS
+	$$
+		DECLARE
+			v_prof_sched_instance
+		BEGIN
+		SELECT INTO v_prof_sched_instance prof_id sched_id FROM pc_professor  
+		WHERE prof_id = p_professor_id AND sched_id = p_schedule_id;
+
+		IF v_prof_sched_instance ISNULL THEN
+		INSERT INTO pc_professor_sched  (professor_id, schedule_id) VALUES
+                                       (p_int_professor_id, p_int_schedule_id);
+    ELSE
+      UPDATE pc_professor_schedule
+        SET schedule_id = p_int_schedule_id
+        WHERE professor_id = p_int_schedule_id
+    END IF;
+    RETURN 'OK';
+  END;
+  $$
+  LANGUAGE 'plpgsql';
+  -------------------------------------------------------------------------------------------------------------------------------------------------------------
+  
+  
+  -- @desc Use this function to get the schedules of a certain professor
+-- @var p_professor_id is the professor id
+-- @returns SETOF INT a list of schedule ids
+
+CREATE OR REPLACE
+	FUNCTION getSchedules(IN p_professor_id INT,
+						  OUT schedule_id INT)
+	RETURNS SETOF INT AS
+	$$
+		SELECT 
+			sched_id
+		FROM 
+			pc_professor_schedule
+		WHERE 
+			prof_id = p_professor_id
+	$$
+LANGUAGE 'sql';
