@@ -209,18 +209,22 @@ CREATE OR REPLACE
 
 -- @desc Use this function for storing new student details or updating an existing student details
 -- @var p_student_id the primary key
--- @var p_student_name the student name
+-- @var p_student_lastname the student's last name
+-- @var p_student_firstname the student's first name
+-- @var p_student_middleinit the student's middle initial
 -- @var p_phone_number the student phone number (Philippines local number)
 -- @var p_student_email the student email
 -- @var p_student_pass the student pass
 
 create or replace 
     function setobj1(p_student_id int,
-					 p_studend_id_number varchar,
-	                 p_student_name varchar, 
-					 p_phone_number varchar, 
-					 p_student_email varchar, 
-					 p_student_pass varchar) 
+		     p_studend_id_number varchar,
+	             p_student_lastname varchar,
+		     p_student_firstname varchar,
+		     p_student_middleinit varchar,
+         	     p_phone_number varchar, 
+		     p_student_email varchar, 
+		     p_student_pass varchar) 
     returns text as
 $$
   declare
@@ -231,20 +235,24 @@ $$
          
       if v_student_id isnull then
           insert into pc_student(stud_id, 
-							  stud_id_number,
-		                       stud_name, 
-							   stud_phone_number, 
-							   stud_email, 
-							   stud_pass) 
+				 stud_id_number,
+				 stud_lastname,
+				 stud_firstname,
+				 stud_middleinit,
+				 stud_phone_number, 
+				 stud_email, 
+				 stud_pass) 
 							   
-					   values (p_student_id,
-							   p_student_name, 
-							   p_phone_number, 
-							   p_student_email, 
-							   p_student_pass);
+			 values (p_student_id,
+				 p_student_lastname,
+				 p_student_firstname,
+				 p_student_middleinit
+				 p_phone_number, 
+				 p_student_email, 
+			         p_student_pass);
       else
           update pc_student 
-            set stud_name = p_student_name
+            set stud_lastname = p_student_lastname
             where stud_id = p_student_id;
       end if;   
          
@@ -255,7 +263,16 @@ $$
   
 -- @desc Use this function to view the created table
 create or replace function 
-    extractStudentInfoPerId(in int, in varchar, out int, out varchar, out varchar, out varchar, out varchar) 
+    extractStudentInfoPerId(in int, 
+			    in varchar, 
+		            out int, 
+			    out varchar, 
+			    out varchar, 
+			    out varchar, 
+			    out varchar, 
+			    out varchar, 
+			    out varchar, 
+			    out varchar) 
 returns setof record as
 $$ 
      select * from pc_student
@@ -263,8 +280,6 @@ $$
      
 $$
  language 'sql';
-
- 
  
  ---------------------------------------------------------------------------------------------------------------------------------------
 -- @desc Use this function for adding a schedule for a certain professor or updating the specific schedule of a certain professor
