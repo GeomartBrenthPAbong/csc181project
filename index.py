@@ -18,7 +18,7 @@ def index(req, page = None):
 	import scripts.functions
 
 	if page is None:
-		scripts.global_variables.g_page = 'homepage'
+		scripts.functions.global_variables.g_page = 'homepage'
 	else:
 		scripts.global_variables.g_page = page
 

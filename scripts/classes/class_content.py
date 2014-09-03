@@ -1,3 +1,5 @@
+import scripts.global_variables
+
 class Content(object):
 	def __init__(self):
 		self.__m_title = ''
@@ -46,6 +48,9 @@ class Content(object):
 	def generateContent(self):
 		__import__('scripts.pages.' + self.__m_page)
 		__import__('scripts.page_templates.' + self.__m_page_template)
+
+		scripts.global_variables.g_process_page()
+		scripts.global_variables.g_process_template()
 
 		self.__m_content += self.__m_before_content
 		self.__m_content += self.__m_after_content

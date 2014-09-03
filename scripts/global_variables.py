@@ -4,3 +4,6 @@ g_footer = None
 g_page = None
 g_style_adder = None
 g_root_path = None
+g_process_page = None
+g_process_template = None
+g_session = None
