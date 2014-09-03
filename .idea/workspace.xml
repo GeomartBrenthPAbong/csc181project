@@ -2,9 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5c49670-4a81-4666-8565-3b008cf4ed3a" name="Default" comment="">
-      <change type="DELETED" beforePath="C:\Apache Group\Apache2\htdocs\TestingGround\spam\scripts\footer.py" afterPath="" />
-      <change type="DELETED" beforePath="C:\Apache Group\Apache2\htdocs\TestingGround\spam\scripts\header.py" afterPath="" />
-      <change type="DELETED" beforePath="C:\Apache Group\Apache2\htdocs\TestingGround\spam\scripts\processor.py" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/classes/class_content.py" afterPath="$PROJECT_DIR$/scripts/classes/class_content.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/page_templates/default.py" afterPath="$PROJECT_DIR$/scripts/page_templates/default.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/functions.py" afterPath="$PROJECT_DIR$/scripts/functions.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/global_variables.py" afterPath="$PROJECT_DIR$/scripts/global_variables.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/page_templates/home_template.py" afterPath="$PROJECT_DIR$/scripts/page_templates/home_template.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/pages/homepage.py" afterPath="$PROJECT_DIR$/scripts/pages/homepage.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.py" afterPath="$PROJECT_DIR$/index.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/page_templates/sample_template.py" afterPath="$PROJECT_DIR$/scripts/page_templates/sample_template.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/pages/samplepage.py" afterPath="$PROJECT_DIR$/scripts/pages/samplepage.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="spam.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -27,50 +34,52 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="index.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="index.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="24" column="38" selection-start="619" selection-end="619" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="595">
+            <state line="3" column="4" selection-start="52" selection-end="52" vertical-scroll-proportion="0.0816" vertical-offset="0" max-vertical-offset="625">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="class_header.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts/classes/class_header.py">
+      <file leaf-file-name="ajax.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts/ajax.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="24" column="33" selection-start="630" selection-end="630" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="578">
+            <state line="2" column="11" selection-start="39" selection-end="39" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="425">
               <folding>
-                <element signature="e#0#25#0" expanded="true" />
+                <element signature="e#0#16#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="class_footer.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts/classes/class_footer.py">
+      <file leaf-file-name="getgradesheet.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://D:/getgradesheet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="19" column="21" selection-start="491" selection-end="491" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="425">
-              <folding />
+            <state line="13" column="7" selection-start="385" selection-end="385" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="374">
+              <folding>
+                <element signature="e#0#19#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="functions.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="functions.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/functions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="18" column="61" selection-start="694" selection-end="694" vertical-scroll-proportion="0.4896" vertical-offset="0" max-vertical-offset="625">
+            <state line="5" column="1" selection-start="123" selection-end="123" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="918">
               <folding>
-                <element signature="e#1#24#0" expanded="true" />
+                <element signature="e#0#23#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="general.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/javascript/general.js">
+      <file leaf-file-name="global_variables.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts/global_variables.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="3" selection-start="332" selection-end="332" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="323">
+            <state line="8" column="16" selection-start="167" selection-end="167" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="238">
               <folding />
             </state>
           </provider>
@@ -94,22 +103,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/__init__.py" />
-        <option value="$PROJECT_DIR$/scripts/pages/homepage.py" />
-        <option value="$PROJECT_DIR$/scripts/page_templates/default.py" />
-        <option value="$PROJECT_DIR$/scripts/page_templates/home_template.py" />
-        <option value="$PROJECT_DIR$/scripts/page_templates/sample_template.py" />
-        <option value="$PROJECT_DIR$/scripts/pages/samplepage.py" />
-        <option value="$PROJECT_DIR$/scripts/classes/class_style_adder.py" />
-        <option value="$PROJECT_DIR$/scripts/classes/class_script_adder.py" />
-        <option value="$PROJECT_DIR$/scripts/global_variables.py" />
-        <option value="$PROJECT_DIR$/index.py" />
-        <option value="$PROJECT_DIR$/scripts/classes/class_scriptstyle_adder.py" />
-        <option value="$PROJECT_DIR$/scripts/classes/class_content.py" />
-        <option value="$PROJECT_DIR$/scripts/functions.py" />
         <option value="$PROJECT_DIR$/scripts/classes/class_footer.py" />
         <option value="$PROJECT_DIR$/scripts/classes/class_header.py" />
         <option value="$PROJECT_DIR$/javascript/general.js" />
+        <option value="$PROJECT_DIR$/scripts/ajax_gate.py" />
+        <option value="$PROJECT_DIR$/scripts/pages/samplepage.py" />
+        <option value="$PROJECT_DIR$/scripts/pages/homepage.py" />
+        <option value="$PROJECT_DIR$/scripts/page_templates/home_template.py" />
+        <option value="$PROJECT_DIR$/scripts/classes/class_content.py" />
+        <option value="$PROJECT_DIR$/scripts/page_templates/sample_template.py" />
+        <option value="$PROJECT_DIR$/scripts/page_templates/default.py" />
+        <option value="$PROJECT_DIR$/scripts/classes/class_form.py" />
+        <option value="$PROJECT_DIR$/../../181/javascript/globs.js" />
+        <option value="$PROJECT_DIR$/index.py" />
+        <option value="$PROJECT_DIR$/scripts/ajax.py" />
+        <option value="$PROJECT_DIR$/scripts/global_variables.py" />
+        <option value="$PROJECT_DIR$/scripts/functions.py" />
       </list>
     </option>
   </component>
@@ -145,6 +154,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -195,59 +205,8 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="spam" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="spam" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scripts" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="page_templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="spam" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="spam" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scripts" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="classes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="spam" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="spam" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="javascript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -423,15 +382,16 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="784" extended-state="7" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1382" height="784" extended-state="6" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24963397" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24963397" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
@@ -440,7 +400,6 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -478,119 +437,117 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/scripts/pages/homepage.py">
+    <entry file="file://$PROJECT_DIR$/scripts/ajax_gate.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="61" selection-start="150" selection-end="150" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="204">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/page_templates/default.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="86" selection-start="189" selection-end="189" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="221">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="625" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/pages/samplepage.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="61" selection-start="243" selection-end="243" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="170">
-          <folding />
-        </state>
+        <state line="7" column="53" selection-start="320" selection-end="320" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="221" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/confirmation.txt">
+    <entry file="file://$PROJECT_DIR$/scripts/page_templates/default.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="591">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/pages/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="604">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="604">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/global_variables.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="16" selection-start="32" selection-end="32" vertical-scroll-proportion="0.0272" vertical-offset="0" max-vertical-offset="625">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/classes/class_content.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="30" selection-start="1033" selection-end="1033" vertical-scroll-proportion="1.1424" vertical-offset="0" max-vertical-offset="986">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/classes/class_scriptstyle_adder.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="0" selection-start="79" selection-end="79" vertical-scroll-proportion="0.1088" vertical-offset="0" max-vertical-offset="625">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/classes/class_script_adder.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="21" selection-start="369" selection-end="369" vertical-scroll-proportion="0.2992" vertical-offset="0" max-vertical-offset="625">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/classes/class_style_adder.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="20" selection-start="366" selection-end="366" vertical-scroll-proportion="0.2992" vertical-offset="0" max-vertical-offset="625">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="38" selection-start="619" selection-end="619" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="595">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/classes/class_footer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="21" selection-start="491" selection-end="491" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="425">
+        <state line="9" column="61" selection-start="493" selection-end="493" vertical-scroll-proportion="0.2448" vertical-offset="0" max-vertical-offset="625">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/classes/class_header.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="33" selection-start="630" selection-end="630" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="578">
+        <state line="14" column="35" selection-start="341" selection-end="341" vertical-scroll-proportion="0.3808" vertical-offset="0" max-vertical-offset="625">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/classes/class_form.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="83" column="99" selection-start="3189" selection-end="3189" vertical-scroll-proportion="0.77124184" vertical-offset="939" max-vertical-offset="1598">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../181/javascript/globs.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="42" selection-start="732" selection-end="732" vertical-scroll-proportion="0.6192053" vertical-offset="51" max-vertical-offset="697">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../181/scripts/getgradesheet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="604">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/page_templates/sample_template.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="61" selection-start="254" selection-end="254" vertical-scroll-proportion="0.1388889" vertical-offset="0" max-vertical-offset="612">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/page_templates/home_template.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="61" selection-start="238" selection-end="238" vertical-scroll-proportion="0.136" vertical-offset="0" max-vertical-offset="625">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/pages/homepage.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="17" selection-start="50" selection-end="50" vertical-scroll-proportion="0.0544" vertical-offset="0" max-vertical-offset="625">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/classes/class_content.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="51" column="37" selection-start="1272" selection-end="1272" vertical-scroll-proportion="0.7488" vertical-offset="399" max-vertical-offset="1071">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/getgradesheet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="7" selection-start="385" selection-end="385" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="374">
           <folding>
-            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/javascript/general.js">
+    <entry file="file://$PROJECT_DIR$/scripts/global_variables.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="3" selection-start="332" selection-end="332" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="323">
+        <state line="8" column="16" selection-start="167" selection-end="167" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="238">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/ajax.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="11" selection-start="39" selection-end="39" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="425">
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/functions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="61" selection-start="694" selection-end="694" vertical-scroll-proportion="0.4896" vertical-offset="0" max-vertical-offset="625">
+        <state line="5" column="1" selection-start="123" selection-end="123" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="918">
           <folding>
-            <element signature="e#1#24#0" expanded="true" />
+            <element signature="e#0#23#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="4" selection-start="52" selection-end="52" vertical-scroll-proportion="0.0816" vertical-offset="0" max-vertical-offset="625">
+          <folding />
         </state>
       </provider>
     </entry>
