@@ -342,28 +342,29 @@ LANGUAGE 'sql';
 
 CREATE OR REPLACE 
     FUNCTION newAppointment(p_appointment_id INT, 
-									p_state_viewed BOOLEAN, 
-									p_professor_id INT, 
-									p_student_id INT, 
-									p_schedule_id INT, 
-									p_appointment_date DATE, 
-									p_message TEXT) 
+							p_state_viewed BOOLEAN, 
+							p_professor_id INT, 
+							p_student_id INT, 
+							p_schedule_id INT, 
+							p_appointment_date DATE, 
+							p_message TEXT) 
     RETURNS TEXT AS
 $$
   DECLARE
      v_appointment_id INT;
   BEGIN
-    SELECT INTO v_appointment_id appointment_id FROM pc_appointment 
-         WHERE appointment_id = p_appointment_id;
+    SELECT INTO v_appointment_id appointment_id 
+		FROM pc_appointment 
+        WHERE appointment_id = p_appointment_id;
          
       IF v_appointment_id ISNULL THEN
           INSERT INTO pc_appointment(appointment_id, 
-										state_viewed, 
-										professor_id, 
-										student_id, 
-										schedule_id, 
-										appointment_date, 
-										message) 
+									 state_viewed, 
+									 professor_id, 
+									 student_id, 
+									 schedule_id, 
+									 appointment_date, 
+									 message) 
 			VALUES (p_appointment_id, 
 					p_state_viewed, 
 					p_professor_id, 
@@ -373,13 +374,13 @@ $$
 					p_message);
       ELSE
           UPDATE pc_appointment 
-            SET state_viewed = p_state_viewed, 
-				professor_id = p_professor_id,
-				student_id = p_student_id,
-				schedule_id = p_schedule_id,
-				appointment_date = p_appointment_date,
-				message = p_message
-            WHERE appointment_id = p_appointment_id;
+            SET state_viewed 		= p_state_viewed, 
+				professor_id 		= p_professor_id,
+				student_id 			= p_student_id,
+				schedule_id 		= p_schedule_id,
+				appointment_date 	= p_appointment_date,
+				message 			= p_message
+            WHERE appointment_id 	= p_appointment_id;
       END IF;   
          
       RETURN 'OK';
@@ -398,15 +399,21 @@ $$
 		v_appointment_id INT;
 		v_state_viewed BOOLEAN;
 	BEGIN
-		SELECT INTO v_appointment_id appointment_id FROM pc_appointment 
-         WHERE appointment_id = p_appointment_id;
-		SELECT INTO v_state_viewed state_viewed FROM pc_appointment 
-         WHERE appointment_id = p_appointment_id;
+		SELECT INTO v_appointment_id appointment_id 
+			FROM pc_appointment 
+			WHERE appointment_id = p_appointment_id;
+			
+		SELECT INTO v_state_viewed state_viewed 
+			FROM pc_appointment 
+			WHERE appointment_id = p_appointment_id;
+			
 		IF v_appointment_id ISNULL THEN
 			RETURN 'Appointment no longer exists.';
+			
 		ELSE
 			IF v_state_viewed THEN
 				RETURN 'Appointment already viewed!';
+				
 			ELSE
 				UPDATE pc_appointment
 					SET state_viewed = TRUE
@@ -429,8 +436,9 @@ $$
 	DECLARE
 		v_appointment_id INT;
 	BEGIN
-		SELECT INTO v_appointment_id appointment_id FROM pc_appointment 
-         WHERE appointment_id = p_appointment_id;
+		SELECT INTO v_appointment_id appointment_id 
+			FROM pc_appointment 
+			WHERE appointment_id = p_appointment_id;
 		
 		IF v_appointment_id ISNULL THEN
 			RETURN 'The appointment you are trying to remove does not exist.';
@@ -506,4 +514,4 @@ $$
 	WHERE student_id_number = $1 AND
 	prof_employment_id = $2;
 $$
-LANGUAGE 'sql';
+LANGUAGE 'sql';€
