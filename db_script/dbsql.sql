@@ -251,7 +251,7 @@ CREATE OR REPLACE
 
 CREATE OR REPLACE 
     FUNCTION setobj1(p_student_id_number VARCHAR,
-	                 p_student_name student_name, 
+	                 p_student_name VARCHAR, 
 					 p_phone_number VARCHAR, 
 					 p_student_email VARCHAR, 
 					 p_student_pass VARCHAR) 
@@ -265,18 +265,18 @@ $$
          
       IF v_student_id ISNULL THEN
           INSERT INTO pc_student(stud_id_number,
-		                       stud_name, 
-							   stud_phone_number, 
-							   stud_email, 
-							   stud_pass) 
+		                         stud_name, 
+							     stud_phone_number, 
+							     stud_email, 
+							     stud_pass) 
 							   
-					   VALUES (p_student_id_number,
-							   p_student_name, 
-							   p_phone_number, 
-							   p_student_email, 
-							   p_student_pass);
+					     VALUES (p_student_id_number,
+							     p_student_name, 
+							     p_phone_number, 
+							     p_student_email, 
+							     p_student_pass);
       ELSE
-          UPDATE pc_student 
+            UPDATE pc_student 
             SET stud_name = p_student_name
             WHERE stud_id_number = p_student_id_number;
       END IF;   
