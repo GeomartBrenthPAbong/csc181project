@@ -1,5 +1,7 @@
 def index(req, page = 'homepage'):
 	import os,sys
+	import scripts.global_variables
+	import scripts.functions
 
 	home_path = os.path.dirname(__file__)
 
@@ -12,15 +14,11 @@ def index(req, page = 'homepage'):
 	if does_not_exists is False:
 		sys.path.append(home_path)
 
-	import scripts.global_variables
 	scripts.global_variables.g_root_path = 'http://localhost/spam'
-
 	scripts.global_variables.g_main_path = home_path
 
-	import scripts.functions
-
-	scripts.global_variables.g_page = page
-
+	scripts.functions.page_validation( page )
+	
 	scripts.functions.pre_processing()
 	scripts.functions.post_processing()
 

@@ -43,6 +43,18 @@ def function_exists( p_function_name ):
 		except NameError:
 			return False
 
+def page_validation( p_page_name ):
+	import os
+	try:
+		if os.path.isfile( global_variables.g_main_path + '/scripts/pages/' + p_page_name + '.py' ):
+			global_variables.g_page = p_page_name
+		else:
+			raise IOError()
+	except IOError:
+		global_variables.g_page = 'notification'
+		global_variables.g_notification_title = '404 Not Found'
+		global_variables.g_notification_msg = 'This page does not exists.'
+
 ##===== AJAX callable functions here
 
 ## Used for logging in
