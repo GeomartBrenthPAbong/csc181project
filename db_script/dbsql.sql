@@ -142,23 +142,41 @@ LANGUAGE 'sql';
 -- RETURNS TEXT
 
 CREATE OR REPLACE
-	FUNCTION createSchedule(p_schedule_id INT, p_from_time TIME, p_to_time TIME, p_schedule_day VARCHAR)
+	FUNCTION createSchedule(
+							p_schedule_id INT, 
+							p_from_time TIME, 
+							p_to_time TIME, 
+							p_schedule_day VARCHAR
+						   )
 	RETURNS TEXT AS
 	$$
 		DECLARE
 			v_schedule_instance INT;
 		BEGIN
-			SELECT INTO v_schedule_instance p_sched_id FROM pc_schedule
-			WHERE sched_from_time = p_time_from 
-			AND sched_to_time = p_to_time 
-			AND sched_day = p_schedule_day ;
+			SELECT 
+				INTO v_schedule_instance p_sched_id 
+				FROM pc_schedule
+				WHERE sched_from_time = p_time_from 
+				AND sched_to_time = p_to_time 
+				AND sched_day = p_schedule_day ;
 
 		IF v_schedule_instance ISNULL THEN
-			INSERT INTO pc_schedule(sched_id, sched_from_time, sched_to_time, sched_day) 
-			VALUES (p_schedule_id, p_from_time, p_to_time, p_schedule_day);
+			INSERT 
+				INTO pc_schedule(
+								 sched_id, 
+								 sched_from_time, 
+								 sched_to_time, 
+								 sched_day
+								) 
+				VALUES (
+					    p_schedule_id, 
+					    p_from_time, 
+						p_to_time, 
+						p_schedule_day
+					   );
 		END IF;
-		RETURN 'OK';
-		END;
+	RETURN 'OK';
+	END;
 	$$
 LANGUAGE 'plpgsql';
 
@@ -170,14 +188,21 @@ LANGUAGE 'plpgsql';
 -- @var p_schedule_day the new schedule day
 
 CREATE OR REPLACE
-	FUNCTION editSchedule(p_schedule_id INT, p_from_time TIME, p_to_time TIME, p_schedule_day VARCHAR)
+	FUNCTION editSchedule(
+						  p_schedule_id INT, 
+						  p_from_time TIME, 
+						  p_to_time TIME, 
+						  p_schedule_day VARCHAR
+						 )
 	RETURNS TEXT AS
 	$$
 	DECLARE
 		v_schedule_instance INT;
 	BEGIN
-		SELECT INTO v_schedule_instance sched_id FROM pc_schedule
-		WHERE sched_id = p_schedule_id;
+		SELECT 
+			INTO v_schedule_instance sched_id 
+			FROM pc_schedule
+			WHERE sched_id = p_schedule_id;
 
 		IF v_schedule_instance ISNULL THEN
 			RETURN 'NO INSTANCE';
@@ -198,10 +223,12 @@ LANGUAGE 'plpgsql';
 -- @var p_int_schedule the schedule id
 -- @returns SETOF RECORD a list of time range
 CREATE OR REPLACE
-  FUNCTION extractScheduleInfoFromID(IN INT,
+  FUNCTION extractScheduleInfoFromID(
+									 IN INT,
                                      OUT TIME,
                                      OUT TIME,
-                                     OUT VARCHAR)
+                                     OUT VARCHAR
+									)
   RETURNS SETOF RECORD AS
   $$
     SELECT sched_from_time,
