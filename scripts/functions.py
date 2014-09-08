@@ -8,18 +8,18 @@ import types
 ##===== Admin functions here
 
 ## Starts a session for saving data in the server
-def session_start():
-	global_variables.g_session = recipe.SESSION
-	global_variables.g_session.start()
+#def session_start():
+#	global_variables.g_session = recipe.SESSION
+#	global_variables.g_session.start()
 
 ## Destroys the session variable and sets it to None
-def session_destroy():
-	global_variables.g_session.destroy()
-	global_variables.g_session = None
+#def session_destroy():
+#	global_variables.g_session.destroy()
+#	global_variables.g_session = None
 
 ## Returns true if the user is logged in otherwise, returns false
-def is_user_logged_in():
-	return global_variables.g_session.isset( 'logged_in' )
+#def is_user_logged_in():
+#	return global_variables.g_session.isset( 'logged_in' )
 
 ## Initialize global variables here
 def pre_processing():

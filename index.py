@@ -1,5 +1,5 @@
-def index(req, page = None):
-	import os, sys, imp
+def index(req, page = 'homepage'):
+	import os,sys
 
 	home_path = os.path.dirname(__file__)
 
@@ -13,14 +13,13 @@ def index(req, page = None):
 		sys.path.append(home_path)
 
 	import scripts.global_variables
-	scripts.global_variables.g_root_path = 'http://localhost/testingground/spam'
+	scripts.global_variables.g_root_path = 'http://localhost/spam'
+
+	scripts.global_variables.g_main_path = home_path
 
 	import scripts.functions
 
-	if page is None:
-		scripts.functions.global_variables.g_page = 'homepage'
-	else:
-		scripts.global_variables.g_page = page
+	scripts.global_variables.g_page = page
 
 	scripts.functions.pre_processing()
 	scripts.functions.post_processing()

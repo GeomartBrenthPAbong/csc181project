@@ -46,12 +46,16 @@ class Content(object):
 		return self.__m_after_content
 
 	def generateContent(self):
-		__import__('scripts.pages.' + self.__m_page)
-		__import__('scripts.page_templates.' + self.__m_page_template)
+		from mod_python import apache
 
-		scripts.global_variables.g_process_page()
-		scripts.global_variables.g_process_template()
+		page = apache.import_module( self.__m_page, path=[scripts.global_variables.g_main_path + '/scripts/pages/'])
+		self.setTitle( page.title )
+		self.setContent( page.content )
+		self.setPageTemplate( page.page_template )
 
+		page_template = apache.import_module( page.page_template, path=[scripts.global_variables.g_main_path + '/scripts/page_templates/'])
+
+		self.__m_content = page_template.generate_page()
 		self.__m_content += self.__m_before_content
 		self.__m_content += self.__m_after_content
 

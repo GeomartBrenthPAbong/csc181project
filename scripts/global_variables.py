@@ -7,3 +7,6 @@ g_root_path = None
 g_process_page = None
 g_process_template = None
 g_session = None
+g_main_path = None
+g_notification_title = None
+g_notification_msg = None
