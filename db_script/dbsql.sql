@@ -1,18 +1,16 @@
 ----------------------------------	TABLES
 
+-- @desc Defining composite types for student name and professor name
 
--- @desc Creating PROFESSOR Table
-
-CREATE TABLE pc_professor(
-	prof_id INT PRIMARY KEY,
-	prof_employment_id VARCHAR(20),
-    prof_first_name VARCHAR(50),
-    prof_last_name VARCHAR(30),
-	prof_email_add VARCHAR(80),
-	prof_phone_number VARCHAR(20),
-	sched_id SERIAL REFERENCES pc_schedule(sched_id)
+CREATE TYPE professor_name AS (
+	prof_first_name VARCHAR(50),
+	prof_last_name VARCHAR(50)
 );
 
+CREATE TYPE student_name AS (
+	stud_first_name VARCHAR(50),
+	stud_last_name VARCHAR(50)
+);
 
 -- @desc Creating SCHEDULE Table
 
@@ -21,19 +19,28 @@ CREATE TABLE pc_schedule(
     sched_from_time TIME,
     sched_to_time TIME,
     sched_day VARCHAR
-	prof_employment_id INT REFERENCES pc_professor(prof_employment_id)
 );
 
+-- @desc Creating PROFESSOR Table
+
+CREATE TABLE pc_professor(
+	prof_employment_id VARCHAR(20),
+	prof_name professor_name,
+	prof_email_add VARCHAR(80),
+	prof_phone_number VARCHAR(20),
+	sched_id INT REFERENCES pc_schedule(sched_id),
+	PRIMARY KEY (prof_employment_id)
+);
 
 -- @desc Creating STUDENT Table
 
-create table pc_student(
-     stud_id INT PRIMARY KEY,
+CREATE TABLE pc_student(
 	 stud_id_number VARCHAR(10),
-     stud_name VARCHAR(50),
+     stud_name student_name,
      stud_phone_number VARCHAR(15),
      stud_email VARCHAR(100),
-	 stud_password VARCHAR(100)
+	 stud_password VARCHAR(100),
+	 PRIMARY KEY (stud_id_number)
 );
 
 -- @desc Creating APPOINTMENT Table
@@ -41,20 +48,27 @@ create table pc_student(
 CREATE TABLE pc_appointment (
      appointment_id INT PRIMARY KEY,
 	 state_viewed BOOLEAN,
-	 prof_employment_id VARCHAR(20) REFERENCES pc_professor(prof_employment_id),
-	 student_id_number VARCHAR(10) REFERENCES pc_student(stud_id_number),
-	 schedule_id SERIAL REFERENCES pc_schedule(sched_id),
+	 prof_employment_id VARCHAR(20)REFERENCES pc_professor(prof_employment_id) UNIQUE,
+	 student_id_number VARCHAR(10) REFERENCES pc_student(stud_id_number) UNIQUE,
+	 schedule_id INT REFERENCES pc_schedule(sched_id) UNIQUE,
 	 appointment_date DATE,
 	 message TEXT
 );
 
+-- @desc Creating a table matching setting schedules for professors
+
+CREATE TABLE pc_professor_sched(
+	prof_sched_id INT PRIMARY KEY,
+	prof_employment_id VARCHAR(20) REFERENCES pc_professor(prof_employment_id),
+	sched_id INT REFERENCES pc_schedule(sched_id)
+);
 
 
 ---------------------------------- PROFESSOR TABLE SCRIPT
 
 
 -- @desc Use this function for storing new professor details or updating an existing professor details
--- @var p_professor_id the professor id 
+-- @var p_prof_employment_id the professor employment id
 -- @var p_first_name the first name
 -- @var p_last_name the last name
 -- @var p_email_add the email address
@@ -62,63 +76,57 @@ CREATE TABLE pc_appointment (
 -- @returns TEXT
 
 CREATE OR REPLACE
-	FUNCTION setProfessor(p_professor_id INT,
-						  p_prof_employment_id VARCHAR,
-						  p_first_name VARCHAR,
-						  p_last_name VARCHAR,
+	FUNCTION setProfessor(p_prof_employment_id VARCHAR,
+						  p_prof_name professor_name,
                           p_email_add VARCHAR,
                           p_phone_number VARCHAR)
 	RETURNS TEXT AS
 	$$
 		DECLARE
-			v_professor_instance;
+			v_professor_instance VARCHAR;
 		BEGIN
 		SELECT INTO v_professor_instance prof_email_add FROM pc_professor 
 		WHERE prof_email_add = p_email_add;
 
 		IF v_professor_instance ISNULL THEN
-			INSERT INTO pc_professor(prof_id, prof_employment_id, prof_first_name, prof_last_name, prof_email_add, prof_phone_number) VALUES
-									(p_professor_id, p_prof_employment_id, p_first_name, p_last_name, p_email_add, p_phone_number);
+			INSERT INTO pc_professor(prof_employment_id, 
+										prof_name, 
+										prof_email_add, 
+										prof_phone_number) 
+			VALUES(p_prof_employment_id, 
+					p_prof_name , 
+					p_email_add, 
+					p_phone_number);
 		ELSE
 			UPDATE pc_professor
-			SET prof_id = p_professor_id
-				prof_employment_id = p_prof_employment_id,
+			SET prof_employment_id = p_prof_employment_id,
 				prof_first_name = p_first_name,
 				prof_last_name = p_last_name,
 				prof_phone_number = p_phone_number
-			WHERE prof_email_add = p_email_add
+			WHERE prof_email_add = p_email_add;
 		END IF;
     RETURN 'OK';
 	END;
 	$$
  LANGUAGE 'plpgsql';
 
-  
--- @desc Use this function to extract information of a certain professor
--- @var p_email_add is the email address of the professor
--- @returns SETOF RECORD a set of professor details except the schedule
-
-CREATE OR REPLACE
+ CREATE OR REPLACE
 	FUNCTION extractProfessorInfoPerEmail(IN p_email_add VARCHAR,
-										  OUT professor_id INT,
 										  OUT prof_employment_id VARCHAR,
-										  OUT first_name VARCHAR,
-										  OUT last_name VARCHAR,
+										  OUT name professor_name,
 										  OUT email_address VARCHAR,
 										  OUT phone_number VARCHAR)
 	RETURNS SETOF RECORD AS
 	$$
 		SELECT 
-			prof_id,
 			prof_employment_id,
-			prof_first_name,
-			prof_last_name,
+			prof_name,
 			prof_email_add,
 			prof_phone_number
 		FROM 
 			pc_professor
 		WHERE 
-			prof_email_add = p_email_add
+			prof_email_add = $1;
 	$$
 LANGUAGE 'sql';
 
@@ -196,11 +204,11 @@ CREATE OR REPLACE
                                      OUT VARCHAR)
   RETURNS SETOF RECORD AS
   $$
-    SELECT from_time,
-           to_time,
-           day_sched
-    FROM pc_sched
-    WHERE int_schedule_id = $1;
+    SELECT sched_from_time,
+           sched_to_time,
+           sched_day
+    FROM pc_schedule
+    WHERE sched_id = $1;
   $$
   LANGUAGE 'sql';
   
@@ -208,78 +216,61 @@ CREATE OR REPLACE
   
 
 -- @desc Use this function for storing new student details or updating an existing student details
--- @var p_student_id the primary key
--- @var p_student_lastname the student's last name
--- @var p_student_firstname the student's first name
--- @var p_student_middleinit the student's middle initial
+-- @var p_student_id_number the PRIMARY key
+-- @var p_student_name the student name
 -- @var p_phone_number the student phone number (Philippines local number)
 -- @var p_student_email the student email
 -- @var p_student_pass the student pass
 
-create or replace 
-    function setobj1(p_student_id int,
-		     p_studend_id_number varchar,
-	             p_student_lastname varchar,
-		     p_student_firstname varchar,
-		     p_student_middleinit varchar,
-         	     p_phone_number varchar, 
-		     p_student_email varchar, 
-		     p_student_pass varchar) 
-    returns text as
+CREATE OR REPLACE 
+    FUNCTION setobj1(p_student_id_number VARCHAR,
+	                 p_student_name student_name, 
+					 p_phone_number VARCHAR, 
+					 p_student_email VARCHAR, 
+					 p_student_pass VARCHAR) 
+    RETURNS text AS
 $$
-  declare
-     v_student_id int;
-  begin
-      select into v_student_id student_id from student
-         where student_id = p_student_id;
+  DECLARE
+     v_student_id_number VARCHAR;
+  BEGIN
+      SELECT INTO v_student_id_number stud_id_number FROM pc_student
+         WHERE stud_id_number = p_student_id_number;
          
-      if v_student_id isnull then
-          insert into pc_student(stud_id, 
-				 stud_id_number,
-				 stud_lastname,
-				 stud_firstname,
-				 stud_middleinit,
-				 stud_phone_number, 
-				 stud_email, 
-				 stud_pass) 
+      IF v_student_id ISNULL THEN
+          INSERT INTO pc_student(stud_id_number,
+		                       stud_name, 
+							   stud_phone_number, 
+							   stud_email, 
+							   stud_pass) 
 							   
-			 values (p_student_id,
-				 p_student_lastname,
-				 p_student_firstname,
-				 p_student_middleinit
-				 p_phone_number, 
-				 p_student_email, 
-			         p_student_pass);
-      else
-          update pc_student 
-            set stud_lastname = p_student_lastname
-            where stud_id = p_student_id;
-      end if;   
+					   VALUES (p_student_id_number,
+							   p_student_name, 
+							   p_phone_number, 
+							   p_student_email, 
+							   p_student_pass);
+      ELSE
+          UPDATE pc_student 
+            SET stud_name = p_student_name
+            WHERE stud_id_number = p_student_id_number;
+      END IF;   
          
-      return 'OK';
-  end;
+      RETURN 'OK';
+  END;
 $$
-  language 'plpgsql'; 
+  LANGUAGE 'plpgsql'; 
   
 -- @desc Use this function to view the created table
-create or replace function 
-    extractStudentInfoPerId(in int, 
-			    in varchar, 
-		            out int, 
-			    out varchar, 
-			    out varchar, 
-			    out varchar, 
-			    out varchar, 
-			    out varchar, 
-			    out varchar, 
-			    out varchar) 
-returns setof record as
+CREATE OR REPLACE FUNCTION 
+    extractStudentInfoPerId(IN VARCHAR, OUT VARCHAR, OUT student_name, OUT VARCHAR, OUT VARCHAR, OUT VARCHAR) 
+RETURNS setof RECORD AS
 $$ 
-     select * from pc_student
-     where stud_id = $1;
+     SELECT * FROM pc_student
+     WHERE stud_id_number = $1;
      
 $$
- language 'sql';
+ LANGUAGE 'sql';
+
+ 
  
  ---------------------------------------------------------------------------------------------------------------------------------------
 -- @desc Use this function for adding a schedule for a certain professor or updating the specific schedule of a certain professor
@@ -288,26 +279,33 @@ $$
 -- @returns TEXT
 
 CREATE OR REPLACE
-	FUNCTION addScheduleToProfessor(p_professor_id INT,
+	FUNCTION addScheduleToProfessor(p_professor_employment_id VARCHAR,
 									p_schedule_id INT)
 	RETURNS TEXT AS
 	$$
 		DECLARE
-			v_prof_sched_instance
+			v_prof_employment_id VARCHAR;
+			v_schedule_id INT;
 		BEGIN
-		SELECT INTO v_prof_sched_instance prof_id sched_id FROM pc_professor  
-		WHERE prof_id = p_professor_id AND sched_id = p_schedule_id;
+			SELECT INTO v_prof_employment_id,
+						v_schedule_id prof_employment_id, 
+						sched_id 
+			FROM pc_professor_sched
+			WHERE prof_employment_id = p_professor_employment_id AND 
+				sched_id = p_schedule_id;
 
-		IF v_prof_sched_instance ISNULL THEN
-		INSERT INTO pc_professor_sched  (professor_id, schedule_id) VALUES
-                                       (p_int_professor_id, p_int_schedule_id);
-    ELSE
-      UPDATE pc_professor_schedule
-        SET schedule_id = p_int_schedule_id
-        WHERE professor_id = p_int_schedule_id
-    END IF;
-    RETURN 'OK';
-  END;
+			IF v_prof_employment_id AND v_schedule_id ISNULL THEN
+				INSERT INTO pc_professor_sched  (prof_employment_id, 
+												sched_id) 
+				VALUES(p_professor_employment_id, 
+						p_schedule_id);
+			ELSE						-- should put a warning here, in case prof tries to make a sched with existing entry
+				UPDATE pc_professor_sched
+				SET sched_id = p_schedule_id
+				WHERE prof_employment_id = p_professor_employment_id;
+			END IF;
+			RETURN 'OK';
+		END;
   $$
   LANGUAGE 'plpgsql';
   -------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -318,16 +316,16 @@ CREATE OR REPLACE
 -- @returns SETOF INT a list of schedule ids
 
 CREATE OR REPLACE
-	FUNCTION getSchedules(IN p_professor_id INT,
+	FUNCTION getSchedules(IN p_prof_employment_id VARCHAR,
 						  OUT schedule_id INT)
 	RETURNS SETOF INT AS
 	$$
 		SELECT 
 			sched_id
 		FROM 
-			pc_professor_schedule
+			pc_professor_sched
 		WHERE 
-			prof_id = p_professor_id
+			prof_employment_id = $1;
 	$$
 LANGUAGE 'sql';
 
@@ -453,18 +451,18 @@ $$
 -- @var p_professor_id is the professor id
 -- @returns setof record a set of appointments and their details
 CREATE OR REPLACE FUNCTION 
-    getApptPerProfId(in INT, 
-					out INT, 
-					out BOOLEAN, 
-					out INT, 
-					out INT, 
-					out INT, 
-					out DATE, 
-					out TEXT) 
+    getApptPerProfId(IN VARCHAR, 
+					OUT INT, 
+					OUT BOOLEAN, 
+					OUT VARCHAR, 
+					OUT VARCHAR, 
+					OUT INT, 
+					OUT DATE, 
+					OUT TEXT) 
 RETURNS setof RECORD AS
 $$ 
      SELECT * FROM pc_appointment
-     WHERE professor_id = $1;
+     WHERE prof_employment_id = $1;
      
 $$
  LANGUAGE 'sql';
@@ -473,18 +471,18 @@ $$
  -- @var p_student_id is the unique student id
  -- @returns setof record A set of appointments and their details
 CREATE OR REPLACE FUNCTION
-	getApptPerStudId(in INT, 
-					out INT, 
-					out BOOLEAN, 
-					out INT, 
-					out INT, 
-					out INT, 
-					out DATE, 
-					out TEXT)
+	getApptPerStudId(IN VARCHAR, 
+					OUT INT, 
+					OUT BOOLEAN, 
+					OUT VARCHAR, 
+					OUT VARCHAR, 
+					OUT INT, 
+					OUT DATE, 
+					OUT TEXT)
 RETURNS setof RECORD AS
 $$
 	SELECT * FROM pc_appointment
-	WHERE student_id = $1;
+	WHERE student_id_number = $1;
 $$
 LANGUAGE 'sql';
 
@@ -493,19 +491,19 @@ LANGUAGE 'sql';
 -- @var p_professor_id The unique professor id
 -- @return setof record A set of appointment details
 CREATE OR REPLACE FUNCTION
-	getApptPerStudProfId(in INT, 
-						in INT, 
-						out INT, 
-						out BOOLEAN, 
-						out INT, 
-						out INT, 
-						out INT, 
-						out DATE, 
-						out TEXT)
+	getApptPerStudProfId(IN VARCHAR, 
+					IN VARCHAR,
+					OUT INT, 
+					OUT BOOLEAN, 
+					OUT VARCHAR, 
+					OUT VARCHAR, 
+					OUT INT, 
+					OUT DATE, 
+					OUT TEXT)
 RETURNS setof RECORD AS
 $$
 	SELECT * FROM pc_appointment
-	WHERE student_id = $1 AND
-	professor_id = $2;
+	WHERE student_id_number = $1 AND
+	prof_employment_id = $2;
 $$
 LANGUAGE 'sql';
