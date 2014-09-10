@@ -1,14 +1,14 @@
 def index(req):
-	import os,sys,cgi
-
+	import os,sys,cgi, mod_python
 	sys.path.append( os.path.dirname(__file__) )
 
-	#import functions
-	from third_party_modules.simplejson.simplejson.encoder import JSONEncoder
+	import scripts.functions
+	from scripts.third_party_modules.simplejson.simplejson.encoder import JSONEncoder
 
-	values = cgi.FieldStorage()
+	#values = cgi.FieldStorage(req)
+	values = mod_python.util.FieldStorage(req)
 
-	result = {'msg': values.getvalue('the_value', 'error') }
+	result = {'msg': values.getfirst('the_value', 'error') }
 
 	return JSONEncoder().encode( result )
 	#return json.dumps(response)
