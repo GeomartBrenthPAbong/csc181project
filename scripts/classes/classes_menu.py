@@ -4,13 +4,28 @@ import class_printable
 class Menu(class_printable.Printable):
 	def __init__(self, p_menu = None):
 		self.__m_menu = p_menu
-		self._m_string = ''
+		super(Menu, self).__init__()
 
 	def setMenu(self, p_menu):
 		self.__m_menu = p_menu
 
+	def setMenuID(self, p_menu_id):
+		if self.__m_menu is None:
+			return
+		self.__m_menu['ul_id'] = p_menu_id
+
 	def getGeneratedMenu(self):
 		return self._m_string
+
+	def getMenuID(self):
+		if self.__m_menu is None or not 'ul_id' in self.__m_menu:
+			return None
+		return self.__m_menu['ul_id']
+
+	def getMenuItems(self):
+		if self.__m_menu is None or not 'menu_items' in self.__m_menu:
+			return None
+		return self.__m_menu['menu_items']
 
 	# OrderedDict p_menu_items is of the format: { 'id here': {
 	# 													'label': label here
@@ -41,6 +56,42 @@ class Menu(class_printable.Printable):
 				return
 
 		self.__m_menu['menu_items'][p_parent_menu_id]['sub_menu'] = p_menu
+
+	def removeSubmenu(self, p_menu_id):
+		if p_menu_id in self.__m_menu['menu_items']:
+			if 'sub_menu' in self.__m_menu['menu_items'][p_menu_id]:
+				del self.__m_menu['menu_items'][p_menu_id]['sub_menu']
+				return
+		self.__removeSubmenuH(p_menu_id, self.__m_menu['menu_items'])
+
+	def __removeSubmenuH(self, p_menu_id, p_menu):
+		if p_menu_id in p_menu:
+				if 'sub_menu' in p_menu[p_menu_id]:
+					del p_menu[p_menu_id]['sub_menu']
+				return True
+
+		for menu_item_key in p_menu:
+			if 'sub_menu' in p_menu[menu_item_key]:
+				if self.__removeSubmenuH(p_menu_id, p_menu[menu_item_key]['sub_menu'].getMenuItems()):
+					return True
+		return False
+
+	def removeMenuItem(self, p_menu_id):
+		if p_menu_id in self.__m_menu['menu_items']:
+			del self.__m_menu['menu_items'][p_menu_id]
+			return
+		self.__removeMenuItemH(p_menu_id, self.__m_menu['menu_items'])
+
+	def __removeMenuItemH(self, p_menu_id, p_menu):
+		if p_menu_id in p_menu:
+				del p_menu[p_menu_id]
+				return True
+
+		for menu_item_key in p_menu:
+			if 'sub_menu' in p_menu[menu_item_key]:
+				if self.__removeMenuItemH(p_menu_id, p_menu[menu_item_key]['sub_menu'].getMenuItems()):
+					return True
+		return False
 
 	def generateMenu(self):
 		if self.__m_menu is None \
