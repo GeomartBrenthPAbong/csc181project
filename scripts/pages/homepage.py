@@ -42,6 +42,9 @@ def page_additions():
 			main_menu.addAsSubmenu('link_1', link_one_sub_menu)
 
 			main_menu.addMenuItem('link_4', 'Added in homepage', '#')
+			main_menu.removeMenuItem('sub_3')
+			main_menu.removeSubmenu('sub_2')
+
 			scripts.global_variables.g_locations.clearLocation('main_menu')
 			scripts.global_variables.g_locations.addToLocation('main_menu', main_menu)
 
