@@ -1,5 +1,14 @@
-import scripts.global_variables
+import scripts.global_variables as g
+import scripts.classes.class_printable as p
 
-title = scripts.global_variables.g_notification_title
-content = scripts.global_variables.g_notification_msg
-page_template = 'default'
+def get_title():
+	return g.g_notification_title
+
+def get_content():
+	return g.g_notification_msg
+
+def get_page_template():
+	return 'default'
+
+def page_additions():
+	pass

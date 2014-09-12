@@ -7,8 +7,15 @@ import scripts.classes.class_printable
 import scripts.classes.classes_menu
 
 def include_in_pages():
+	# Bootstrap
 	g.g_header.getStyleAdder().add('bootstrap/css/bootstrap.min')
 	g.g_header.getStyleAdder().add('bootstrap/css/bootstrap-theme.min')
 
 	# Styles for all pages
 	g.g_header.getStyleAdder().add('styles')
+
+
+	# Scripts for all pages
+
+
+	# Location additions for all pages
