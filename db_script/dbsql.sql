@@ -29,6 +29,7 @@ CREATE TABLE pc_professor(
 	prof_email_add VARCHAR(80),
 	prof_phone_number VARCHAR(20),
 	sched_id INT REFERENCES pc_schedule(sched_id),
+	prof_password VARCHAR(100),
 	PRIMARY KEY (prof_employment_id)
 );
 
@@ -49,19 +50,22 @@ CREATE TABLE pc_appointment (
      appointment_id INT PRIMARY KEY,
 	 state_viewed BOOLEAN,
 	 prof_employment_id VARCHAR(20)REFERENCES pc_professor(prof_employment_id) UNIQUE,
-	 student_id_number VARCHAR(10) REFERENCES pc_student(stud_id_number) UNIQUE,
-	 schedule_id INT REFERENCES pc_schedule(sched_id) UNIQUE,
+	 stud_id VARCHAR(10) REFERENCES pc_student(stud_id_number) UNIQUE,
+	 sched_id INT REFERENCES pc_schedule(sched_id) UNIQUE,
 	 appointment_date DATE,
 	 message TEXT
 );
 
 -- @desc Creating a table matching setting schedules for professors
 
-CREATE TABLE pc_professor_sched(
+CREATE TABLE pc_professor_schedule(
 	prof_sched_id INT PRIMARY KEY,
 	prof_employment_id VARCHAR(20) REFERENCES pc_professor(prof_employment_id),
 	sched_id INT REFERENCES pc_schedule(sched_id)
 );
+
+
+
 
 
 ---------------------------------- PROFESSOR TABLE SCRIPT
@@ -79,30 +83,34 @@ CREATE OR REPLACE
 	FUNCTION setProfessor(p_prof_employment_id VARCHAR,
 						  p_prof_name professor_name,
                           p_email_add VARCHAR,
-                          p_phone_number VARCHAR)
+                          p_phone_number VARCHAR,
+						  p_prof_password VARCHAR)
 	RETURNS TEXT AS
 	$$
 		DECLARE
-			v_professor_instance VARCHAR;
+			v_prof_instance VARCHAR;
 		BEGIN
-		SELECT INTO v_professor_instance prof_email_add FROM pc_professor 
+		SELECT INTO v_prof_instance prof_email_add FROM pc_professor 
 		WHERE prof_email_add = p_email_add;
 
-		IF v_professor_instance ISNULL THEN
+		IF v_prof_instance ISNULL THEN
 			INSERT INTO pc_professor(prof_employment_id, 
 										prof_name, 
 										prof_email_add, 
-										prof_phone_number) 
+										prof_phone_number
+										prof_password) 
 			VALUES(p_prof_employment_id, 
 					p_prof_name , 
 					p_email_add, 
-					p_phone_number);
+					p_phone_number,
+					p_prof_password);
 		ELSE
 			UPDATE pc_professor
 			SET prof_employment_id = p_prof_employment_id,
 				prof_first_name = p_first_name,
 				prof_last_name = p_last_name,
-				prof_phone_number = p_phone_number
+				prof_phone_number = p_phone_number,
+				prof_password = p_prof_password
 			WHERE prof_email_add = p_email_add;
 		END IF;
     RETURN 'OK';
@@ -143,24 +151,24 @@ LANGUAGE 'sql';
 
 CREATE OR REPLACE
 	FUNCTION createSchedule(
-							p_schedule_id INT, 
+							p_sched_id INT, 
 							p_from_time TIME, 
 							p_to_time TIME, 
-							p_schedule_day VARCHAR
+							p_sched_day VARCHAR
 						   )
 	RETURNS TEXT AS
 	$$
 		DECLARE
-			v_schedule_instance INT;
+			v_sched_instance INT;
 		BEGIN
 			SELECT 
-				INTO v_schedule_instance p_sched_id 
+				INTO v_sched_instance sched_id 
 				FROM pc_schedule
-				WHERE sched_from_time = p_time_from 
+				WHERE sched_from_time = p_from_time
 				AND sched_to_time = p_to_time 
-				AND sched_day = p_schedule_day ;
+				AND sched_day = p_sched_day ;
 
-		IF v_schedule_instance ISNULL THEN
+		IF v_sched_instance ISNULL THEN
 			INSERT 
 				INTO pc_schedule(
 								 sched_id, 
@@ -169,13 +177,15 @@ CREATE OR REPLACE
 								 sched_day
 								) 
 				VALUES (
-					    p_schedule_id, 
+					    p_sched_id, 
 					    p_from_time, 
 						p_to_time, 
-						p_schedule_day
+						p_sched_day
 					   );
+			RETURN 'OK';
+		ELSE RETURN 'Schedule already exists.';
 		END IF;
-	RETURN 'OK';
+	
 	END;
 	$$
 LANGUAGE 'plpgsql';
@@ -189,29 +199,29 @@ LANGUAGE 'plpgsql';
 
 CREATE OR REPLACE
 	FUNCTION editSchedule(
-						  p_schedule_id INT, 
+						  p_sched_id INT, 
 						  p_from_time TIME, 
 						  p_to_time TIME, 
-						  p_schedule_day VARCHAR
+						  p_sched_day VARCHAR
 						 )
 	RETURNS TEXT AS
 	$$
 	DECLARE
-		v_schedule_instance INT;
+		v_sched_instance INT;
 	BEGIN
 		SELECT 
-			INTO v_schedule_instance sched_id 
+			INTO v_sched_instance sched_id 
 			FROM pc_schedule
-			WHERE sched_id = p_schedule_id;
+			WHERE sched_id = p_sched_id;
 
-		IF v_schedule_instance ISNULL THEN
+		IF v_sched_instance ISNULL THEN
 			RETURN 'NO INSTANCE';
 		ELSE
 			UPDATE pc_schedule
 				SET sched_from_time = p_from_time,
 					sched_to_time = p_to_time,
-					sched_day = p_schedule_day
-				WHERE sched_id = p_schedule_id;
+					sched_day = p_sched_day
+				WHERE sched_id = p_sched_id;
 			RETURN 'OK';
 		END IF;
 	END;
@@ -250,35 +260,35 @@ CREATE OR REPLACE
 -- @var p_student_pass the student pass
 
 CREATE OR REPLACE 
-    FUNCTION setobj1(p_student_id_number VARCHAR,
-	                 p_student_name VARCHAR, 
+    FUNCTION setStudent(p_stud_id VARCHAR,
+	                 p_stud_name student_name, 
 					 p_phone_number VARCHAR, 
-					 p_student_email VARCHAR, 
-					 p_student_pass VARCHAR) 
+					 p_stud_email VARCHAR, 
+					 p_stud_pass VARCHAR) 
     RETURNS text AS
 $$
   DECLARE
-     v_student_id_number VARCHAR;
+     v_stud_id VARCHAR;
   BEGIN
-      SELECT INTO v_student_id_number stud_id_number FROM pc_student
-         WHERE stud_id_number = p_student_id_number;
+      SELECT INTO v_stud_id stud_id_number FROM pc_student
+         WHERE stud_id_number = p_stud_id;
          
-      IF v_student_id ISNULL THEN
+      IF v_stud_id ISNULL THEN
           INSERT INTO pc_student(stud_id_number,
 		                         stud_name, 
 							     stud_phone_number, 
 							     stud_email, 
-							     stud_pass) 
+							     stud_password) 
 							   
-					     VALUES (p_student_id_number,
-							     p_student_name, 
+					     VALUES (p_stud_id,
+							     p_stud_name, 
 							     p_phone_number, 
-							     p_student_email, 
-							     p_student_pass);
+							     p_stud_email, 
+							     p_stud_pass);
       ELSE
             UPDATE pc_student 
-            SET stud_name = p_student_name
-            WHERE stud_id_number = p_student_id_number;
+            SET stud_name = p_stud_name
+            WHERE stud_id_number = p_stud_id;
       END IF;   
          
       RETURN 'OK';
@@ -306,51 +316,49 @@ $$
 -- @returns TEXT
 
 CREATE OR REPLACE
-	FUNCTION addScheduleToProfessor(p_professor_employment_id VARCHAR,
-									p_schedule_id INT)
+	FUNCTION addScheduleToProfessor(p_prof_sched_id INT, p_prof_employment_id VARCHAR,
+									p_sched_id INT)
 	RETURNS TEXT AS
 	$$
 		DECLARE
 			v_prof_employment_id VARCHAR;
-			v_schedule_id INT;
+			v_sched_id INT;
 		BEGIN
 			SELECT INTO v_prof_employment_id,
-						v_schedule_id prof_employment_id, 
+						v_sched_id prof_employment_id, 
 						sched_id 
-			FROM pc_professor_sched
-			WHERE prof_employment_id = p_professor_employment_id AND 
-				sched_id = p_schedule_id;
+			FROM pc_professor_schedule
+			WHERE prof_employment_id = p_prof_employment_id AND 
+				sched_id = p_sched_id;
 
-			IF v_prof_employment_id AND v_schedule_id ISNULL THEN
-				INSERT INTO pc_professor_sched  (prof_employment_id, 
+			IF v_prof_employment_id ISNULL AND v_sched_id ISNULL THEN
+				INSERT INTO pc_professor_schedule  (prof_sched_id, prof_employment_id, 
 												sched_id) 
-				VALUES(p_professor_employment_id, 
-						p_schedule_id);
-			ELSE						-- should put a warning here, in case prof tries to make a sched with existing entry
-				UPDATE pc_professor_sched
-				SET sched_id = p_schedule_id
-				WHERE prof_employment_id = p_professor_employment_id;
+					VALUES(p_prof_sched_id, p_prof_employment_id, 
+						p_sched_id);
+				RETURN 'OK';
+			ELSE	RETURN 'Professor already has that schedule';	-- should put a warning here, in case prof tries to make a sched with existing entry
 			END IF;
-			RETURN 'OK';
+		
 		END;
   $$
   LANGUAGE 'plpgsql';
   -------------------------------------------------------------------------------------------------------------------------------------------------------------
   
   
-  -- @desc Use this function to get the schedules of a certain professor
+-- @desc Use this function to get the schedules of a certain professor
 -- @var p_professor_id is the professor id
 -- @returns SETOF INT a list of schedule ids
 
 CREATE OR REPLACE
-	FUNCTION getSchedules(IN p_prof_employment_id VARCHAR,
-						  OUT schedule_id INT)
+	FUNCTION getProfessorSchedules(IN p_prof_employment_id VARCHAR,
+						  OUT sched_id INT)
 	RETURNS SETOF INT AS
 	$$
 		SELECT 
 			sched_id
 		FROM 
-			pc_professor_sched
+			pc_professor_schedule
 		WHERE 
 			prof_employment_id = $1;
 	$$
@@ -370,9 +378,9 @@ LANGUAGE 'sql';
 CREATE OR REPLACE 
     FUNCTION newAppointment(p_appointment_id INT, 
 							p_state_viewed BOOLEAN, 
-							p_professor_id INT, 
-							p_student_id INT, 
-							p_schedule_id INT, 
+							p_prof_employment_id VARCHAR, 
+							p_stud_id VARCHAR, 
+							p_sched_id INT, 
 							p_appointment_date DATE, 
 							p_message TEXT) 
     RETURNS TEXT AS
@@ -387,24 +395,24 @@ $$
       IF v_appointment_id ISNULL THEN
           INSERT INTO pc_appointment(appointment_id, 
 									 state_viewed, 
-									 professor_id, 
-									 student_id, 
-									 schedule_id, 
+									 prof_employment_id, 
+									 stud_id, 
+									 sched_id, 
 									 appointment_date, 
 									 message) 
 			VALUES (p_appointment_id, 
 					p_state_viewed, 
-					p_professor_id, 
-					p_student_id, 
-					p_schedule_id, 
+					p_prof_employment_id, 
+					p_stud_id, 
+					p_sched_id, 
 					p_appointment_date, 
 					p_message);
       ELSE
           UPDATE pc_appointment 
             SET state_viewed 		= p_state_viewed, 
-				professor_id 		= p_professor_id,
-				student_id 			= p_student_id,
-				schedule_id 		= p_schedule_id,
+				prof_employment_id 		= p_prof_employment_id,
+				stud_id 			= p_stud_id,
+				sched_id 			= p_sched_id,
 				appointment_date 	= p_appointment_date,
 				message 			= p_message
             WHERE appointment_id 	= p_appointment_id;
@@ -414,7 +422,7 @@ $$
   END;
 $$
 	LANGUAGE 'plpgsql';
-	
+----------------------------------------------------------------------------------	
 -- @desc Use this function to change the viewed state of the appointment
 -- @var p_appointment_id The unique appointment id
 -- @returns text
@@ -517,7 +525,7 @@ CREATE OR REPLACE FUNCTION
 RETURNS setof RECORD AS
 $$
 	SELECT * FROM pc_appointment
-	WHERE student_id_number = $1;
+	WHERE stud_id = $1;
 $$
 LANGUAGE 'sql';
 
@@ -538,7 +546,7 @@ CREATE OR REPLACE FUNCTION
 RETURNS setof RECORD AS
 $$
 	SELECT * FROM pc_appointment
-	WHERE student_id_number = $1 AND
+	WHERE stud_id = $1 AND
 	prof_employment_id = $2;
 $$
-LANGUAGE 'sql';€
+LANGUAGE 'sql';
