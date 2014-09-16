@@ -28,15 +28,16 @@ CREATE TABLE pc_user(
 	fuser_name full_name,
 	email_add VARCHAR(80),
 	phone_number VARCHAR(20),
-	account_type VARCHAR REFERENCES pc_account_type(account_type) UNIQUE,
+	account_type VARCHAR REFERENCES pc_account_type(account_type),
 	password VARCHAR(100),
 	PRIMARY KEY (user_id)
 );
 
 -- @desc Creating APPOINTMENT Table
 
+CREATE SEQUENCE id_gen START 1 INCREMENT BY 1;
 CREATE TABLE pc_appointment (
-     appointment_id INT PRIMARY KEY,
+     appointment_id INT PRIMARY KEY DEFAULT NEXTVAL('id_gen'),
 	 state_viewed BOOLEAN,
 	 prof_id VARCHAR(20)REFERENCES pc_user(user_id) UNIQUE,
 	 stud_id VARCHAR(20) REFERENCES pc_user(user_id) UNIQUE,
@@ -44,6 +45,7 @@ CREATE TABLE pc_appointment (
 	 appointment_date DATE,
 	 message TEXT
 );
+ALTER SEQUENCE id_gen OWNED BY pc_appointment.appointment_id;
 
 -- @desc Creating a table matching setting schedules for professors
 
@@ -104,7 +106,8 @@ CREATE OR REPLACE
   CREATE OR REPLACE
 	FUNCTION extractUserDetailsPerId(IN VARCHAR,
 								OUT VARCHAR,
-								OUT full_name,
+								OUT VARCHAR,
+								OUT VARCHAR,
 								OUT VARCHAR,
 								OUT VARCHAR,
 								OUT VARCHAR)
@@ -112,7 +115,8 @@ CREATE OR REPLACE
 	$$
 		SELECT 
 			user_id,
-			fuser_name,
+			(fuser_name).first_name,
+			(fuser_name).last_name,
 			email_add,
 			phone_number,
 			account_type
@@ -406,11 +410,36 @@ $$
 
 --view
 
+
 -- @desc Use this function to get list of appointments and details using unique user id
 -- @returns setof record a set of appointments and their details
 
 CREATE OR REPLACE FUNCTION 
-    getApptPerId(IN VARCHAR, 
+    getApptPerUserId(IN VARCHAR,OUT INT) 
+RETURNS SETOF INT AS
+$$ 
+     SELECT appointment_id FROM pc_appointment
+     WHERE prof_id = $1 OR stud_id = $1;
+     
+$$
+ LANGUAGE 'sql';
+ 
+ -- @desc Use this function to get list of appointment ids between specified professor id and student id
+ CREATE OR REPLACE FUNCTION 
+    getApptPerStudProfId(IN prof_id VARCHAR, 
+			IN stud_id VARCHAR) 
+RETURNS SETOF INT AS
+$$ 
+     SELECT appointment_id FROM pc_appointment
+     WHERE prof_id = $1 AND stud_id = $1;
+     
+$$
+ LANGUAGE 'sql';
+ 
+ -- @desc Use this function to get appointment details using appointment id
+ 
+ CREATE OR REPLACE FUNCTION 
+    getApptDetails(IN INT,
 					OUT INT, 
 					OUT BOOLEAN, 
 					OUT VARCHAR, 
@@ -421,20 +450,41 @@ CREATE OR REPLACE FUNCTION
 RETURNS setof RECORD AS
 $$ 
      SELECT * FROM pc_appointment
-     WHERE prof_id = $1 OR stud_id = $1;
+     WHERE appointment_id = $1;
      
 $$
  LANGUAGE 'sql';
 
+
 -- @desc Use this function to check existence of record
 
 CREATE OR REPLACE FUNCTION
-	checkExistence(IN VARCHAR,
-					OUT VARCHAR,
-					OUT VARCHAR)
+	checkExistence(IN VARCHAR, IN VARCHAR, OUT VARCHAR, OUT VARCHAR)
+RETURNS SETOF RECORD AS
+$$
+	SELECT user_id, account_type 
+	FROM pc_user 
+	WHERE user_id = $1 AND 
+		  password = $2;
+$$
+LANGUAGE 'sql';
+
+-- @desc Use this function to get records according to account types
+
+CREATE OR REPLACE FUNCTION getList(IN VARCHAR,
+			OUT VARCHAR,
+			OUT full_name,
+			OUT VARCHAR,
+			OUT VARCHAR,
+			OUT VARCHAR)
 RETURNS setof RECORD AS
 $$
-	SELECT user_id, account_type FROM pc_user
-	WHERE user_id = $1;
+	SELECT user_id, 
+			fuser_name, 
+			email_add, 
+			phone_number, 
+			account_type 
+	FROM pc_user
+	WHERE account_type = $1;
 $$
 LANGUAGE 'sql';
