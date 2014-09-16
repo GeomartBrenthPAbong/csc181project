@@ -14,6 +14,32 @@ class Menu(class_printable.Printable):
 			return
 		self.__m_menu['ul_id'] = p_menu_id
 
+	def setAsActive(self, p_menu_item_id):
+		if self.__m_menu is None or not 'menu_items' in self.__m_menu:
+			return False
+
+		return self.__setAsActiveH(p_menu_item_id)
+
+	def __setAsActiveH(self, p_menu_item_id):
+		if p_menu_item_id in self.__m_menu['menu_items']:
+			if not 'exclusive_class' in self.__m_menu['menu_items'][p_menu_item_id]:
+				self.__m_menu['menu_items'][p_menu_item_id]['exclusive_class'] = ''
+
+			self.__m_menu['menu_items'][p_menu_item_id]['exclusive_class'] += ' active'
+			return 'active'
+
+		for menu_item_dict in self.__m_menu['menu_items']:
+			menu_item = self.__m_menu['menu_items'][menu_item_dict]
+			if 'sub_menu' in menu_item:
+				returned = menu_item['sub_menu'].setAsActive(p_menu_item_id)
+				if returned:
+					returned = 'parent-' + returned
+					if not 'exclusive_class' in menu_item:
+						menu_item['exclusive_class'] = ''
+					menu_item['exclusive_class'] += ' active-parent ' + returned
+					return returned
+		return False
+
 	def getGeneratedMenu(self):
 		return self._m_string
 
@@ -27,10 +53,6 @@ class Menu(class_printable.Printable):
 			return None
 		return self.__m_menu['menu_items']
 
-	# OrderedDict p_menu_items is of the format: { 'id here': {
-	# 													'label': label here
-	# 													'link': link here
-	# 													'sub_menu': submrenu here}}
 	def addToMenu(self, p_menu_items):
 		if self.__m_menu is None or not 'menu_items' in self.__m_menu:
 			self.__m_menu = {}
@@ -84,8 +106,8 @@ class Menu(class_printable.Printable):
 
 	def __removeMenuItemH(self, p_menu_id, p_menu):
 		if p_menu_id in p_menu:
-				del p_menu[p_menu_id]
-				return True
+			del p_menu[p_menu_id]
+			return True
 
 		for menu_item_key in p_menu:
 			if 'sub_menu' in p_menu[menu_item_key]:
@@ -107,6 +129,9 @@ class Menu(class_printable.Printable):
 		if 'ul_class' in self.__m_menu:
 			self._m_string += ' class="menu '+self.__m_menu['ul_class']+'" '
 		self._m_string += '>'
+
+		if 'ul_open' in self.__m_menu:
+			self._m_string += self.__m_menu['ul_open']
 
 		before_li = ''
 		if 'before_li' in self.__m_menu:
@@ -141,21 +166,33 @@ class Menu(class_printable.Printable):
 			if not 'label' in menu_item:
 				continue
 
+			# Replacing here (before_a for now. Feel free to add more)
+			temp_before_a = before_a
+			before_a = before_a.replace('%label%', menu_item['label'])
+
+			exclusive_class = ''
+			if 'exclusive_class' in menu_item:
+				exclusive_class = menu_item['exclusive_class']
+
 			link = '#'
 			if 'link' in menu_item:
 				link = menu_item['link']
 
 			self._m_string += before_li +\
-								'<li class="menu-item '+li_class+'">' +\
-									before_a+'<a href="'+link+'" class="menu-item-link '+a_class+'">' +\
-											menu_item['label'] + inside_a +\
-									'</a>'+after_a
-
+							'<li id="' +menu_item_dict+ '" class="menu-item '+li_class+ exclusive_class +'">' +\
+								before_a+'<a href="'+link+'" class="menu-item-link '+a_class +'">' +\
+										menu_item['label'] + inside_a +\
+								'</a>'+after_a
 
 			if 'sub_menu' in menu_item:
 				self._m_string += menu_item['sub_menu'].toString()
 
 			self._m_string += '</li>'+after_li
+
+			before_a = temp_before_a
+
+		if 'ul_close' in self.__m_menu:
+			self._m_string += self.__m_menu['ul_close']
 
 		self._m_string += '</ul>'
 

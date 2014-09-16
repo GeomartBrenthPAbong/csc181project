@@ -1,49 +1,53 @@
-import scripts.global_variables
-import scripts.classes.class_header
-import scripts.classes.class_content
-import scripts.classes.class_footer
-import scripts.classes.class_locations
-import scripts.classes.class_printable
-import scripts.classes.classes_menu
+import scripts.global_variables as g
+import scripts.classes.class_menu as m
+import scripts.third_party_modules.ordereddict.ordereddict as od
+import scripts.classes.class_printable as p
 
 def include_in_pages():
-	from scripts.third_party_modules.ordereddict.ordereddict import OrderedDict
+	# Bootstrap
+	g.g_header.getStyleAdder().add('bootstrap/css/bootstrap.min')
+	g.g_header.getStyleAdder().add('bootstrap/css/bootstrap-theme.min')
 
-	scripts.global_variables.g_header.getStyleAdder().add('styles')
+	# Styles for all pages
 
-	scripts.global_variables.g_header.getScriptAdder().add('jquery-2.1.1.min')
-	scripts.global_variables.g_header.getScriptAdder().add('general')
+	# Scripts for all pages
+	g.g_header.getScriptAdder().add('jquery-2.1.1.min')
 
-	scripts.global_variables.g_locations.addToLocation('just_after_body_tag',
-														scripts.classes.class_printable.Printable('<div><p>Added first. Printed to every page</p></div>'))
-	scripts.global_variables.g_locations.addToLocation('just_after_body_tag',
-														scripts.classes.class_printable.Printable('<div><p>Added second. Printed to every page</p></div>'), 5)
-	scripts.global_variables.g_locations.addToLocation('just_after_body_tag',
-														scripts.classes.class_printable.Printable('<div><p>Added third. Printed to every page</p></div>'), 12)
-	scripts.global_variables.g_locations.addToLocation('just_after_body_tag',
-														scripts.classes.class_printable.Printable('<div><p>Added fourth. Printed to every page</p></div>'), 1)
-	scripts.global_variables.g_locations.addToLocation('content_custom_location',
-														scripts.classes.class_printable.Printable('<div><p>For custom location. Printed to every page</p></div>'), 1)
+	# Location additions for all pages
 
-	menu_items = OrderedDict([('link_1', { 'label': 'Test link one',
-										   'link': '#'}),
-								('link_2', { 'label': 'Test link two',
-											 'link': '#'} ),
-								('link_3', { 'label': 'Test link three',
-											   'link': 'http://www.google.com'})]);
+	#### navbar_brand Location addition for default template
+	g.g_locations.addToLocation('navbar_brand', p.Printable('S.<br>P.<br>A.<br>M.'))
 
-	menu = { 'before_ul': '<p>Before Menu</p>',
-			 'after_ul': '<p>After Menu</p>',
-			 'before_li': '<span class="before-li"></span>',
-			 'after_li': '<span class="after-li"></span>',
-			 'before_a': '<span class="before-a"></span>',
-			 'after_a': '<span class="after-a"></span>',
-			 'inside_a': '<span class="inside-a"></span>',
-			 'ul_id': 'main-menu',
-			 'ul_class': 'site-menu',
+	#### main_nav location addition for default template
+	menu_items = od.OrderedDict([
+									('home', {
+												'label': 'Home',
+												'link': g.g_root_path + '/index.py?page=home'}),
+									('calendar', {
+												'label': 'Calendar',
+												'link': '#'}),
+									('appointments', {
+												'label': 'Appointments',
+												'link': '#'}),
+									('settings', {
+												'label': 'Settings',
+												'link': '#'}),
+									('sign_out', {
+												'label': 'Sign out',
+												'link': '#'})
+								])
+
+	menu = { 'ul_class': 'main-nav nav navbar-nav',
+			 'before_a': '<div>' +\
+						 '<span class="adder blue-adder"></span>' +\
+						 '<div class="img-coater">' +\
+						 	'<span class="img"></span>'
+						 '</div>' +\
+						 '<span class="nav-block">%label%</span>',
+			 'after_a': '</div>',
 			 'li_class': 'main-menu-item',
 			 'a_class': 'main-menu-item-link',
 			 'menu_items': menu_items
 			}
 
-	scripts.global_variables.g_locations.addToLocation('main_menu', scripts.classes.classes_menu.Menu(menu))
+	g.g_locations.addToLocation('main_nav', m.Menu(menu))

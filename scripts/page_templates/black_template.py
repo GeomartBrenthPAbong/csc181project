@@ -3,19 +3,21 @@ import scripts.global_variables as g
 
 def generate_page():
 	# Styles
-	g.g_header.getStyleAdder().add('default_template')
+	g.g_header.getStyleAdder().add('black_template')
+
+	#Scripts
+	g.g_header.getScriptAdder().add('black_template')
 
 	# Header area
-	generated_page = '<div id="header" class="navbar navbar-inverse navbar-fixed-top" role="navigation">' +\
+	generated_page = '<div class="page-wrap"><div id="header">' +\
 						'<div class="container">' +\
-						g.g_locations.printContentsAtLocation('before_nav_bar') +\
-						'<div class="navbar-brand-container">' +\
+						'<div class="navbar-brand-container left">' +\
 							'<a class="navbar-brand" href="#">'+ g.g_locations.printContentsAtLocation('navbar_brand') +'</a>' +\
 						'</div><!-- end navbar-header -->' +\
-						'<div class="collapse navbar-collapse navbar-container">' +\
+						'<div class="navbar-container left"><span class="decoration"></span>' +\
 							g.g_locations.printContentsAtLocation('main_nav') +\
 						'</div><!-- end navbar -->' +\
-						g.g_locations.printContentsAtLocation('after_nav_bar') +\
+						'<span class="clearfix"></span>' +\
 						'</div><!-- end container -->' +\
 					  '</div><!-- end header -->'
 
@@ -37,6 +39,7 @@ def generate_page():
 						'<div class="container">' +\
 							g.g_locations.printContentsAtLocation('footer') +\
 						'</div><!-- container -->' +\
-					 '</div><!-- end footer'
+					 '</div><!-- end footer -->' +\
+					'</div><!-- end page-wrap -->'
 
 	return generated_page

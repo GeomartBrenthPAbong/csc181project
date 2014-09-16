@@ -1,6 +1,6 @@
 import class_script_adder
 import class_style_adder
-import scripts.global_variables
+import scripts.global_variables as g
 
 
 class Header(object):
@@ -16,9 +16,16 @@ class Header(object):
 
 	def generateHeader(self):
 		header = '<!DOCTYPE html><head>'
+		header += '<meta charset="utf-8"/>'
+		header += '<meta http-equiv="X-UA-Compatible" content="IE=edge">'
+		header += '<meta name="viewport" content="width=device-width, initial-scale=1">'
+		header += '<meta name="description" content="">'
+		header += '<meta name="author" content="">'
+		header += '<link rel="icon" href="' + g.g_locations.printContentsAtLocation('icon_path') +'">'
+		header += '<title>'+ g.g_locations.printContentsAtLocation('head_title') +'</title>'
 		header += self.__m_script_adder.generateScript()
 		header += self.__m_style_adder.generateStyle()
 		header += '</head><body>'
-		header += scripts.global_variables.g_locations.printContentsAtLocation('just_after_body_tag')
+		header += g.g_locations.printContentsAtLocation('just_after_body_tag')
 
 		return header
