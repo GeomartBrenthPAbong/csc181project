@@ -4,12 +4,8 @@ def index(req, page = 'home'):
 	home_path = os.path.dirname(__file__)
 
 	# Just to make sure that our home path is included in the sys.path list
-	does_not_exists = False
-	for path in sys.path:
-		if path == home_path:
-			does_not_exists = True
-			break
-	if does_not_exists is False:
+
+	if sys.path.count(home_path) < 0:
 		sys.path.append(home_path)
 
 	import scripts.global_variables
