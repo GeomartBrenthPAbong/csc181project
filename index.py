@@ -5,7 +5,7 @@ def index(req, page = 'home'):
 
 	# Just to make sure that our home path is included in the sys.path list
 
-	if sys.path.count(home_path) < 0:
+	if sys.path.count(home_path) <= 0:
 		sys.path.append(home_path)
 
 	import scripts.global_variables

@@ -1,0 +1,22 @@
+#picture {
+    line-height:30px;
+    background-color:#eeeeee;
+    height:300px;
+    width:300px;
+    float:left;
+    padding:10px;
+	margin-left:20px;
+	margin-top:20px;
+}
+
+#details {
+	width:800px;
+    float:left;
+    padding-left:20px; 
+	border:1px solid black;
+	height:500px;
+	border-radius:15px;
+	margin-left: 25px;
+	margin-top: 15px;
+	margin-bottom: 50px;
+}
