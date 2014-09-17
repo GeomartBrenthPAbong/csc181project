@@ -28,15 +28,16 @@ CREATE TABLE pc_user(
 	fuser_name full_name,
 	email_add VARCHAR(80),
 	phone_number VARCHAR(20),
-	account_type VARCHAR REFERENCES pc_account_type(account_type) UNIQUE,
+	account_type VARCHAR REFERENCES pc_account_type(account_type),
 	password VARCHAR(100),
 	PRIMARY KEY (user_id)
 );
 
 -- @desc Creating APPOINTMENT Table
 
+CREATE SEQUENCE appt_id_gen START 1 INCREMENT BY 1;
 CREATE TABLE pc_appointment (
-     appointment_id INT PRIMARY KEY,
+     appointment_id INT PRIMARY KEY DEFAULT NEXTVAL('appt_id_gen'),
 	 state_viewed BOOLEAN,
 	 prof_id VARCHAR(20)REFERENCES pc_user(user_id) UNIQUE,
 	 stud_id VARCHAR(20) REFERENCES pc_user(user_id) UNIQUE,
@@ -44,15 +45,17 @@ CREATE TABLE pc_appointment (
 	 appointment_date DATE,
 	 message TEXT
 );
+ALTER SEQUENCE appt_id_gen OWNED BY pc_appointment.appointment_id;
 
 -- @desc Creating a table matching setting schedules for professors
 
+CREATE SEQUENCE prof_sched_id_gen START 1 INCREMENT BY 1;
 CREATE TABLE pc_professor_schedule(
-	prof_sched_id INT PRIMARY KEY,
+	prof_sched_id INT PRIMARY KEY DEFAULT NEXTVAL('prof_sched_id_gen'),
 	prof_id VARCHAR(20) REFERENCES pc_user(user_id),
 	sched_id INT REFERENCES pc_schedule(sched_id)
 );
-
+ALTER SEQUENCE appt_id_gen OWNED BY pc_professor_schedule.prof_sched_id;
 ---------------------------- USER TABLE SCRIPT
 
 -- @desc Use this function to add user data
@@ -104,7 +107,8 @@ CREATE OR REPLACE
   CREATE OR REPLACE
 	FUNCTION extractUserDetailsPerId(IN VARCHAR,
 								OUT VARCHAR,
-								OUT full_name,
+								OUT VARCHAR,
+								OUT VARCHAR,
 								OUT VARCHAR,
 								OUT VARCHAR,
 								OUT VARCHAR)
@@ -112,7 +116,8 @@ CREATE OR REPLACE
 	$$
 		SELECT 
 			user_id,
-			fuser_name,
+			(fuser_name).first_name,
+			(fuser_name).last_name,
 			email_add,
 			phone_number,
 			account_type
@@ -177,28 +182,32 @@ LANGUAGE 'plpgsql';
 
 CREATE OR REPLACE
 	FUNCTION editSchedule(
+<<<<<<< HEAD
 						  p_sched_id INT, 
 						  p_from_time TIME, 
 						  p_to_time TIME, 
+=======
+						  p_prof_sched_id INT,
+						  p_prof_id VARCHAR,
+						  p_sched_id INT
+>>>>>>> 77340e0f189895eb02083450575988c5bc5afe18
 						 )
 	RETURNS TEXT AS
 	$$
 	DECLARE
-		v_sched_instance INT;
+		v_prof_sched_instance INT;
 	BEGIN
 		SELECT 
-			INTO v_sched_instance sched_id 
-			FROM pc_schedule
-			WHERE sched_id = p_sched_id;
+			INTO v_sched_instance prof_sched_id 
+			FROM pc_professor_schedule
+			WHERE prof_sched_id = p_prof_sched_id;
 
 		IF v_sched_instance ISNULL THEN
 			RETURN 'NO INSTANCE';
 		ELSE
-			UPDATE pc_schedule
-				SET sched_from_time = p_from_time,
-					sched_to_time = p_to_time,
-					sched_day = p_sched_day
-				WHERE sched_id = p_sched_id;
+			UPDATE pc_professor_schedule
+				SET sched_id = p_sched_id
+				WHERE prof_sched_id = p_prof_sched_id;
 			RETURN 'OK';
 		END IF;
 	END;
@@ -211,18 +220,45 @@ LANGUAGE 'plpgsql';
 -- @returns SETOF RECORD a list of time range
 
 CREATE OR REPLACE
-  FUNCTION extractScheduleInfoFromID(
+  FUNCTION extractSchedIDInfoFromProfID(
+									 IN VARCHAR,
+                                     OUT INT
+									)
+  RETURNS SETOF INT AS
+  $$
+    SELECT sched_id
+    FROM pc_professor_schedule
+    WHERE prof_sched_id = $1;
+  $$
+  LANGUAGE 'sql';
+  
+  CREATE OR REPLACE
+  FUNCTION extractSchedInfoFromSchedID(
 									 IN INT,
                                      OUT TIME,
-                                     OUT TIME,
-                                     OUT VARCHAR
+									 OUT TIME,
+									 OUT VARCHAR
 									)
   RETURNS SETOF RECORD AS
   $$
-    SELECT sched_from_time,
-           sched_to_time,
-           sched_day
+    SELECT sched_id,
+    sched_from_time,
+    sched_to_time,
+    sched_day
     FROM pc_schedule
+    WHERE sched_id = $1;
+  $$
+  LANGUAGE 'sql';
+  
+  CREATE OR REPLACE
+  FUNCTION checkSchedExistence(
+									 IN INT,
+                                     OUT INT
+									)
+  RETURNS SETOF INT AS
+  $$
+    SELECT sched_id
+	FROM pc_schedule
     WHERE sched_id = $1;
   $$
   LANGUAGE 'sql';
@@ -405,11 +441,36 @@ $$
 
 --view
 
+
 -- @desc Use this function to get list of appointments and details using unique user id
 -- @returns setof record a set of appointments and their details
 
 CREATE OR REPLACE FUNCTION 
-    getApptPerId(IN VARCHAR, 
+    getApptPerUserId(IN VARCHAR,OUT INT) 
+RETURNS SETOF INT AS
+$$ 
+     SELECT appointment_id FROM pc_appointment
+     WHERE prof_id = $1 OR stud_id = $1;
+     
+$$
+ LANGUAGE 'sql';
+ 
+ -- @desc Use this function to get list of appointment ids between specified professor id and student id
+ CREATE OR REPLACE FUNCTION 
+    getApptPerStudProfId(IN prof_id VARCHAR, 
+			IN stud_id VARCHAR) 
+RETURNS SETOF INT AS
+$$ 
+     SELECT appointment_id FROM pc_appointment
+     WHERE prof_id = $1 AND stud_id = $1;
+     
+$$
+ LANGUAGE 'sql';
+ 
+ -- @desc Use this function to get appointment details using appointment id
+ 
+ CREATE OR REPLACE FUNCTION 
+    getApptDetails(IN INT,
 					OUT INT, 
 					OUT BOOLEAN, 
 					OUT VARCHAR, 
@@ -420,20 +481,51 @@ CREATE OR REPLACE FUNCTION
 RETURNS setof RECORD AS
 $$ 
      SELECT * FROM pc_appointment
-     WHERE prof_id = $1 OR stud_id = $1;
+     WHERE appointment_id = $1;
      
 $$
  LANGUAGE 'sql';
 
+
 -- @desc Use this function to check existence of record
 
 CREATE OR REPLACE FUNCTION
-	checkExistence(IN VARCHAR,
-					OUT VARCHAR,
-					OUT VARCHAR)
+	checkAccountExistence(IN VARCHAR, IN VARCHAR, OUT VARCHAR, OUT VARCHAR)
+RETURNS SETOF RECORD AS
+$$
+	SELECT user_id, account_type 
+	FROM pc_user 
+	WHERE user_id = $1 AND 
+		  password = $2;
+$$
+LANGUAGE 'sql';
+
+CREATE OR REPLACE FUNCTION
+	checkUserExistence(IN VARCHAR, OUT VARCHAR)
+RETURNS SETOF VARCHAR AS
+$$
+	SELECT user_id
+	FROM pc_user
+	WHERE user_id = $1;
+$$
+LANGUAGE 'sql';
+
+-- @desc Use this function to get records according to account types
+
+CREATE OR REPLACE FUNCTION getList(IN VARCHAR,
+			OUT VARCHAR,
+			OUT full_name,
+			OUT VARCHAR,
+			OUT VARCHAR,
+			OUT VARCHAR)
 RETURNS setof RECORD AS
 $$
-	SELECT user_id, account_type FROM pc_user
-	WHERE user_id = $1;
+	SELECT user_id, 
+			fuser_name, 
+			email_add, 
+			phone_number, 
+			account_type 
+	FROM pc_user
+	WHERE account_type = $1;
 $$
 LANGUAGE 'sql';
