@@ -35,9 +35,9 @@ CREATE TABLE pc_user(
 
 -- @desc Creating APPOINTMENT Table
 
-CREATE SEQUENCE id_gen START 1 INCREMENT BY 1;
+CREATE SEQUENCE appt_id_gen START 1 INCREMENT BY 1;
 CREATE TABLE pc_appointment (
-     appointment_id INT PRIMARY KEY DEFAULT NEXTVAL('id_gen'),
+     appointment_id INT PRIMARY KEY DEFAULT NEXTVAL('appt_id_gen'),
 	 state_viewed BOOLEAN,
 	 prof_id VARCHAR(20)REFERENCES pc_user(user_id) UNIQUE,
 	 stud_id VARCHAR(20) REFERENCES pc_user(user_id) UNIQUE,
@@ -45,16 +45,17 @@ CREATE TABLE pc_appointment (
 	 appointment_date DATE,
 	 message TEXT
 );
-ALTER SEQUENCE id_gen OWNED BY pc_appointment.appointment_id;
+ALTER SEQUENCE appt_id_gen OWNED BY pc_appointment.appointment_id;
 
 -- @desc Creating a table matching setting schedules for professors
 
+CREATE SEQUENCE prof_sched_id_gen START 1 INCREMENT BY 1;
 CREATE TABLE pc_professor_schedule(
-	prof_sched_id INT PRIMARY KEY,
+	prof_sched_id INT PRIMARY KEY DEFAULT NEXTVAL('prof_sched_id_gen'),
 	prof_id VARCHAR(20) REFERENCES pc_user(user_id),
 	sched_id INT REFERENCES pc_schedule(sched_id)
 );
-
+ALTER SEQUENCE appt_id_gen OWNED BY pc_professor_schedule.prof_sched_id;
 ---------------------------- USER TABLE SCRIPT
 
 -- @desc Use this function to add user data
@@ -181,29 +182,26 @@ LANGUAGE 'plpgsql';
 
 CREATE OR REPLACE
 	FUNCTION editSchedule(
-						  p_sched_id INT, 
-						  p_from_time TIME, 
-						  p_to_time TIME, 
-						  p_sched_day VARCHAR
+						  p_prof_sched_id INT,
+						  p_prof_id VARCHAR,
+						  p_sched_id INT
 						 )
 	RETURNS TEXT AS
 	$$
 	DECLARE
-		v_sched_instance INT;
+		v_prof_sched_instance INT;
 	BEGIN
 		SELECT 
-			INTO v_sched_instance sched_id 
-			FROM pc_schedule
-			WHERE sched_id = p_sched_id;
+			INTO v_sched_instance prof_sched_id 
+			FROM pc_professor_schedule
+			WHERE prof_sched_id = p_prof_sched_id;
 
 		IF v_sched_instance ISNULL THEN
 			RETURN 'NO INSTANCE';
 		ELSE
-			UPDATE pc_schedule
-				SET sched_from_time = p_from_time,
-					sched_to_time = p_to_time,
-					sched_day = p_sched_day
-				WHERE sched_id = p_sched_id;
+			UPDATE pc_professor_schedule
+				SET sched_id = p_sched_id
+				WHERE prof_sched_id = p_prof_sched_id;
 			RETURN 'OK';
 		END IF;
 	END;
@@ -216,18 +214,45 @@ LANGUAGE 'plpgsql';
 -- @returns SETOF RECORD a list of time range
 
 CREATE OR REPLACE
-  FUNCTION extractScheduleInfoFromID(
+  FUNCTION extractSchedIDInfoFromProfID(
+									 IN VARCHAR,
+                                     OUT INT
+									)
+  RETURNS SETOF INT AS
+  $$
+    SELECT sched_id
+    FROM pc_professor_schedule
+    WHERE prof_sched_id = $1;
+  $$
+  LANGUAGE 'sql';
+  
+  CREATE OR REPLACE
+  FUNCTION extractSchedInfoFromSchedID(
 									 IN INT,
                                      OUT TIME,
-                                     OUT TIME,
-                                     OUT VARCHAR
+									 OUT TIME,
+									 OUT VARCHAR
 									)
   RETURNS SETOF RECORD AS
   $$
-    SELECT sched_from_time,
-           sched_to_time,
-           sched_day
+    SELECT sched_id,
+    sched_from_time,
+    sched_to_time,
+    sched_day
     FROM pc_schedule
+    WHERE sched_id = $1;
+  $$
+  LANGUAGE 'sql';
+  
+  CREATE OR REPLACE
+  FUNCTION checkSchedExistence(
+									 IN INT,
+                                     OUT INT
+									)
+  RETURNS SETOF INT AS
+  $$
+    SELECT sched_id
+	FROM pc_schedule
     WHERE sched_id = $1;
   $$
   LANGUAGE 'sql';
@@ -459,13 +484,23 @@ $$
 -- @desc Use this function to check existence of record
 
 CREATE OR REPLACE FUNCTION
-	checkExistence(IN VARCHAR, IN VARCHAR, OUT VARCHAR, OUT VARCHAR)
+	checkAccountExistence(IN VARCHAR, IN VARCHAR, OUT VARCHAR, OUT VARCHAR)
 RETURNS SETOF RECORD AS
 $$
 	SELECT user_id, account_type 
 	FROM pc_user 
 	WHERE user_id = $1 AND 
 		  password = $2;
+$$
+LANGUAGE 'sql';
+
+CREATE OR REPLACE FUNCTION
+	checkUserExistence(IN VARCHAR, OUT VARCHAR)
+RETURNS SETOF VARCHAR AS
+$$
+	SELECT user_id
+	FROM pc_user
+	WHERE user_id = $1;
 $$
 LANGUAGE 'sql';
 
