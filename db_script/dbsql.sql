@@ -134,10 +134,8 @@ LANGUAGE 'sql';
 
 CREATE OR REPLACE
 	FUNCTION createSchedule(
-							p_sched_id INT, 
-							p_from_time TIME, 
-							p_to_time TIME, 
-							p_sched_day VARCHAR
+								p_from_time TIME, 
+								p_to_time TIME
 						   )
 	RETURNS TEXT AS
 	$$
@@ -168,6 +166,8 @@ CREATE OR REPLACE
 			RETURN 'OK';
 		ELSE RETURN 'Schedule already exists.';
 		END IF;
+
+
 	
 	END;
 	$$
@@ -180,7 +180,6 @@ CREATE OR REPLACE
 						  p_sched_id INT, 
 						  p_from_time TIME, 
 						  p_to_time TIME, 
-						  p_sched_day VARCHAR
 						 )
 	RETURNS TEXT AS
 	$$

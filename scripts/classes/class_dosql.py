@@ -22,7 +22,7 @@ class doSql(object):
         try:
             self._cur.execute(sql)
             rows = self._cur.fetchall()
-	    if apply_:
+	        if apply_:
                 self._cxn.commit()
             if self._cur.rowcount == 0:
                 rows.append(['None'])
@@ -30,7 +30,7 @@ class doSql(object):
             #errmsg = sys.exc_type + ":" + sys.exc_value 
             errmsg =  str(sys.exc_info()[1])
             rows.append([errmsg])
-        return rows    
+        return rows  
 
     
 #a = doSql()

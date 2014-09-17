@@ -1,4 +1,4 @@
-def index(req, page = 'homepage'):
+def index(req, page = 'home'):
 	import os,sys
 
 	home_path = os.path.dirname(__file__)
