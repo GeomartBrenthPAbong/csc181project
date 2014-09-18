@@ -12,6 +12,7 @@ def include_in_pages():
 
 	# Scripts for all pages
 	g.g_header.getScriptAdder().add('jquery-2.1.1.min')
+	g.g_header.getScriptAdder().add('general')
 
 	# Location additions for all pages
 
