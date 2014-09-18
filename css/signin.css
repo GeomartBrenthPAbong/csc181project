@@ -60,7 +60,7 @@ h2.sub-title{
 }
 
 .form-signin input[type=email], .form-signin input[type=password]{
-    width: 250px;
+    width: 300px;
 }
 
 .form-signin input[type=password] {
