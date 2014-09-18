@@ -14,6 +14,7 @@ def get_page_template():
 def page_additions():
 	#===== Styles and Javascripts
 	g.g_header.getStyleAdder().add('signin')
+	g.g_header.getScriptAdder().add('temp')
 
 	#===== Contents Additions
 	g.g_locations.addToLocation('main_content', p.Printable(login_form.get_form()))
