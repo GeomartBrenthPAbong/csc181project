@@ -4,8 +4,8 @@ def index(req):
 
 	sys.path.append(os.path.dirname(__file__))
 
-	import scripts.functions as functions
-	import scripts.ajax_functions as ajax_functions
+	import functions
+	import ajax_functions
 
 	function_name = req.form.getfirst('action')
 
@@ -14,17 +14,10 @@ def index(req):
 			raise Exception
 		if functions.is_user_logged_in():
 			try:
-				function = getattr(ajax_functions, 'spam_in_' + function_name)(req)
+				return getattr(ajax_functions, 'spam_in_' + function_name)(req)
 			except AttributeError:
-				function = getattr(ajax_functions, 'spam_out_' + function_name)(req)
+				return getattr(ajax_functions, 'spam_out_' + function_name)(req)
 		else:
-			try:
-				function = getattr(ajax_functions, 'spam_out_' + function_name)(req)
-			except AttributeError:
-				raise Exception
-
-		if not function or not callable(function):
-				raise Exception
-		return function()
-	except:
-		return json.dumps({'status':'FAILED', 'msg': 'Invalid action'})
+			return getattr(ajax_functions, 'spam_out_' + function_name)(req)
+	except Exception, e:
+		return json.dumps({'status': 'FAILED', 'msg': 'Invalid action'})
