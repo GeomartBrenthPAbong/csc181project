@@ -9,6 +9,7 @@ g_root_path = None
 g_main_path = None
 
 g_session = None
+g_sql = None
 
 g_notification_title = None
 g_notification_msg = None
