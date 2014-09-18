@@ -7,7 +7,7 @@ def get_title():
 def get_content():
 	html =	"""
 			<div id = "picture">
-				<img src="../spam/picture/user/student/2009-0731.png" alt="No picture found." style="width:300px;height:300px">
+				<img src="../spam/picture/user/student/2009-0731.png" alt="No picture found." style="width:290px;height:290px">
 			</div>
 			"""
 	
