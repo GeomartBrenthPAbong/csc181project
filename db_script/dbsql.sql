@@ -182,15 +182,9 @@ LANGUAGE 'plpgsql';
 
 CREATE OR REPLACE
 	FUNCTION editSchedule(
-<<<<<<< HEAD
 						  p_sched_id INT, 
 						  p_from_time TIME, 
-						  p_to_time TIME, 
-=======
-						  p_prof_sched_id INT,
-						  p_prof_id VARCHAR,
-						  p_sched_id INT
->>>>>>> 77340e0f189895eb02083450575988c5bc5afe18
+						  p_to_time TIME,
 						 )
 	RETURNS TEXT AS
 	$$
