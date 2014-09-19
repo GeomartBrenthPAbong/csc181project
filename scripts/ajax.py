@@ -12,12 +12,11 @@ def index(req):
 	try:
 		if function_name is None:
 			raise Exception
-		if functions.is_user_logged_in():
-			try:
+		try:
+			if functions.is_user_logged_in():
 				return getattr(ajax_functions, 'spam_in_' + function_name)(req)
-			except AttributeError:
+			raise AttributeError
+		except AttributeError:
 				return getattr(ajax_functions, 'spam_out_' + function_name)(req)
-		else:
-			return getattr(ajax_functions, 'spam_out_' + function_name)(req)
 	except Exception, e:
 		return json.dumps({'status': 'FAILED', 'msg': 'Invalid action'})
