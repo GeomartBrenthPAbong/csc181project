@@ -1,6 +1,5 @@
 import sys
 import psycopg2
-from globs import *
 
 
 class doSql(object):
@@ -10,7 +9,7 @@ class doSql(object):
     errmsg ="" 
     #methods
     def __init__(self): #constructor
-        self._cxn = psycopg2.connect("dbname='test' user='your_username' password='your_pass' host='127.0.0.1' port='5432'")
+        self._cxn = psycopg2.connect("dbname='postgres' user='postgres' password='amp025966n' host='127.0.0.1' port='5432'")
         self._cur = self._cxn.cursor()
         
     def __del__(self): #destructor
@@ -22,17 +21,15 @@ class doSql(object):
         try:
             self._cur.execute(sql)
             rows = self._cur.fetchall()
-            
-			if apply_:
+	    if apply_:
                 self._cxn.commit()
-
             if self._cur.rowcount == 0:
                 rows.append(['None'])
         except:
             #errmsg = sys.exc_type + ":" + sys.exc_value 
             errmsg =  str(sys.exc_info()[1])
             rows.append([errmsg])
-        return rows  
+        return rows    
 
     
 #a = doSql()
