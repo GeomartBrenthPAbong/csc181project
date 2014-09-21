@@ -54,8 +54,8 @@ def page_additions():
 					</div>
 					"""
 	g.g_locations.addToLocation('head_title', p.Printable("Home-" + stud_name))
-	g.g_locations.addToLocation('after_content', p.Printable(user_pic_html))
-	g.g_locations.addToLocation('after_content', p.Printable(details_html))
+	g.g_locations.addToLocation('left_content', p.Printable(user_pic_html + details_html))
+	g.g_locations.addToLocation('right_content', p.Printable("Search here."))
 	
 	
 	content_list = g.g_locations.getContentsAtLocation('main_nav')
