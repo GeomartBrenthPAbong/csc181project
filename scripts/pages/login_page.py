@@ -17,7 +17,7 @@ def page_additions():
 	g.g_header.getScriptAdder().add('temp')
 
 	#===== Contents Additions
-	g.g_locations.addToLocation('main_content', p.Printable(login_form.get_form()))
+	g.g_locations.addToLocation('main_content', login_form.get_form())
 	g.g_locations.addToLocation('title', p.Printable('Welcome to S.P.A.M'))
 	g.g_locations.addToLocation('sub_title', p.Printable('Where Teachers and Students Collaborate Appointments'))
 

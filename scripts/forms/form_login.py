@@ -41,9 +41,8 @@ def get_form():
 
 	login_form = form.Form('login-form', 'form-signin form', 'form-login')
 	login_form.setFields(form_fields)
-	login_form.generateForm()
 
-	return login_form.getGeneratedForm()
+	return login_form
 
 
 
