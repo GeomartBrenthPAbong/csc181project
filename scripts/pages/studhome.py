@@ -14,6 +14,7 @@ def get_page_template():
 	return 'black_template'
 	
 def page_additions():
+<<<<<<< HEAD
 	
 	#if not f.user_logged_in():
 		#pass
@@ -49,7 +50,6 @@ def page_additions():
 	user_pic_html =	"""
 					<div id = "picture">
 						<img src="../spam/picture/user/student/2009-0731.png" alt="No picture found." style="width:290px;height:290px">
-					</div>
 					"""
 	g.g_locations.addToLocation('head_title', p.Printable("Home-" + stud_name))
 	g.g_locations.addToLocation('after_content', p.Printable(details_html), 3)
