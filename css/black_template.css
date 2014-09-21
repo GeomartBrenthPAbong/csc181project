@@ -204,3 +204,11 @@ li#sign_out div.img-coater span{
 .main-content, .main-content p{
     color: #505050;
 }
+
+.main-content .left-content{
+    width: 25%;
+}
+
+.main-content .right-content{
+    width: 75%;
+}

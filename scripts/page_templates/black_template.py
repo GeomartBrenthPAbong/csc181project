@@ -28,7 +28,14 @@ def generate_page():
 							'<h2 class="title">' + g.g_content.getTitle() + '</h2>' +\
 							g.g_locations.printContentsAtLocation('between_title_content') +\
 							'<div class="main-content">' +\
-								g.g_content.getContent() +\
+								'<div class="left-content left">' +\
+									g.g_content.getContent() +\
+									g.g_locations.printContentsAtLocation('left_content') +\
+								'</div>' +\
+								'<div class="right-content left">' +\
+									g.g_locations.printContentsAtLocation('right_content') +\
+								'</div>' +\
+								'<div class="clearfix"></div>' +\
 							'</div><!-- end main-content -->' +\
 							g.g_locations.printContentsAtLocation('after_content') +\
 						'</div><!-- container -->' +\

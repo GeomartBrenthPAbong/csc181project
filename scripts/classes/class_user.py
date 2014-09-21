@@ -8,11 +8,15 @@ class User(object):
 		self._m_last_name = None
 		self._m_email_address = None
 		self._m_phone_number = None
+		self._m_address = None
 
 	##==============================
 	## Getters and Setters
 
-	def setUserID(self, p_id ):
+	def setAddress(self, p_address):
+		self._m_address = p_address
+	
+	def setID(self, p_id ):
 		self._m_id = p_id
 
 	def setFirstName(self, p_first_name):
@@ -27,7 +31,10 @@ class User(object):
 	def setPhoneNumber(self, p_phone_number):
 		self._m_phone_number = p_phone_number
 
-	def getUserID(self):
+	def getAddress(self):
+		return self._m_address
+	
+	def getID(self):
 		return self._m_id
 
 	def getFirstName(self):
@@ -35,7 +42,7 @@ class User(object):
 
 	def getLastName(self):
 		return self._m_last_name
-
+		
 	def getEmailAddress(self):
 		return self._m_email_address
 
