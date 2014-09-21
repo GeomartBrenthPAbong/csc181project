@@ -18,7 +18,7 @@ def get_page_template():
 	return 'black_template'
 	
 def page_additions():
-	g.g_header.getStyleAdder().add('studhome')
+	g.g_header.getStyleAdder().add('profile')
 	#stud_name = g.g_user.getFirstName() + " " + g.g_user.getLastName()
 	stud_name = "Christopher Pacillos"
 	
