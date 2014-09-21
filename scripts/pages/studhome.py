@@ -14,7 +14,6 @@ def get_page_template():
 	return 'black_template'
 	
 def page_additions():
-<<<<<<< HEAD
 	
 	#if not f.user_logged_in():
 		#pass
@@ -29,9 +28,9 @@ def page_additions():
 	g.g_user.setPhoneNumber("09122241144")
 	g.g_user.setCourse("BSEC")
 	
-	g.g_header.getStyleAdder().add('studhome')
+	g.g_header.getStyleAdder().add('profile')
 	
-	stud_name = g.g_user.getFirstName() + g.g_user.getLastName()
+	stud_name = g.g_user.getFirstName() + " " + g.g_user.getLastName()
 	stud_id = g.g_user.getID()
 	stud_email = g.g_user.getEmailAddress()
 	stud_phone = g.g_user.getPhoneNumber()
@@ -39,21 +38,25 @@ def page_additions():
 	stud_course = g.g_user.getCourse()
 	
 	
-	details_html =	'<div id="details">'
-	details_html +=	"<h1>" + stud_name + "<h1>"
+	details_html =	'<div class="left" id="details">'
+	details_html +=	"<h1>" + stud_name + "</h1>"
 	details_html +=	"<p>" + stud_course + "</p>"
 	details_html +=	"<p>" + stud_email + "</p>"
 	details_html +=	"<p>" + stud_phone + "</p>"
 	details_html +=	"<p>" + stud_address + "</p>"
 	details_html +=	"<p>" + stud_id + "</p>"
+	details_html += "</div>"
+	details_html += '<div class="clearfix"></div>'
 	
 	user_pic_html =	"""
-					<div id = "picture">
+					<div class="left" id="picture">
 						<img src="../spam/picture/user/student/2009-0731.png" alt="No picture found." style="width:290px;height:290px">
+					</div>
 					"""
 	g.g_locations.addToLocation('head_title', p.Printable("Home-" + stud_name))
-	g.g_locations.addToLocation('after_content', p.Printable(details_html), 3)
-	g.g_locations.addToLocation('after_content', p.Printable(user_pic_html), 1)
+	g.g_locations.addToLocation('after_content', p.Printable(user_pic_html))
+	g.g_locations.addToLocation('after_content', p.Printable(details_html))
+	
 	
 	content_list = g.g_locations.getContentsAtLocation('main_nav')
 	if len(content_list) is 1:
