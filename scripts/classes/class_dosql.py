@@ -23,7 +23,7 @@ class doSql(object):
             self._cur.execute(sql)
             rows = self._cur.fetchall()
             
-			if apply_:
+	    if apply_:
                 self._cxn.commit()
 
             if self._cur.rowcount == 0:
