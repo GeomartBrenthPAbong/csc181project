@@ -401,6 +401,27 @@ $$
 $$
 LANGUAGE 'plpgsql';
 
+-- @desc Function to get professor schedule id given sched_to_time, sched_from_time and sched_day.
+
+CREATE OR REPLACE
+	FUNCTION getProfSchedID (IN TIME,
+							IN TIME,
+							IN VARCHAR,
+							OUT INT)
+RETURNS SETOF INT AS
+$$
+
+	SELECT prof_sched_id 
+	FROM pc_professor_schedule 
+	WHERE sched_id = (SELECT sched_id 
+						FROM pc_schedule 
+						WHERE sched_from_time = $1 
+							AND sched_to_time = $2) 
+		AND sched_day = $3; 
+
+$$
+LANGUAGE 'sql';
+
 
 -----------------------------------APPOINTMENT TABLE SCRIPT
 
