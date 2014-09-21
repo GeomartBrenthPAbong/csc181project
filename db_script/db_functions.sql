@@ -66,7 +66,7 @@ $$
 			phone_number = p_phone_number
 		WHERE user_id = p_user_id;
 	
-		RETURN 'OK'
+		RETURN 'OK';
 	
 	END;
 
@@ -167,12 +167,8 @@ LANGUAGE 'sql';
 -- @desc Use this function to get user id's of specific account types.
 
 CREATE OR REPLACE FUNCTION getList(IN VARCHAR,
-			OUT VARCHAR,
-			OUT full_name,
-			OUT VARCHAR,
-			OUT VARCHAR,
 			OUT VARCHAR)
-RETURNS setof RECORD AS
+RETURNS setof VARCHAR AS
 $$
 
 	SELECT user_id
@@ -232,6 +228,7 @@ LANGUAGE 'plpgsql';
 
 CREATE OR REPLACE
 FUNCTION extractSchedInfoFromSchedID(IN INT,
+									OUT INT,
 									OUT TIME,
 									OUT TIME)
 RETURNS SETOF RECORD AS
@@ -361,7 +358,7 @@ $$
 
 	SELECT sched_id
 	FROM pc_professor_schedule
-	WHERE prof_sched_id = $1;
+	WHERE prof_id = $1;
 
 $$
 LANGUAGE 'sql';
@@ -559,6 +556,7 @@ CREATE OR REPLACE
 	FUNCTION getApptDetails(IN INT,
 							OUT INT, 
 							OUT BOOLEAN, 
+							OUT BOOLEAN,
 							OUT VARCHAR, 
 							OUT VARCHAR, 
 							OUT INT, 
