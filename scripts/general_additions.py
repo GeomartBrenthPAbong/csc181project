@@ -9,8 +9,7 @@ def include_in_pages():
 	g.g_header.getStyleAdder().add('bootstrap/css/bootstrap-theme.min')
 
 	# Styles for all pages
-	g.g_header.getStyleAdder().add('sticky-footer')
-	
+
 	# Scripts for all pages
 	g.g_header.getScriptAdder().add('jquery-2.1.1.min')
 	g.g_header.getScriptAdder().add('general')
