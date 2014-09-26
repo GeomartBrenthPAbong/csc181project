@@ -15,5 +15,3 @@ g_user = None
 
 g_notification_title = None
 g_notification_msg = None
-
-
