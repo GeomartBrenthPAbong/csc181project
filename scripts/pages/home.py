@@ -24,3 +24,4 @@ def page_additions():
 		main_nav = content_list[0]
 		main_nav.setAsActive('home')
 
+

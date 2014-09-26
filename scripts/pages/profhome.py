@@ -28,10 +28,10 @@ def page_additions():
 		main_nav.setAsActive('home')
 		
 	g.g_header.getStyleAdder().add('profile')
-	html = """ 	<div id="picture">
+	html = """ 	<div id="nav">
 					<img src="#../spam/picture/profilepics/" alt="PIC" width="290px" height="290px">
 				</div>
-				<div id="details">
+				<div id="section">
 					<h4>Position:</h4>
 					<h4>Degree:</h4>
 					<h4>Age:</h4>
@@ -42,5 +42,6 @@ def page_additions():
 
 	
 	g.g_locations.addToLocation('after_content', p.Printable(html))
-	
+
+
 
