@@ -3,20 +3,20 @@
 -- @desc Use this function to add user data
 
 CREATE OR REPLACE
-	FUNCTION setUser(p_user_id VARCHAR,
+	FUNCTION setUser(p_user_id TEXT,
 						p_fuser_name full_name,
-						p_email_add VARCHAR,
-						p_address VARCHAR,
-						p_phone_number VARCHAR,
-						p_account_type VARCHAR,
-						p_password VARCHAR)
+						p_email_add TEXT,
+						p_address TEXT,
+						p_phone_number TEXT,
+						p_account_type TEXT,
+						p_password TEXT)
 	RETURNS TEXT AS
 	
 	$$
 	
 		DECLARE
 
-			v_user_instance VARCHAR;
+			v_user_instance TEXT;
 		
 		BEGIN
 			SELECT INTO v_user_instance email_add FROM pc_user
@@ -50,10 +50,10 @@ LANGUAGE 'plpgsql';
 -- @desc Function to edit user details
 
 CREATE OR REPLACE
-	FUNCTION editUserDetails(p_user_id VARCHAR,
-							p_email_add VARCHAR,
-							p_address VARCHAR,
-							p_phone_number VARCHAR)
+	FUNCTION editUserDetails(p_user_id TEXT,
+							p_email_add TEXT,
+							p_address TEXT,
+							p_phone_number TEXT)
 RETURNS TEXT AS
 
 $$
@@ -76,8 +76,8 @@ LANGUAGE 'plpgsql';
 -- @desc Function to change user password
 
 CREATE OR REPLACE
-	FUNCTION changePassword (p_new_password VARCHAR,
-							p_user_id VARCHAR)
+	FUNCTION changePassword (p_new_password TEXT,
+							p_user_id TEXT)
 RETURNS TEXT AS
 $$
 
@@ -97,9 +97,9 @@ LANGUAGE 'plpgsql';
 -- @desc Function to retrieve password per user id
 
 CREATE OR REPLACE
-	FUNCTION getPassword (IN VARCHAR,
-						OUT VARCHAR)
-RETURNS VARCHAR AS
+	FUNCTION getPassword (IN TEXT,
+						OUT TEXT)
+RETURNS TEXT AS
 $$
 
 	SELECT password FROM pc_user WHERE user_id = $1;
@@ -110,13 +110,13 @@ LANGUAGE 'sql';
 -- @desc Function to retrieve user details per user id
 
 CREATE OR REPLACE
-	FUNCTION extractUserDetailsPerId(IN VARCHAR,
-								OUT VARCHAR,
-								OUT VARCHAR,
-								OUT VARCHAR,
-								OUT VARCHAR,
-								OUT VARCHAR,
-								OUT VARCHAR)
+	FUNCTION extractUserDetailsPerId(IN TEXT,
+								OUT TEXT,
+								OUT TEXT,
+								OUT TEXT,
+								OUT TEXT,
+								OUT TEXT,
+								OUT TEXT)
 	RETURNS SETOF RECORD AS
 $$
 
@@ -135,10 +135,10 @@ LANGUAGE 'sql';
 -- @desc Function to check account existence using id and password.
 
 CREATE OR REPLACE FUNCTION
-	checkAccountExistence(IN VARCHAR,
-						IN VARCHAR,
-						OUT VARCHAR,
-						OUT VARCHAR)
+	checkAccountExistence(IN TEXT,
+						IN TEXT,
+						OUT TEXT,
+						OUT TEXT)
 RETURNS SETOF RECORD AS
 $$
 
@@ -153,8 +153,8 @@ LANGUAGE 'sql';
 -- @desc Function to check user existence using id.
 
 CREATE OR REPLACE FUNCTION
-	checkUserExistence(IN VARCHAR, OUT VARCHAR)
-RETURNS SETOF VARCHAR AS
+	checkUserExistence(IN TEXT, OUT TEXT)
+RETURNS SETOF TEXT AS
 $$
 
 	SELECT user_id
@@ -166,9 +166,9 @@ LANGUAGE 'sql';
 
 -- @desc Use this function to get user id's of specific account types.
 
-CREATE OR REPLACE FUNCTION getList(IN VARCHAR,
-			OUT VARCHAR)
-RETURNS setof VARCHAR AS
+CREATE OR REPLACE FUNCTION getList(IN TEXT,
+			OUT TEXT)
+RETURNS setof RECORD AS
 $$
 
 	SELECT user_id
@@ -278,7 +278,7 @@ LANGUAGE 'sql';
 -- @desc Function to retrieve pending appointment id's per user id.
 
 CREATE OR REPLACE
-FUNCTION getPendingApptPerUserId(IN VARCHAR,
+FUNCTION getPendingApptPerUserId(IN TEXT,
 								OUT INT)
 RETURNS SETOF INT AS
 $$
@@ -295,19 +295,19 @@ LANGUAGE 'sql';
 -- @desc Function to add schedule to professor. Returns generated professor-schedule id.
 
 CREATE OR REPLACE
-	FUNCTION addScheduleToProfessor(p_prof_id VARCHAR,
+	FUNCTION addScheduleToProfessor(p_prof_id TEXT,
 									p_sched_id INT,
-									p_sched_day VARCHAR)
+									p_sched_day TEXT)
 	RETURNS INT AS
 $$
 
 		DECLARE
 
 			v_prof_sched_id INT;
-			v_account_type VARCHAR;
-			v_prof_id VARCHAR;
+			v_account_type TEXT;
+			v_prof_id TEXT;
 			v_sched_id INT;
-			v_sched_day VARCHAR;
+			v_sched_day TEXT;
 
 		BEGIN
 
@@ -351,7 +351,7 @@ LANGUAGE 'plpgsql';
 -- @desc Function to get schedule id using professor id
 
 CREATE OR REPLACE
-FUNCTION getSchedIDPerProfID(IN VARCHAR,
+FUNCTION getSchedIDPerProfID(IN TEXT,
 								OUT INT)
 RETURNS SETOF INT AS
 $$
@@ -368,7 +368,7 @@ LANGUAGE 'sql';
 CREATE OR REPLACE
 	FUNCTION editProfessorSchedule (p_old_sched_id INT, 
 									p_new_sched_id INT,
-									p_prof_id VARCHAR)
+									p_prof_id TEXT)
 RETURNS TEXT AS
 $$
 
@@ -406,7 +406,7 @@ LANGUAGE 'plpgsql';
 CREATE OR REPLACE
 	FUNCTION getProfSchedID (IN TIME,
 							IN TIME,
-							IN VARCHAR,
+							IN TEXT,
 							OUT INT)
 RETURNS SETOF INT AS
 $$
@@ -431,8 +431,8 @@ CREATE OR REPLACE
 	FUNCTION setAppointment(p_appointment_id INT, 
 							p_state_viewed BOOLEAN, 
 							p_status BOOLEAN,
-							p_prof_id VARCHAR, 
-							p_stud_id VARCHAR, 
+							p_prof_id TEXT, 
+							p_stud_id TEXT, 
 							p_sched_id INT, 
 							p_appointment_date DATE, 
 							p_message TEXT) 
@@ -442,8 +442,8 @@ $$
 	DECLARE
 
 		v_appointment_id INT;
-		v_prof_id VARCHAR;
-		v_stud_id VARCHAR;
+		v_prof_id TEXT;
+		v_stud_id TEXT;
 
 	BEGIN
 
@@ -545,7 +545,7 @@ LANGUAGE 'plpgsql';
 -- @desc Function to retrieve set of appointment id's approved by professor.
 
 CREATE OR REPLACE
-	FUNCTION getApptIDPerUserId(IN VARCHAR,OUT INT)
+	FUNCTION getApptIDPerUserId(IN TEXT,OUT INT)
 RETURNS SETOF INT AS
 $$
 
@@ -559,8 +559,8 @@ $$
 -- @desc Use this function to get list of appointment ids between specified professor id and student id
 
 CREATE OR REPLACE
-	FUNCTION getApptIDPerStudProfId(IN prof_id VARCHAR, 
-									IN stud_id VARCHAR) 
+	FUNCTION getApptIDPerStudProfId(IN prof_id TEXT, 
+									IN stud_id TEXT) 
 RETURNS SETOF INT AS
 $$ 
 
@@ -578,8 +578,8 @@ CREATE OR REPLACE
 							OUT INT, 
 							OUT BOOLEAN, 
 							OUT BOOLEAN,
-							OUT VARCHAR, 
-							OUT VARCHAR, 
+							OUT TEXT, 
+							OUT TEXT, 
 							OUT INT, 
 							OUT DATE, 
 							OUT TEXT) 
@@ -597,10 +597,10 @@ LANGUAGE 'sql';
 -- @desc Function to retrieve meta_value from table pc_user_meta using user_id and meta_key.
 
 CREATE OR REPLACE
-	FUNCTION getUserMeta(IN VARCHAR,
-						IN VARCHAR,
-						OUT VARCHAR)
-RETURNS VARCHAR AS
+	FUNCTION getUserMeta(IN TEXT,
+						IN TEXT,
+						OUT TEXT)
+RETURNS TEXT AS
 $$
 
 	SELECT meta_value

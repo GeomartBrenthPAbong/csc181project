@@ -7,8 +7,8 @@ CREATE SEQUENCE sched_id_gen START 1 INCREMENT BY 1;
 -- @desc Defining composite types for user names
 
 CREATE TYPE full_name AS (
-	first_name VARCHAR(50),
-	last_name VARCHAR(50)
+	first_name TEXT,
+	last_name TEXT
 );
 
 -- @desc Creating SCHEDULE Table
@@ -23,19 +23,19 @@ CREATE TABLE pc_schedule(
 -- @desc Creating ACCOUNT TYPE Table
 
 CREATE TABLE pc_account_type(
-	account_type VARCHAR(20) PRIMARY KEY
+	account_type TEXT PRIMARY KEY
 );
 
 -- @desc Creating USER Table
 
 CREATE TABLE pc_user(
-	user_id VARCHAR(20),
+	user_id TEXT,
 	fuser_name full_name,
-	email_add VARCHAR(80),
-	address VARCHAR(80),
-	phone_number VARCHAR(20),
-	account_type VARCHAR REFERENCES pc_account_type(account_type),
-	password VARCHAR(100),
+	email_add TEXT,
+	address TEXT,
+	phone_number TEXT,
+	account_type TEXT REFERENCES pc_account_type(account_type),
+	password TEXT,
 	PRIMARY KEY (user_id)
 );
 
@@ -45,8 +45,8 @@ CREATE TABLE pc_appointment (
      appointment_id INT DEFAULT NEXTVAL('appt_id_gen'),
 	 state_viewed BOOLEAN,
 	 status BOOLEAN,
-	 prof_id VARCHAR(20)REFERENCES pc_user(user_id) UNIQUE,
-	 stud_id VARCHAR(20) REFERENCES pc_user(user_id) UNIQUE,
+	 prof_id TEXT REFERENCES pc_user(user_id) UNIQUE,
+	 stud_id TEXT REFERENCES pc_user(user_id) UNIQUE,
 	 sched_id INT REFERENCES pc_schedule(sched_id) UNIQUE,
 	 appointment_date DATE,
 	 message TEXT,
@@ -56,15 +56,15 @@ CREATE TABLE pc_appointment (
 
 CREATE TABLE pc_professor_schedule(
 	prof_sched_id INT PRIMARY KEY DEFAULT NEXTVAL('prof_sched_id_gen'),
-	prof_id VARCHAR(20) REFERENCES pc_user(user_id),
+	prof_id TEXT REFERENCES pc_user(user_id),
 	sched_id INT REFERENCES pc_schedule(sched_id),
-	sched_day VARCHAR(10)
+	sched_day TEXT
 );
 
 CREATE TABLE pc_user_meta(
-	user_id VARCHAR REFERENCES pc_user(user_id),
-	meta_key VARCHAR(30),
-	meta_value VARCHAR(50),
+	user_id TEXT REFERENCES pc_user(user_id),
+	meta_key TEXT,
+	meta_value TEXT,
 	PRIMARY KEY (user_id)
 );
 ALTER SEQUENCE appt_id_gen OWNED BY pc_appointment.appointment_id;
