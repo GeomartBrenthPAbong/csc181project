@@ -25,7 +25,3 @@ def page_additions():
 		main_nav = content_list[0]
 		main_nav.setAsActive('home')
 
-	g.g_locations.addToLocation('after_content', p.Printable('<input type="submit" name="btn" value="Click me"/>'))
-	g.g_locations.addToLocation('right_content', p.Printable('Home page here'))
-	g.g_locations.addToLocation('after_content', p.Printable('<div id="sample-div">This a sample div</div>'))
-

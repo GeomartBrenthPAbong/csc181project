@@ -50,12 +50,12 @@ def include_in_pages():
 			}
 
 	g.g_locations.addToLocation('main_nav', m.Menu(menu))
-	
+
 	#### Footer location addition
 	g.g_locations.addToLocation('footer', p.Printable('<p>Copyright Popcorn</p>'))
 
 	#test
-	
+
 	g.g_user = ss.Student()
 	g.g_user.setAddress("Tibanga")
 	g.g_user.setID("2009-0731")
@@ -90,4 +90,3 @@ def include_in_pages():
 	user_pic_html += 'alt="No picture found." style="width:290px;height:290px">'
 
 	g.g_locations.addToLocation('left_content', p.Printable(user_pic_html + details_html))
-	g.g_locations.addToLocation('right_content', p.Printable("Search here."))

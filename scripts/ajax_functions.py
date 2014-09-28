@@ -84,3 +84,10 @@ def spam_out_get_page_content(req):
 			locations[location] = g.g_locations.printContentsAtLocation(location)
 
 	return json.dumps({'status': 'SUCCESS', 'data': locations})
+
+
+def spam_in_gen_prof_list(req):
+	import third_party_modules.simplejson.simplejson as json
+	import functions as f
+
+	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_prof_list(req) })
