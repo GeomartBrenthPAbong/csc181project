@@ -7,15 +7,15 @@ class UserFactory():
 	### @return Professor|Student
 	### @throw ENotRegistered
 	@staticmethod
-	def createUser(p_username, p_password):
+	def createUserFromUname(p_username, p_password):
 		import scripts.exceptions.e_notregistered as error
 		import scripts.global_variables as g
 
 		try:
-			[(
+			((
 				user_id,
 				_
-			)] = g.g_sql.execqry('checkAccountExistence(' + p_username + ', ' + p_password + ')')
+			),) = g.g_sql.execqry("SELECT * FROM checkAccountExistence('" + p_username + "', '" + p_password + "')")
 		except:
 			raise error.ENotRegistered('User does not exists.')
 		return UserFactory().createUser(user_id)
@@ -26,28 +26,28 @@ class UserFactory():
 	### @return Professor|Student
 	### @throw ENotRegistered
 	@staticmethod
-	def createUser(p_user_id):
+	def createUserFromID(p_user_id):
 		import class_professor as professor
 		import class_student as student
 		import scripts.exceptions.e_notregistered as error
 		import scripts.global_variables as g
 
 		try:
-			[(
+			((
 				_,
 				first_name,
 				last_name,
 				email_address,
 				phone_number,
 				account_type
-			)] = g.g_sql.execqry('extractUserDetailsPerId(' + p_user_id + ')')
+			),) = g.g_sql.execqry("SELECT * FROM extractUserDetailsPerId('" + str(p_user_id) + "')", False)
 
-			if account_type == 'prof':
+			if account_type == 'Professor':
 				user = professor.Professor()
 			else:
 				user = student.Student()
 
-			user.setUserID(p_user_id)
+			user.setID(p_user_id)
 			user.setFirstName(first_name)
 			user.setLastName(last_name)
 			user.setEmailAddress(email_address)

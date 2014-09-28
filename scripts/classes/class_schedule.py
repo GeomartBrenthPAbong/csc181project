@@ -7,7 +7,7 @@ class Schedule(object):
 	##==============================
 	## Getters and Setters
 
-	def setScheduleID(self, p_id):
+	def setID(self, p_id):
 		self.__m_id = p_id
 
 	def setFromTime(self, p_from_time):
@@ -16,7 +16,7 @@ class Schedule(object):
 	def setToTime(self, p_to_time):
 		self.__m_to_time = p_to_time
 
-	def getScheduleID(self):
+	def getID(self):
 		return self.__m_id
 
 	def getFromTime(self):
@@ -75,7 +75,7 @@ class Schedule(object):
 			)] = g.g_sql.execqry('extractSchedInfoFromSchedID(' + p_schedule_id + ')')
 
 			schedule = Schedule()
-			schedule.setScheduleID(p_schedule_id)
+			schedule.setID(p_schedule_id)
 			schedule.setFromTime(from_time)
 			schedule.setToTime(to_time)
 
@@ -91,8 +91,7 @@ class Schedule(object):
 	def dbStore(self):
 		import scripts.exceptions.e_notenoughdetails as e_notenoughdetails
 
-		if self.__m_id is None or \
-			self.__m_from_time is None or \
+		if self.__m_from_time is None or \
 			self.__m_to_time is None:
 				raise e_notenoughdetails.ENotEnoughDetails('All schedule details are required.')
 
@@ -111,4 +110,4 @@ class Schedule(object):
 		if functions.schedule_time_exists(self.__m_from_time, self.__m_to_time):
 			raise e_alreadyexists.EAlreadyExists('Schedule already exists.')
 
-		[self.__m_id] = g.g_sql.execqry('createSchedule(' + self.__m_from_time + ', '+ self.__m_to_time + ')', True)
+		((self.__m_id,),) = g.g_sql.execqry("SELECT * FROM setSchedule('" + self.__m_from_time + "', '" + self.__m_to_time + "')", True)

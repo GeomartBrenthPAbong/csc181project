@@ -1,13 +1,16 @@
 def index(req):
 	import os,sys
 	import scripts.third_party_modules.simplejson.simplejson as json
-	import global_variables as g
 
-	g.g_main_path = os.path.dirname(__file__)
-	sys.path.append(g.g_main_path)
+	main_path = os.path.dirname(__file__)
+	sys.path.append(main_path)
 
-	import functions
-	import ajax_functions
+	import scripts.global_variables as g
+	import scripts.functions as functions
+	import scripts.ajax_functions as ajax_functions
+
+	g.g_root_path = 'http://localhost/spam'
+	g.g_main_path = main_path
 
 	function_name = req.form.getfirst('action')
 

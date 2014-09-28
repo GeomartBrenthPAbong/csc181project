@@ -179,7 +179,7 @@ class Menu(class_printable.Printable):
 				link = menu_item['link']
 
 			self._m_string += before_li +\
-							'<li id="' +menu_item_dict+ '" class="menu-item '+li_class+ exclusive_class +'">' +\
+							'<li id="' +menu_item_dict+ '" class="menu-item '+li_class + ' ' + exclusive_class +'">' +\
 								before_a+'<a href="'+link+'" class="menu-item-link '+a_class +'">' +\
 										menu_item['label'] + inside_a +\
 								'</a>'+after_a

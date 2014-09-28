@@ -1,0 +1,8 @@
+#schedule-adder{
+    padding: 10px;
+    background-color: #EFEFEF;
+}
+
+form#add-sched-form table td{
+    padding: 0 5px;
+}

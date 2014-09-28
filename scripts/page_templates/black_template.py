@@ -11,11 +11,11 @@ def generate_page():
 	# Header area
 	generated_page = '<div class="page-wrap"><div id="header">' +\
 						'<div class="container">' +\
-						'<div class="navbar-brand-container left">' +\
-							'<a class="navbar-brand" href="#">'+ g.g_locations.printContentsAtLocation('navbar_brand') +'</a>' +\
-						'</div><!-- end navbar-header -->' +\
-						'<div class="navbar-container left"><span class="decoration"></span>' +\
+						'<div class="navbar-container">' +\
 							g.g_locations.printContentsAtLocation('main_nav') +\
+						'</div><!-- end navbar-header -->' +\
+						'<div class="logo">' +\
+							'<a href="#">'+ g.g_locations.printContentsAtLocation('navbar_brand') +'</a>' +\
 						'</div><!-- end navbar -->' +\
 						'<span class="clearfix"></span>' +\
 						'</div><!-- end container -->' +\
@@ -24,15 +24,22 @@ def generate_page():
 	# Content area
 	generated_page += '<div id="content">' +\
 						'<div class="container">' +\
-							g.g_locations.printContentsAtLocation('before_title') +\
-							'<h2 class="title">' + g.g_content.getTitle() + '</h2>' +\
-							g.g_locations.printContentsAtLocation('between_title_content') +\
-							'<div class="main-content">' +\
-								g.g_content.getContent() +\
-							'</div><!-- end main-content -->' +\
+								'<div class="left-content left"><div class="wrapper"><span class="absolute arrow arrow-left"></span><div>' +\
+									g.g_content.getContent() +\
+									g.g_locations.printContentsAtLocation('left_content') +\
+								'</div></div></div>' +\
+								'<div class="right-content right"><div class="wrapper"><span class="absolute arrow arrow-right"></span>' +\
+									g.g_locations.printContentsAtLocation('before_title') +\
+									'<h2 class="title">' + g.g_content.getTitle() + '</h2>' +\
+									g.g_locations.printContentsAtLocation('between_title_content') +\
+									'<div>' +\
+									g.g_locations.printContentsAtLocation('right_content') +\
+								'</div></div></div>' +\
+								'<div class="absolute right-bg"><div class="rel"><span class="absolute"></span></div></div>' +\
+								'<div class="clearfix"></div>' +\
 							g.g_locations.printContentsAtLocation('after_content') +\
 						'</div><!-- container -->' +\
-					 '</div><!-- end content'
+					 '</div><!-- end content-->'
 
 	# Footer area
 	generated_page += '<div id="footer">' +\

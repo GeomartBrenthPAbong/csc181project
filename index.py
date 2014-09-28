@@ -20,6 +20,7 @@ def index(req, page = 'home'):
 	scripts.functions.pre_processing()
 	scripts.general_additions.include_in_pages()
 	scripts.functions.process_page()
+	scripts.functions.post_processing()
 
 	return scripts.global_variables.g_header.generateHeader() + \
 		   scripts.global_variables.g_content.generateContent() + \

@@ -2,6 +2,7 @@ class Appointment(object):
 	def __init__(self):
 		self.__m_id = None
 		self.__m_state_viewed = False
+		self.__m_status = False
 		self.__m_professor = None
 		self.__m_student = None
 		self.__m_schedule = None
@@ -11,11 +12,14 @@ class Appointment(object):
 	##==============================
 	## Getters and Setters
 
-	def setAppointmentID(self, p):
+	def setID(self, p):
 		self.__m_id = p
 
 	def setStateViewed(self, p_state_viewed):
 		self.__m_state_viewed = p_state_viewed
+
+	def setStatus(self, p_status):
+		self.__m_status = p_status
 
 	def setProfessor(self, p_professor):
 		self.__m_professor = p_professor
@@ -32,11 +36,14 @@ class Appointment(object):
 	def setAppointmentMsg(self, p_appointment_msg):
 		self.__m_appointment_msg = p_appointment_msg
 
-	def getAppointmentID(self):
+	def getID(self):
 		return self.__m_id
 
 	def getStateViewed(self):
 		return self.__m_state_viewed
+
+	def getStatus(self):
+		return self.__m_status
 
 	def getProfessor(self):
 		return self.__m_professor
@@ -55,6 +62,12 @@ class Appointment(object):
 
 	##==============================
 	## Other functions
+
+	def changeStatus(self):
+		g.g_sql.execqry("SELECT* FROM changeStatus(" + str(self.__m_id) + ", " + self.__m_status + ")", True)
+
+	def changeStateViewed(self):
+		g.g_sql.execqry("SELECT * FROM changeState(" + str(self.__m_id) + ", " + self.__m_status + ")", True)
 
 	### Creates an object using the tuples passed
 	###
@@ -111,12 +124,13 @@ class Appointment(object):
 			[(
 				_,
 				state_viewed,
+				status,
 				professor_id,
 				student_id,
 				schedule_id,
 				appointment_date,
 				appointment_msg
-			)] = g.g_sql.execqry('getApptDetails(' + p_appointment_id + ')')
+			)] = g.g_sql.execqry("SELECT * FROM getApptDetails('" + p_appointment_id + "')")
 		except:
 			raise e_notregistered.ENotRegistered('Appointment does not exists.')
 
@@ -124,7 +138,7 @@ class Appointment(object):
 		import scripts.classes.class_schedule as schedule
 
 		appointment = Appointment()
-		appointment.setAppointmentID(p_appointment_id)
+		appointment.setID(p_appointment_id)
 		appointment.setStateViewed(state_viewed)
 		appointment.setProfessor(user_factory.UserFactory().createUser(professor_id))
 		appointment.setStudent(user_factory.UserFactory().createUser(student_id))
@@ -157,15 +171,16 @@ class Appointment(object):
 
 		import scripts.exceptions.e_alreadyexists as e_exists
 
-		if functions.appointment_exists(self.__m_professor.getUserID(), self.__m_student.getUserID):
+		if functions.appointment_exists(self.__m_professor.getID(), self.__m_student.getID):
 			raise e_exists.EAlreadyExists('Appointment already exists.')
 
 		import scripts.global_variables as g
 
-		[self.__m_id] = g.g_sql.execqry('newAppointment(' + self.__m_state_viewed + ', ' +\
-											self.__m_professor.getUserID() + ', ' +\
-											self.__m_student.getUserID() + ', ' +\
-											self.__m_schedule.getScheduleID() + ', ' +\
-											self.__m_appointment_date + ', ' +\
-											self.__m_appointment_msg + ')', True)
+		((self.__m_id,),) = g.g_sql.execqry("SELECT * FROM setAppointment(" + self.__m_state_viewed + ", " +
+											self.__m_status + ", '" +
+											self.__m_professor.getID() + "', '" +
+											self.__m_student.getID() + "', " +
+											str(self.__m_schedule.getID()) + ", " +
+											self.__m_appointment_date + ", '" +
+											self.__m_appointment_msg + "')", True)
 

@@ -1,4 +1,4 @@
-import scripts.global_variables as g
+	import scripts.global_variables as g
 import scripts.classes.class_printable as p
 
 def get_title():
