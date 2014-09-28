@@ -42,5 +42,6 @@ def page_additions():
 
 	
 	g.g_locations.addToLocation('after_content', p.Printable(html))
-	
+
+
 

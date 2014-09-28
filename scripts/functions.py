@@ -7,7 +7,7 @@ import types
 ##===== Admin functions here
 
 ## Returns true if the user is logged in otherwise, returns false
-def is_user_logged_in():
+def user_logged_in():
 	return True
 
 ## Initialize global variables here
