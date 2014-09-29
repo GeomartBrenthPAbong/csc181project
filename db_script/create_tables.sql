@@ -31,6 +31,8 @@ CREATE TABLE pc_account_type(
 CREATE TABLE pc_user(
 	user_id TEXT,
 	fuser_name full_name,
+	college TEXT,
+	department TEXT,
 	email_add TEXT,
 	address TEXT,
 	phone_number TEXT,
