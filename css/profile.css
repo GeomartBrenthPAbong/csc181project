@@ -1,20 +1,44 @@
 #picture {
-	background-color:#2a2b2b;
 	height:300px;
 	width:300px;
-	padding:5px;	
-	margin-left:50px;
-	margin-top:30px;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:20px;
 }
+
+.alignCell {
+	text-align:center;
+}
+
+#sprofile {
+	margin-top: 10px;
+	border-radius: 5px;
+	background-color: white;
+	padding:10px;
+	text-align:center;
+	margin-left:auto;
+	margin-right:auto;
+	width:90%;
+}
+
+a.noline {
+	text-decoration:none;
+}
+
 #details {
-	width:750px;
-	height:500px;
-	padding:5px;	
-	border:1px solid black;
-	border-radius:15px;
-	margin-left:100px;
-	margin-top: 15px;
-	margin-bottom: 50px;
+	margin-top:20px;
+	background-color:white;
+	font-weight:bold;
+	padding:20px;
+	padding-top:5px;
+	border-radius:5px;
+	width:70%;
+}
+
+.center{
+	margin-left:auto;
+	margin-right:auto;
+	width:70%;
 }
 
 #search {

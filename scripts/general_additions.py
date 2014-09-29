@@ -52,7 +52,8 @@ def include_in_pages():
 	g.g_locations.addToLocation('main_nav', m.Menu(menu))
 
 	#### Footer location addition
-	g.g_locations.addToLocation('footer', p.Printable('<p>Copyright Popcorn</p>'))
+	g.g_locations.addToLocation('footer', p.Printable('<p><b>Just SPAM it!</b></p>'))
+	g.g_locations.addToLocation('footer', p.Printable('<p>Want to settle things with your professor?&nbsp;</p>'))
 
 	#test
 
@@ -74,8 +75,8 @@ def include_in_pages():
 
 	if str(type(g.g_user).__name__) == 'Student':
 		user_course_html = "<p>" + g.g_user.getCourse() + "</p>"
-
-	details_html =	"<h1>" + user_name + "</h1>"
+	details_html = '<div id="details" class="center">'
+	details_html +=	'<h1 style="font-weight: bold;">' + user_name + "</h1>"
 	details_html +=	user_course_html
 	details_html +=	"<p>" + user_email + "</p>"
 	details_html +=	"<p>" + user_phone + "</p>"
@@ -84,9 +85,10 @@ def include_in_pages():
 	details_html += "</div>"
 	details_html += '<div class="clearfix"></div>'
 
-	user_pic_html = '<div class="left" id="picture">'
+	user_pic_html = '<div id="picture">'
 	user_pic_html += '<img src="../spam/picture/user/student/'
 	user_pic_html += user_id + '.png"'
-	user_pic_html += 'alt="No picture found." style="width:290px;height:290px">'
+	user_pic_html += 'alt="No picture found." style="width:300px;height:300px">'
+	user_pic_html += '</div>'
 
 	g.g_locations.addToLocation('left_content', p.Printable(user_pic_html + details_html))
