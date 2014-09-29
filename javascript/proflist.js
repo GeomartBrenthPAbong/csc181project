@@ -22,8 +22,6 @@ function gen_proflist_html(res){
             prof_rows += '</td>';
             prof_rows += '</tr>';
             $('#proflist').append(prof_rows);
-            /*$('#proflist').append(prof_rows1 + '<a href="#rowlinkModal" data-toggle="modal">Test</a>' + prof_rows2 + 'Testing' + prof_rows_3 + 'testingers' + prof_rows4);*/
-            //$('#proflist').append('<p id ='+ res.msg[i][0] + '><span style="color:black; font-weight:bold;">' + '&nbsp;&nbsp;' + res.msg[i][1] + ' ' + res.msg[i][2] + '</span></p>');
         }
 
         if(page == 0)

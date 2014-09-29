@@ -72,11 +72,12 @@ a,h2,div,p {
 }
 
 #header .logo{
-    height: 180px;
+    height: 105px;
     width: 100%;
     text-align: right;
     background-color: #D4D4D4;
     position: relative;
+    font-weight:bold;
 }
 
 #header .logo a{

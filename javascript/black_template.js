@@ -142,7 +142,7 @@ jQuery(document).ready(function($){
             var content = $('#content');
             var spam = $('.logo a');
 
-            content.css('margin-top', '180px');
+            content.css('margin-top', '105px');
 
             spam.finish();
             spam_container.css('position', 'fixed');
@@ -170,7 +170,7 @@ jQuery(document).ready(function($){
             g_container_on_top = false;
         }
 
-        if(g_on_top && diff >= 180) {
+        if(g_on_top && diff >= 105) {
             var spam = $('.logo a');
 
             spam.css('position', 'absolute');
