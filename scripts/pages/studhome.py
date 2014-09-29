@@ -46,14 +46,15 @@ def page_additions():
 						<span id="page" style="color:black; font-weight:bold;">Page 1</span>
 					</div>
 				"""
+	content_list = g.g_locations.getContentsAtLocation('main_nav')
+
+	if not content_list is None and len(content_list) is 1:
+		main_nav = content_list[0]
+		main_nav.addMenuItem('studhome', 'Home', g.g_root_path + '/index.py?page=studhome')
+		main_nav.setAsActive('studhome')
+
 	g.g_header.getScriptAdder().add('proflist')
 	g.g_header.getStyleAdder().add('profile')
 	g.g_locations.addToLocation('head_title', p.Printable("Home-" + g.g_user.getFirstName()))
 	g.g_locations.addToLocation('right_content', p.Printable(rc_statement))
 	g.g_locations.addToLocation('right_content', p.Printable(rc_content))
-
-
-	content_list = g.g_locations.getContentsAtLocation('main_nav')
-	if len(content_list) is 1:
-		main_nav = content_list[0]
-		main_nav.setAsActive('home')

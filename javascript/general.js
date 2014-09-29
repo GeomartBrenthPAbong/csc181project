@@ -140,4 +140,39 @@ jQuery(document).ready(function($){
 
         return false;
    });
+
+   $('#modal-close').click(function(e){
+        $('#blocker').css('display', 'none');
+        $('#modal-container').css('display', 'none');
+        $('#modal').css('display', 'none');
+        $('#modal-holder').css('display', 'none');
+   });
 });
+
+
+function activate_modal(header, body, footer){
+    $('#blocker').css('display', 'block');
+    $('#modal-container').css('display', 'block');
+    $('#modal').css('display', 'block');
+    $('#modal-holder').css('display', 'block');
+
+    if (!header)
+        header = "";
+
+    if (!body)
+        body = "";
+
+    if (!footer)
+        footer = "";
+
+    $('#modal-header').empty();
+    $('#modal-body').empty();
+    $('#modal-footer').empty();
+    $('#modal-header').append(header);
+    $('#modal-body').append('<b>' + body + '</b>');
+    $('#modal-footer').append('<b>' + footer + '</b>');
+
+    window_height = $(window).height();
+    top_margin = (window_height/2)*.30;
+    $('#modal').css('margin-top', top_margin);
+}

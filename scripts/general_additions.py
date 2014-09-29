@@ -6,13 +6,14 @@ import scripts.classes.class_printable as p
 
 def include_in_pages():
 	# Bootstrap
-	g.g_header.getStyleAdder().add('bootstrap/css/bootstrap.min')
-	g.g_header.getStyleAdder().add('bootstrap/css/bootstrap-theme.min')
+	g.g_header.getStyleAdder().add('bootstrap/css/bootstrap')
+	g.g_header.getStyleAdder().add('bootstrap/css/bootstrap-theme')
 
 	# Styles for all pages
 
 	# Scripts for all pages
 	g.g_header.getScriptAdder().add('jquery-2.1.1.min')
+	g.g_header.getScriptAdder().add('bootstrap/bootstrap')
 	g.g_header.getScriptAdder().add('general')
 
 	# Location additions for all pages
@@ -25,11 +26,7 @@ def include_in_pages():
 
 
 	#### main_nav location addition for default template
-	menu_items = od.OrderedDict([
-									('home', {
-												'label': 'Home',
-												'link': g.g_root_path + '/index.py?page=home'}),
-									('calendar', {
+	menu_items = od.OrderedDict([	('calendar', {
 												'label': 'Calendar',
 												'link': '#'}),
 									('appointments', {

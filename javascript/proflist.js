@@ -12,7 +12,7 @@ function gen_proflist_html(res){
         {
             prof_rows = '<tr id=' + res.msg[i][0] + ' data-toggle="modal">';
             prof_rows += '<td>';
-            prof_rows += '<a href="#rowlinkModal" data-toggle="modal" class="noline"><b>' + res.msg[i][1] + ' ' + res.msg[i][2] + '</b></a>';
+            prof_rows += '<a href="#rowlinkModal" style="color:black;" data-toggle="modal" class="noline"><b>' + res.msg[i][1] + ' ' + res.msg[i][2] + '</b></a>';
             prof_rows += '</td>';
             prof_rows += '<td>';
             prof_rows += '<b>SCS</b>';
@@ -49,7 +49,11 @@ jQuery(document).ready(function($) {
 
     $('#proflist').on('click', 'td a', function(e){
         id = $(this).closest('tr').attr('id');
-        alert(id);
+        header = 'PROFESSOR LIST';
+        message = '<b>This will show a professor profile with id: '+ id + '</b>';
+        footer = '<b>Add a button to request for appointment.</b>'
+
+        activate_modal(header, message);
 
         e.preventDefault();
     });
@@ -80,6 +84,7 @@ jQuery(document).ready(function($) {
     });
 
     //prof search on load
+    //
     var data = {
         action: 'gen_prof_list',
         limit: list_limit

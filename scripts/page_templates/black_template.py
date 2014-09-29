@@ -9,7 +9,30 @@ def generate_page():
 	g.g_header.getScriptAdder().add('black_template')
 
 	# Header area
-	generated_page = '<div class="page-wrap"><div id="header">' +\
+	blocker = """
+			<div id="blocker">
+			</div>
+			"""
+	modal_container = """
+					<div id="modal-container">
+						<div id="modal-holder">
+							<div id="modal">
+								<button id="modal-close" type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+								<table class="table table-hover">
+								<thead>
+									<tr>
+										<th id="modal-header">Header</th>
+									</tr>
+						  		</thead>
+								</table>
+								<div id="modal-body"></div>
+								<div id="modal-footer"></div>
+							</div>
+						</div>
+					</div>
+					"""
+
+	generated_page = '<div class="page-wrap">' + blocker + modal_container + '<div id="header">' +\
 						'<div class="container">' +\
 						'<div class="navbar-container">' +\
 							g.g_locations.printContentsAtLocation('main_nav') +\
