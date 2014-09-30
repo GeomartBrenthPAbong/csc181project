@@ -10,6 +10,10 @@
 	text-align:center;
 }
 
+.table-hover.rowlink tr:hover td, .table-hover .rowlink tr:hover td{
+	background-color: #94C2F3;
+}
+
 #sprofile {
 	margin-top: 10px;
 	border-radius: 5px;

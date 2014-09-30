@@ -38,6 +38,9 @@ CREATE OR REPLACE
 					p_phone_number,
 					p_account_type,
 					p_password);
+			ELSE
+				
+				RETURN 'Error';
 			
 			END IF;
 		

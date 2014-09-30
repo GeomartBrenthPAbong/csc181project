@@ -49,7 +49,7 @@ jQuery(document).ready(function($) {
 
     $('#proflist').on('click', 'td a', function(e){
         id = $(this).closest('tr').attr('id');
-        header = 'PROFESSOR LIST';
+        header = 'PROFESSOR PROFILE';
         message = '<b>This will show a professor profile with id: '+ id + '</b>';
         footer = '<b>Add a button to request for appointment.</b>'
 
