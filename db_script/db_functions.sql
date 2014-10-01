@@ -716,3 +716,79 @@ $$
 
 $$
 LANGUAGE 'sql';
+
+------------------------------- PC_SESSION TABLE SCRIPTS
+
+-- @desc Function to insert a session into the table
+
+CREATE OR REPLACE FUNCTION saveSessionID(p_session_id TEXT,
+                                        p_user_id TEXT)
+RETURNS BOOLEAN AS
+$$
+DECLARE
+  v_session_instance TEXT;
+BEGIN
+  SELECT INTO v_session_instance session_id
+  FROM pc_session
+  WHERE session_id = p_session_id;
+
+  IF v_session_instance ISNULL THEN
+    INSERT INTO pc_session (session_id, user_id)
+    VALUES (p_session_id, p_user_id);
+    RETURN TRUE;
+  ELSE RETURN FALSE;
+  END IF;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+-- @desc Function to retrieve user id using session id
+
+CREATE OR REPLACE FUNCTION getUser(IN TEXT, OUT TEXT)
+RETURNS TEXT AS
+$$
+SELECT user_id
+FROM pc_session
+WHERE session_id = $1;
+$$
+LANGUAGE 'sql';
+
+-- @desc Trigger function that automatically deletes old data (> 5 days)
+CREATE OR REPLACE FUNCTION deleteOldSessions() RETURNS trigger
+LANGUAGE plpgsql
+AS
+$$
+DECLARE
+  row_count INT;
+BEGIN
+  DELETE FROM pc_session
+  WHERE timestamp < NOW() - INTERVAL '5 days';
+
+  IF found THEN GET DIAGNOSTICS row_count = ROW_COUNT;
+  RAISE NOTICE 'DELETEd % row(s) FROM limiter', row_count;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+--@desc Function that deletes a session from the pc_session
+
+CREATE OR REPLACE FUNCTION deleteSession(p_session_id TEXT)
+RETURNS TEXT AS
+$$
+BEGIN
+  DELETE FROM pc_session
+  WHERE session_id = p_session_id;
+
+  RETURN 'OK';
+
+END;
+$$
+LANGUAGE 'plpgsql';
+
+-- @desc setting the trigger to execute every insertion
+
+CREATE TRIGGER del_sessions
+AFTER INSERT ON pc_session
+EXECUTE PROCEDURE deleteOldSessions();

@@ -72,3 +72,11 @@ CREATE TABLE pc_user_meta(
 ALTER SEQUENCE appt_id_gen OWNED BY pc_appointment.appointment_id;
 ALTER SEQUENCE prof_sched_id_gen OWNED BY pc_professor_schedule.prof_sched_id;
 ALTER SEQUENCE sched_id_gen OWNED BY pc_schedule.sched_id;
+
+-- @desc Creating session table
+CREATE TABLE pc_session(
+session_id TEXT,
+user_id TEXT REFERENCES pc_user(user_id),
+timestamp timestamp NOT NULL DEFAULT NOW(),
+PRIMARY KEY (session_id)
+);
