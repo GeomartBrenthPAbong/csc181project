@@ -27,4 +27,4 @@ def index(req):
 		except AttributeError:
 				return getattr(ajax_functions, 'spam_out_' + function_name)()
 	except Exception:
-		return json.dumps({'status': 'FAILED', 'msg': 'Invalid action. Error:'})
+		return json.dumps({'status': 'FAILED', 'msg': 'Invalid action.'})
