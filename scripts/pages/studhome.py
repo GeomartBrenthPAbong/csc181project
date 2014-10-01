@@ -1,5 +1,6 @@
 import scripts.global_variables as g
 import scripts.classes.class_printable as p
+import scripts.functions as f
 
 def get_title():
 	return 'Search Professor'
@@ -17,6 +18,15 @@ def get_page_template():
 	return 'black_template'
 
 def page_additions():
+	if not f.user_logged_in():
+
+		g.g_notification_title = 'Permission denied'
+		g.g_notification_msg = 'You have no permission to access this page. ' \
+		'Please <a href="' + g.g_root_path + '/index.py' + '">sign in</a> first.'
+
+		f.redirect(g.g_root_path + '/index.py?page=notification')
+		return
+
 	rc_statement = '<span style="font-weight:bold;">&nbsp;&nbsp;&nbsp;Find your professor and make an appointment!</span>'
 	rc_content = """
 					<div style="width:50%; margin-left:8px; margin-top:30px;" class="input-group">

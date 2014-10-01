@@ -17,7 +17,7 @@ class UserFactory():
 				_
 			),) = g.g_sql.execqry("SELECT * FROM checkAccountExistence('" + p_username + "', '" + p_password + "')", False)
 		except:
-			raise error.ENotRegistered('User does not exists or you entered an invalid credential.')
+			raise error.ENotRegistered('User does not exist or you entered an invalid credential.')
 		return UserFactory().createUserFromID(user_id)
 
 	### Function that creates a Professor or Student object given an ID
@@ -55,4 +55,4 @@ class UserFactory():
 
 			return user
 		except:
-			raise error.ENotRegistered('User does not exists.')
+			raise error.ENotRegistered('User does not exist.')
