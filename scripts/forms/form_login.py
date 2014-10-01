@@ -3,10 +3,10 @@ import scripts.classes.class_form as form
 def get_form():
 	form_fields = [
 		{
-			'type': 'email',
-			'name': 'email',
+			'type': 'text',
+			'name': 'id_number',
 			'class': 'form-control',
-			'placeholder': 'Email Address',
+			'placeholder': 'ID Number',
 			'after-field': '<br>',
 			'required': True,
 			'autofocus': True,
