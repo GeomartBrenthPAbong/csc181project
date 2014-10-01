@@ -5,6 +5,8 @@
 CREATE OR REPLACE
 	FUNCTION setUser(p_user_id TEXT,
 						p_fuser_name full_name,
+						p_college TEXT,
+						p_department TEXT,
 						p_email_add TEXT,
 						p_address TEXT,
 						p_phone_number TEXT,
@@ -26,6 +28,8 @@ CREATE OR REPLACE
 
 				INSERT INTO pc_user(user_id,
 								fuser_name,
+								college,
+								department,
 								email_add,
 								address,
 								phone_number,
@@ -33,18 +37,17 @@ CREATE OR REPLACE
 								password)
 				VALUES(p_user_id,
 					p_fuser_name,
+					p_college,
+					p_department,
 					p_email_add,
 					p_address,
 					p_phone_number,
 					p_account_type,
 					p_password);
-			ELSE
 
-				RETURN 'Error';
-
+				RETURN 'OK';
+			ELSE RETURN  'NOT OK';
 			END IF;
-
-			RETURN 'OK';
 
 		END;
 $$
@@ -119,6 +122,8 @@ CREATE OR REPLACE
 								OUT TEXT,
 								OUT TEXT,
 								OUT TEXT,
+								OUT TEXT,
+								OUT TEXT,
 								OUT TEXT)
 	RETURNS SETOF RECORD AS
 $$
@@ -126,6 +131,8 @@ $$
 	SELECT user_id,
 			(fuser_name).first_name,
 			(fuser_name).last_name,
+			college,
+			department,
 			email_add,
 			phone_number,
 			account_type
@@ -180,6 +187,47 @@ $$
 
 $$
 LANGUAGE 'sql';
+
+-- @desc use this function to get user list with details for pagination
+
+CREATE OR REPLACE FUNCTION getUsersLimitOffset(IN TEXT,
+												IN INT,
+												IN INT,
+												OUT TEXT,
+												out text,
+												out text,
+												out text,
+												out text)
+RETURNS SETOF RECORD AS
+$$
+	SELECT user_id,
+			(fuser_name).first_name,
+			(fuser_name).last_name,
+			department,
+			college
+	FROM pc_user
+	WHERE account_type = $1 LIMIT $2 OFFSET $3;
+$$
+LANGUAGE 'sql';
+
+-- @desc function returns true if password matches user id, false, otherwise
+
+CREATE OR REPLACE FUNCTION userAuthentication(p_user_id TEXT, p_password TEXT)
+RETURNS BOOLEAN AS
+$$
+DECLARE
+	v_user_id TEXT;
+	v_password TEXT;
+BEGIN
+	SELECT into v_user_id,v_password user_id,password FROM pc_user where user_id = p_user_id;
+	if v_password = p_password THEN
+		RETURN TRUE;
+	ELSE RETURN FALSE;
+	end if;
+END;
+$$
+LANGUAGE 'plpgsql';
+
 
 ------------------------------------------------- PC_SCHEDULE TABLE SCRIPT
 
@@ -264,7 +312,7 @@ LANGUAGE 'sql';
 -- @desc Function to check schedule existence per schedule time range. Returns schedule id if found.
 
 CREATE OR REPLACE
-FUNCTION checkSchedExistencePerID(IN TIME,
+FUNCTION getSchedIDPerTimeRange(IN TIME,
 								IN TIME,
 								OUT INT)
 RETURNS SETOF INT AS
@@ -278,20 +326,9 @@ $$
 $$
 LANGUAGE 'sql';
 
--- @desc Function to retrieve pending appointment id's per user id.
 
-CREATE OR REPLACE
-FUNCTION getPendingApptPerUserId(IN TEXT,
-								OUT INT)
-RETURNS SETOF INT AS
-$$
 
-	SELECT appointment_id
-	FROM pc_appointment
-	WHERE (prof_id = $1 AND status = 'FALSE') OR (stud_id = $1 AND status = 'FALSE');
 
-$$
-LANGUAGE 'sql';
 
 ------------------------------------------------------------ PC_PROFESSOR_SCHEDULE TABLE SCRIPT
 
@@ -354,7 +391,7 @@ LANGUAGE 'plpgsql';
 -- @desc Function to get schedule id using professor id
 
 CREATE OR REPLACE
-FUNCTION getSchedIDPerProfID(IN TEXT,
+FUNCTION getSchedIDsPerProfID(IN TEXT,
 								OUT INT)
 RETURNS SETOF INT AS
 $$
@@ -425,6 +462,37 @@ $$
 $$
 LANGUAGE 'sql';
 
+-- @desc This function deletes entries from the professor schedule table
+
+CREATE OR REPLACE FUNCTION deleteProfSched(p_prof_id TEXT,
+											p_sched_id INT)
+RETURNS TEXT AS
+$$
+	BEGIN
+
+		DELETE FROM pc_professor_schedule
+		WHERE prof_id = p_prof_id
+			AND sched_id = p_sched_id;
+
+		RETURN 'OK';
+
+	END;
+$$
+LANGUAGE 'plpgsql';
+
+-- @desc This function gets sched day from professor schedule table
+
+CREATE OR REPLACE FUNCTION getSchedDay(IN TEXT,
+										IN INT,
+										OUT TEXT)
+RETURNS TEXT AS
+$$
+	SELECT sched_day
+	FROM pc_professor_schedule
+	WHERE prof_id= $1
+	AND sched_id=$2;
+$$
+LANGUAGE 'sql';
 
 -----------------------------------APPOINTMENT TABLE SCRIPT
 
@@ -548,7 +616,7 @@ LANGUAGE 'plpgsql';
 -- @desc Function to retrieve set of appointment id's approved by professor.
 
 CREATE OR REPLACE
-	FUNCTION getApptIDPerUserId(IN TEXT,OUT INT)
+	FUNCTION getApprovedApptIDsPerUserId(IN TEXT,OUT INT)
 RETURNS SETOF INT AS
 $$
 
@@ -558,6 +626,26 @@ $$
 
 $$
  LANGUAGE 'sql';
+
+ CREATE OR REPLACE FUNCTION getApprovedApptList(IN TEXT,
+												OUT BOOLEAN,
+												OUT TEXT,
+												OUT INT,
+												OUT DATE,
+												OUT TEXT)
+RETURNS SETOF RECORD AS
+$$
+	SELECT status,
+			stud_id,
+			sched_id,
+			appointment_date,
+			message
+	FROM pc_appointment
+	WHERE prof_id = $1
+	AND status = 'TRUE'
+	AND state_viewed = 'TRUE';
+$$
+LANGUAGE 'sql';
 
 -- @desc Use this function to get list of appointment ids between specified professor id and student id
 
@@ -591,6 +679,21 @@ $$
 
 	SELECT * FROM pc_appointment
 	WHERE appointment_id = $1;
+
+$$
+LANGUAGE 'sql';
+
+-- @desc Function to retrieve pending appointment id's per user id.
+
+CREATE OR REPLACE
+FUNCTION getPendingApptPerUserId(IN TEXT,
+								OUT INT)
+RETURNS SETOF INT AS
+$$
+
+	SELECT appointment_id
+	FROM pc_appointment
+	WHERE (prof_id = $1 AND status = 'FALSE') OR (stud_id = $1 AND status = 'FALSE');
 
 $$
 LANGUAGE 'sql';
@@ -638,3 +741,79 @@ FROM pc_user
 WHERE account_type = $1 AND LOWER((fuser_name).first_name) like LOWER($2 || '%') or LOWER((fuser_name).last_name) like LOWER($2 || '%') LIMIT $3 OFFSET $4;
 $$
 LANGUAGE 'sql';
+------------------------------- PC_SESSION TABLE SCRIPTS
+
+-- @desc Function to insert a session into the table
+
+CREATE OR REPLACE FUNCTION saveSessionID(p_session_id TEXT,
+                                        p_user_id TEXT)
+RETURNS BOOLEAN AS
+$$
+DECLARE
+  v_session_instance TEXT;
+BEGIN
+  SELECT INTO v_session_instance session_id
+  FROM pc_session
+  WHERE session_id = p_session_id;
+
+  IF v_session_instance ISNULL THEN
+    INSERT INTO pc_session (session_id, user_id)
+    VALUES (p_session_id, p_user_id);
+    RETURN TRUE;
+  ELSE RETURN FALSE;
+  END IF;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+-- @desc Function to retrieve user id using session id
+
+CREATE OR REPLACE FUNCTION getUser(IN TEXT, OUT TEXT)
+RETURNS TEXT AS
+$$
+SELECT user_id
+FROM pc_session
+WHERE session_id = $1;
+$$
+LANGUAGE 'sql';
+
+-- @desc Trigger function that automatically deletes old data (> 5 days)
+CREATE OR REPLACE FUNCTION deleteOldSessions() RETURNS trigger
+LANGUAGE plpgsql
+AS
+$$
+DECLARE
+  row_count INT;
+BEGIN
+  DELETE FROM pc_session
+  WHERE timestamp < NOW() - INTERVAL '5 days';
+
+  IF found THEN GET DIAGNOSTICS row_count = ROW_COUNT;
+  RAISE NOTICE 'DELETEd % row(s) FROM limiter', row_count;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+--@desc Function that deletes a session from the pc_session
+
+CREATE OR REPLACE FUNCTION deleteSession(p_session_id TEXT)
+RETURNS TEXT AS
+$$
+BEGIN
+  DELETE FROM pc_session
+  WHERE session_id = p_session_id;
+
+  RETURN 'OK';
+
+END;
+$$
+LANGUAGE 'plpgsql';
+
+-- @desc setting the trigger to execute every insertion
+
+CREATE TRIGGER del_sessions
+AFTER INSERT ON pc_session
+EXECUTE PROCEDURE deleteOldSessions();
+

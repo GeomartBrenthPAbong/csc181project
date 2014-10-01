@@ -14,14 +14,17 @@ def index(req):
 
 	function_name = req.form.getfirst('action')
 
+	g.g_req = req
+	g.g_user = functions.create_user()
+
 	try:
 		if function_name is None:
 			raise Exception
 		try:
 			if functions.user_logged_in():
-				return getattr(ajax_functions, 'spam_in_' + function_name)(req)
+				return getattr(ajax_functions, 'spam_in_' + function_name)()
 			raise AttributeError
 		except AttributeError:
-				return getattr(ajax_functions, 'spam_out_' + function_name)(req)
-	except Exception, e:
-		return json.dumps({'status': 'FAILED', 'msg': 'Invalid action'})
+				return getattr(ajax_functions, 'spam_out_' + function_name)()
+	except Exception:
+		return json.dumps({'status': 'FAILED', 'msg': 'Invalid action.'})

@@ -3,6 +3,9 @@ import scripts.global_variables as g
 
 
 class Professor(user.User):
+	def __init__(self):
+		self._m_type = 'professor'
+
 	def getScheduleDay(self, p_schedule):
 		((sched_day,),) = g.g_sql.execqry("SELECT * FROM getSchedDay('" + self._m_id + "', " +
 										str(p_schedule.getID()) + ")")

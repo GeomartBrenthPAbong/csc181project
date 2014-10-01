@@ -12,9 +12,17 @@ def get_page_template():
 	return 'clean_template'
 
 def page_additions():
+	import scripts.functions as f
+
+	if f.user_logged_in():
+		if g.g_user.getType() == 'student':
+			f.redirect(g.g_root_path + '/index.py?page=studhome')
+		else:
+			f.redirect(g.g_root_path + '/index.py?page=profhome')
+
 	#===== Styles and Javascripts
 	g.g_header.getStyleAdder().add('signin')
-	g.g_header.getScriptAdder().add('temp')
+	g.g_header.getScriptAdder().add('login')
 
 	#===== Contents Additions
 	g.g_locations.addToLocation('main_content', login_form.get_form())

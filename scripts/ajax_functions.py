@@ -1,43 +1,55 @@
 import global_variables as g
 import third_party_modules.simplejson.simplejson as json
 
-def spam_in_test_ajax(req):
+def spam_out_login():
+	import scripts.classes.class_user_factory as user_factory
+	import scripts.exceptions.e_notregistered as e_notregistered
+	import scripts.classes.class_dosql as sql
 
-	import third_party_modules.simplejson.simplejson as json
+	g.g_sql = sql.doSql()
 
-	###=============== For future use
+	username = g.g_req.form.getfirst('username')
+	password = g.g_req.form.getfirst('password')
 
-	#import Cookie
-	#import functions
-	#import classes.class_user_factory as user_factory
-	#import exceptions.e_notregistered as e_notregistered
-	#import global_variables as g
-	#
-	#try:
-	#	g.g_user = user_factory.UserFactory().createUser(req.form.getfirst('username'), req.form.getfirst('password'))
-	#except e_notregistered.ENotRegistered, e:
-	#	return json.dumps({'status': 'SUCCESS', 'msg': e.getMessage()})
+	try:
+		g.g_user = user_factory.UserFactory().createUserFromUname(username, password)
+	except e_notregistered.ENotRegistered, e:
+		return json.dumps({'status': 'FAILED',
+						   'msg': e.getMessage()})
 
-	#functions.setup_cookies(req.form.getfirst('username'))
-	#cookie = Cookie.SimpleCookie()
+	import scripts.functions as f
 
-	#functions.setup_cookies()
+	f.log_user_in(username)
 
-	##====================
+	if g.g_user.getType() == 'student':
+		redirect_url = g.g_root_path + '/index.py?page=studhome'
+	else:
+		redirect_url = g.g_root_path + '/index.py?page=profhome'
 
 	return json.dumps({'status': 'SUCCESS',
-						'msg': 'Username: ' + req.form.getfirst('username') +\
-								' Password: ' + req.form.getfirst('password')})
+					   'redirect_url': redirect_url})
 
-def spam_out_add_schedule(req):
+def spam_in_logout():
+	import functions as f
+	import classes.class_dosql as sql
+
+	g.g_sql = sql.doSql()
+
+	if f.log_user_out():
+		return json.dumps({'status': 'SUCCESS',
+							'redirect_url': g.g_root_path + '/index.py?page=login_page'})
+	return json.dumps({'status': 'FAILED',
+					   'msg': 'Sorry, can\'t log you out right now. Please try again later.'})
+
+def spam_in_add_schedule():
 	import scripts.classes.class_user_factory as uf
 	import scripts.classes.class_schedule as s
 	import scripts.exceptions.e_spam as espam
 	import scripts.classes.class_dosql as sql
 
-	from_time = req.form.getfirst('from_time')
-	to_time = req.form.getfirst('to_time')
-	day = req.form.getfirst('day')
+	from_time = g.g_req.form.getfirst('from_time')
+	to_time = g.g_req.form.getfirst('to_time')
+	day = g.g_req.form.getfirst('day')
 	msg = ''
 	data = {'from_time': from_time,
 			'to_time': to_time,
@@ -58,11 +70,11 @@ def spam_out_add_schedule(req):
 						'msg': msg,
 						'data': data})
 
-def spam_out_get_page_content(req):
+def spam_in_get_page_content():
 	import functions as f
 
-	g.g_page_name = req.form.getfirst('page_name')
-	page_locations = json.loads(req.form.getfirst('page_location'))
+	g.g_page_name = g.g_req.form.getfirst('page_name')
+	page_locations = json.loads(g.g_req.form.getfirst('page_location'))
 
 	f.page_validation(g.g_page_name)
 	if g.g_page_name == 'notification':
@@ -71,7 +83,6 @@ def spam_out_get_page_content(req):
 			'right_content': g.g_notification_msg
 		}})
 
-	f.pre_processing()
 	f.process_page()
 
 	locations = {}
@@ -86,8 +97,8 @@ def spam_out_get_page_content(req):
 	return json.dumps({'status': 'SUCCESS', 'data': locations})
 
 
-def spam_in_gen_prof_list(req):
+def spam_in_gen_prof_list():
 	import third_party_modules.simplejson.simplejson as json
 	import functions as f
 
-	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_prof_list(req)})
+	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_prof_list(g.g_req) })

@@ -15,10 +15,10 @@ class UserFactory():
 			((
 				user_id,
 				_
-			),) = g.g_sql.execqry("SELECT * FROM checkAccountExistence('" + p_username + "', '" + p_password + "')")
+			),) = g.g_sql.execqry("SELECT * FROM checkAccountExistence('" + p_username + "', '" + p_password + "')", False)
 		except:
-			raise error.ENotRegistered('User does not exists.')
-		return UserFactory().createUser(user_id)
+			raise error.ENotRegistered('User does not exists or you entered an invalid credential.')
+		return UserFactory().createUserFromID(user_id)
 
 	### Function that creates a Professor or Student object given an ID
 	###
