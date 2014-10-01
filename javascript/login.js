@@ -1,16 +1,24 @@
-jQuery(document).ready( function($){
-    $( 'input[name=btnSubmit]').click( function(e) {
+jQuery(document).ready(function($){
+    function login_success_func(response){
+        if(response.status == 'SUCCESS')
+            window.location = response.redirect_url;
+        else
+            alert(response.msg);
+    }
+
+    $('input[name=btnSubmit]').click( function(e) {
         var data = {
-            action: 'test_ajax',
-            username: $('input[name=email]').val(),
-            password: $('input[name=password]').val()
+            action: 'login',
+            username: jQuery('input[name=id_number]').val(),
+            password: jQuery('input[name=password]').val()
         };
 
-        ajaxify(data);
+        ajaxify(data, login_success_func);
 
         e.preventDefault();
         e.stopPropagation();
 
         return false;
     });
-});
+})
+
