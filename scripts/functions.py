@@ -8,26 +8,95 @@ import types
 
 ## Returns true if the user is logged in otherwise, returns false
 def user_logged_in():
-	return True
+	return global_variables.g_user is not None
+
+def create_user():
+	import mod_python.Cookie as Cookie
+
+	try:
+		c = Cookie.get_cookies(global_variables.g_req, Cookie.MarshalCookie, secret='popcorn')
+		if not 'session_id' in c:
+			return None
+
+		session_id = c["session_id"].value
+	except (Cookie.CookieError, KeyError, Exception):
+		return None
+
+	import classes.class_user_factory as user_factory
+	import exceptions.e_notregistered as e_notregistered
+	import scripts.classes.class_dosql as sql
+
+	dosql = sql.doSql()
+
+	try:
+		((username,),) = dosql.execqry("SELECT * FROM getUser('" + str(session_id) + "')", False)
+		return user_factory.UserFactory().createUserFromID(username)
+	except (e_notregistered.ENotRegistered, Exception):
+		return None
+
+def authenticate_user(p_username, p_password):
+	((status,),) = global_variables.sql.execqry("SELECT * FROM userAuthentication('" + p_username + "', '" + p_password + "'")
+	return status
+
+def redirect(p_url):
+	from mod_python import util
+	import scripts.global_variables as g
+
+	util.redirect(g.g_req, p_url)
+
+def log_user_in(p_username):
+	from mod_python import Cookie
+	import time
+	import uuid
+
+	session_id = None
+
+	while True:
+		session_id = uuid.uuid4()
+
+		((is_unique_session,),) = global_variables.g_sql.execqry("SELECT * FROM saveSessionID('" + str(session_id) + "', '" + p_username + "')", True)
+		if is_unique_session:
+			break
+
+	c = Cookie.Cookie('session_id', session_id)
+	c.expires = time.time() + 432000.0
+	Cookie.add_cookie(global_variables.g_req, c)
+
+def log_user_out():
+	import mod_python.Cookie as Cookie
+
+	try:
+		c = Cookie.get_cookies(global_variables.g_req, Cookie.MarshalCookie, secret='popcorn')
+		if not 'session_id' in c:
+			return False
+
+		session_id = c["session_id"].value
+		global_variables.g_sql.execqry("SELECT * FROM deleteSession('" + session_id + "')", True)
+		return True
+	except (Cookie.CookieError, KeyError, Exception):
+		return False
+
 
 ## Initialize global variables here
 def pre_processing():
+	import classes.class_dosql as sql
+
 	global_variables.g_header = classes.class_header.Header()
 	global_variables.g_content = classes.class_content.Content()
 	global_variables.g_content.setPage(global_variables.g_page_name)
 	global_variables.g_footer = classes.class_footer.Footer()
 	global_variables.g_locations = classes.class_locations.Locations()
+	global_variables.g_sql = sql.doSql()
 
 def process_page():
 	from mod_python import apache
-	import classes.class_dosql as sql
 
 	page = apache.import_module(global_variables.g_page_name, path=[global_variables.g_main_path + '/scripts/pages/'])
 	page.page_additions()
 	global_variables.g_content.setTitle(page.get_title())
 	global_variables.g_content.setContent(page.get_content())
 	global_variables.g_content.setPageTemplate(page.get_page_template())
-	#global_variables.g_sql = sql.doSql()
+
 	global_variables.g_page = page
 
 def post_processing():
@@ -36,7 +105,6 @@ def post_processing():
 
 	page_template = apache.import_module(g.g_page.get_page_template(), path=[g.g_main_path + '/scripts/page_templates/'])
 	g.g_content.setContent(page_template.generate_page())
-
 
 def function_exists(p_function_name):
 	try:
@@ -59,12 +127,6 @@ def page_validation(p_page_name):
 		global_variables.g_page_name = 'notification'
 		global_variables.g_notification_title = '404 Not Found'
 		global_variables.g_notification_msg = 'This page does not exists.'
-
-def setup_cookies(p_cookie_data):
-	import Cookie
-
-	cookie = Cookie.SimpleCookie()
-	cookie['logged_in'] = p_cookie_data
 
 def user_exists(p_user_id):
 	return global_variables.g_sql.execqry('checkUserExistence(' + p_user_id + ')') != 'None'
