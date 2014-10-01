@@ -57,38 +57,38 @@ def include_in_pages():
 
 	#test
 
-	g.g_user = ss.Student()
-	g.g_user.setAddress("Tibanga")
-	g.g_user.setID("2009-0731")
-	g.g_user.setFirstName("Christopher Clint")
-	g.g_user.setLastName("Pacillos")
-	g.g_user.setEmailAddress("clint.pacillos@gmail.com")
-	g.g_user.setPhoneNumber("09122241144")
-	g.g_user.setCourse("BSEC")
+	#g.g_user = ss.Student()
+	#g.g_user.setAddress("Tibanga")
+	#g.g_user.setID("2009-0731")
+	#g.g_user.setFirstName("Christopher Clint")
+	#g.g_user.setLastName("Pacillos")
+	#g.g_user.setEmailAddress("clint.pacillos@gmail.com")
+	#g.g_user.setPhoneNumber("09122241144")
+	#g.g_user.setCourse("BSEC")
 
-	user_name = g.g_user.getFirstName() + " " + g.g_user.getLastName()
-	user_id = g.g_user.getID()
-	user_email = g.g_user.getEmailAddress()
-	user_phone = g.g_user.getPhoneNumber()
-	user_address = g.g_user.getAddress()
-	user_course_html = ""
-
-	if str(type(g.g_user).__name__) == 'Student':
-		user_course_html = "<p>" + g.g_user.getCourse() + "</p>"
-	details_html = '<div id="details" class="center">'
-	details_html +=	'<h1 style="font-weight: bold;">' + user_name + "</h1>"
-	details_html +=	user_course_html
-	details_html +=	"<p>" + user_email + "</p>"
-	details_html +=	"<p>" + user_phone + "</p>"
-	details_html +=	"<p>" + user_address + "</p>"
-	details_html +=	"<p>" + user_id + "</p>"
-	details_html += "</div>"
-	details_html += '<div class="clearfix"></div>'
-
-	user_pic_html = '<div id="picture">'
-	user_pic_html += '<img src="../spam/picture/user/student/'
-	user_pic_html += user_id + '.png"'
-	user_pic_html += 'alt="No picture found." style="width:300px;height:300px">'
-	user_pic_html += '</div>'
-
-	g.g_locations.addToLocation('left_content', p.Printable(user_pic_html + details_html))
+	#user_name = g.g_user.getFirstName() + " " + g.g_user.getLastName()
+	#user_id = g.g_user.getID()
+	#user_email = g.g_user.getEmailAddress()
+	#user_phone = g.g_user.getPhoneNumber()
+	#user_address = g.g_user.getAddress()
+	#user_course_html = ""
+	#
+	#if str(type(g.g_user).__name__) == 'Student':
+	#	user_course_html = "<p>" + g.g_user.getCourse() + "</p>"
+	#details_html = '<div id="details" class="center">'
+	#details_html +=	'<h1 style="font-weight: bold;">' + user_name + "</h1>"
+	#details_html +=	user_course_html
+	#details_html +=	"<p>" + user_email + "</p>"
+	#details_html +=	"<p>" + user_phone + "</p>"
+	#details_html +=	"<p>" + user_address + "</p>"
+	#details_html +=	"<p>" + user_id + "</p>"
+	#details_html += "</div>"
+	#details_html += '<div class="clearfix"></div>'
+	#
+	#user_pic_html = '<div id="picture">'
+	#user_pic_html += '<img src="../spam/picture/user/student/'
+	#user_pic_html += user_id + '.png"'
+	#user_pic_html += 'alt="No picture found." style="width:300px;height:300px">'
+	#user_pic_html += '</div>'
+	#
+	#g.g_locations.addToLocation('left_content', p.Printable(user_pic_html + details_html))
