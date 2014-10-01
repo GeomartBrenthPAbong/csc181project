@@ -9,6 +9,7 @@ class User(object):
 		self._m_email_address = None
 		self._m_phone_number = None
 		self._m_address = None
+		self._m_type = None
 
 	##==============================
 	## Getters and Setters
@@ -30,6 +31,9 @@ class User(object):
 
 	def setAddress(self, p_address):
 		self._m_address = p_address
+
+	def setType(self, p_type):
+		self._m_type = p_type
 
 	def getID(self):
 		return self._m_id
@@ -54,6 +58,9 @@ class User(object):
 
 	def getAddress(self):
 		return self._m_address
+
+	def getType(self):
+		return self._m_type
 
 
 
