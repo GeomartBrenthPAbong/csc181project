@@ -11,6 +11,16 @@ def get_page_template():
 	return 'black_template'
 
 def page_additions():
+	import scripts.functions as f
+
+	if not f.user_logged_in():
+		g.g_notification_title = 'Permission denied'
+		g.g_notification_msg = 'You have no permission to access this page. ' \
+							   'Please <a href="' +g.g_root_path + '/index.py' + '">sign in</a> first.'
+
+		f.redirect(g.g_root_path + '/index.py?page=notification')
+		return
+
 	# Styles and Scripts additions here
 
 	# Location additions here
@@ -28,19 +38,9 @@ def page_additions():
 		main_nav.setAsActive('home')
 
 	g.g_header.getStyleAdder().add('profile')
-	html = """ 	<div id="nav">
-					<img src="#../spam/picture/profilepics/" alt="PIC" width="290px" height="290px">
-				</div>
-				<div id="section">
-					<h4>Position:</h4>
-					<h4>Degree:</h4>
-					<h4>Age:</h4>
-					<h4>Birthdate:</h4>
-				</div>
-			"""
 
-	g.g_locations.addToLocation('right_content', p.Printable('Sample content'))
-	g.g_locations.addToLocation('right_content', p.Printable('KLUYGKLJHILUHLIUHKJ'))
-	g.g_locations.addToLocation('after_content', p.Printable(html))
+	profdetails = 'USER NAME: ' + g.g_user.getFirstName() + ' ' + g.g_user.getLastName()
+
+	g.g_locations.addToLocation('right_content', p.Printable(profdetails))
 
 
