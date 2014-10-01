@@ -90,4 +90,4 @@ def spam_in_gen_prof_list(req):
 	import third_party_modules.simplejson.simplejson as json
 	import functions as f
 
-	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_prof_list(req) })
+	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_prof_list(req)})

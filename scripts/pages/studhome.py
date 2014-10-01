@@ -20,9 +20,9 @@ def page_additions():
 	rc_statement = '<span style="font-weight:bold;">&nbsp;&nbsp;&nbsp;Find your professor and make an appointment!</span>'
 	rc_content = """
 					<div style="width:50%; margin-left:8px; margin-top:30px;" class="input-group">
-						<input style="font-weight:bold;" type="text" class="form-control" placeholder="Not necessarily Sir Orven">
+						<input id="input-search" style="font-weight:bold;" type="text" class="form-control" placeholder="Professor Name">
   						<div class="input-group-btn">
-    						<button type="button" class="btn btn-primary btn-large">Search</button>
+    						<button id="btn-search" type="button" class="btn btn-primary btn-large">Search</button>
   						</div>
 					</div>
 					<div style="margin-left:8px; margin-top:20px;" class="panel panel-default">

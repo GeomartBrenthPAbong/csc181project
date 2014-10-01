@@ -109,15 +109,24 @@ def generate_numbers(p_min, p_max):
 	return numbers
 
 def gen_prof_list(req):
-	import classes.class_dosql as sqlDriver
+    import classes.class_dosql as sqlDriver
 
-	offset = req.form.getfirst('offset')
+    offset = req.form.getfirst('offset')
+    name = req.form.getfirst('name')
 
-	if offset is None:
-		offset = '0'
+    if offset is None:
+        offset = '0'
 
-	query = "SELECT * FROM getUsersLimitOffset('Professor',"
-	query += "'" + req.form.getfirst('limit')
-	query += "','" + offset + "')"
-	f = sqlDriver.doSql()
-	return f.execqry(query, False)
+    if name is None:
+        query = "SELECT * FROM getUsersLimitOffset('Professor',"
+        query += "'" + req.form.getfirst('limit')
+        query += "','" + offset + "')"
+    else:
+        query = "SELECT * FROM getUsersLimitOffsetNameSearch('Professor',"
+        query += "'" + req.form.getfirst('name')
+        query += "','" + req.form.getfirst('limit')
+        query += "','" + offset + "')"
+
+
+    f = sqlDriver.doSql()
+    return f.execqry(query, False)

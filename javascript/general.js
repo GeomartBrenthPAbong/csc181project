@@ -141,13 +141,24 @@ jQuery(document).ready(function($){
         return false;
    });
 
-   $('#modal-close').click(function(e){
-        $('#blocker').css('display', 'none');
-        $('#modal-container').css('display', 'none');
-        $('#modal').css('display', 'none');
-        $('#modal-holder').css('display', 'none');
+   $('#modal-close').click(function(){
+        close_modal();
    });
+
+   $(document).keyup(function(e){
+        if (e.keyCode == 27){
+             close_modal();
+        }   // esc
+    });
+
 });
+
+function close_modal(){
+    $('#blocker').css('display', 'none');
+    $('#modal-container').css('display', 'none');
+    $('#modal').css('display', 'none');
+    $('#modal-holder').css('display', 'none');
+}
 
 
 function activate_modal(header, body, footer){
