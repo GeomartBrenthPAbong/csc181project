@@ -37,6 +37,8 @@ class UserFactory():
 				_,
 				first_name,
 				last_name,
+				college,
+				department,
 				email_address,
 				phone_number,
 				account_type
