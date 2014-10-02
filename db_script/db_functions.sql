@@ -124,6 +124,7 @@ CREATE OR REPLACE
 								OUT TEXT,
 								OUT TEXT,
 								OUT TEXT,
+								OUT TEXT,
 								OUT TEXT)
 	RETURNS SETOF RECORD AS
 $$
@@ -134,6 +135,7 @@ $$
 			college,
 			department,
 			email_add,
+			address,
 			phone_number,
 			account_type
 	FROM pc_user
@@ -499,10 +501,7 @@ LANGUAGE 'sql';
 -- @desc Function to create new appointment. Returns generated appointment id.
 
 CREATE OR REPLACE
-	FUNCTION setAppointment(p_appointment_id INT,
-							p_state_viewed BOOLEAN,
-							p_status BOOLEAN,
-							p_prof_id TEXT,
+	FUNCTION setAppointment(p_prof_id TEXT,
 							p_stud_id TEXT,
 							p_sched_id INT,
 							p_appointment_date DATE,
@@ -524,17 +523,15 @@ $$
 
 		IF v_prof_id ISNULL AND v_stud_id ISNULL THEN
 
-			INSERT INTO pc_appointment(appointment_id,
-										state_viewed,
+			INSERT INTO pc_appointment(state_viewed,
 										status,
 										prof_id,
 										stud_id,
 										sched_id,
 										appointment_date,
 										message)
-			VALUES (p_appointment_id,
-					p_state_viewed,
-					p_status,
+			VALUES ('FALSE',
+					'Pending',
 					p_prof_id,
 					p_stud_id,
 					p_sched_id,
@@ -577,14 +574,14 @@ LANGUAGE 'plpgsql';
 -- @desc Function to change status to TRUE indicating appointment is not pending anymore.
 
 CREATE OR REPLACE
-	FUNCTION changeStatus(p_appointment_id INT)
+	FUNCTION changeStatus(p_appointment_id INT, p_status TEXT)
 RETURNS TEXT AS
 $$
 
 	BEGIN
 
 		UPDATE pc_appointment
-		SET status = TRUE
+		SET status = p_status
 		WHERE appointment_id = p_appointment_id;
 
 		RETURN 'OK';
@@ -616,19 +613,20 @@ LANGUAGE 'plpgsql';
 -- @desc Function to retrieve set of appointment id's approved by professor.
 
 CREATE OR REPLACE
-	FUNCTION getApprovedApptIDsPerUserId(IN TEXT,OUT INT)
+	FUNCTION getApptIDsPerUserId(IN TEXT,IN TEXT, OUT INT)
 RETURNS SETOF INT AS
 $$
 
 	SELECT appointment_id
 	FROM pc_appointment
-	WHERE (prof_id = $1 AND status = 'TRUE') OR (stud_id = $1 AND status = 'TRUE');
+	WHERE (prof_id = $1 AND status = $2) OR (stud_id = $1 AND status = $2);
 
 $$
  LANGUAGE 'sql';
 
- CREATE OR REPLACE FUNCTION getApprovedApptList(IN TEXT,
-												OUT BOOLEAN,
+ CREATE OR REPLACE FUNCTION getApptList(IN TEXT,
+                        IN TEXT,
+												OUT TEXT,
 												OUT TEXT,
 												OUT INT,
 												OUT DATE,
@@ -642,7 +640,7 @@ $$
 			message
 	FROM pc_appointment
 	WHERE prof_id = $1
-	AND status = 'TRUE'
+	AND status = $2
 	AND state_viewed = 'TRUE';
 $$
 LANGUAGE 'sql';
@@ -668,7 +666,7 @@ CREATE OR REPLACE
 	FUNCTION getApptDetails(IN INT,
 							OUT INT,
 							OUT BOOLEAN,
-							OUT BOOLEAN,
+							OUT TEXT,
 							OUT TEXT,
 							OUT TEXT,
 							OUT INT,
@@ -683,20 +681,6 @@ $$
 $$
 LANGUAGE 'sql';
 
--- @desc Function to retrieve pending appointment id's per user id.
-
-CREATE OR REPLACE
-FUNCTION getPendingApptPerUserId(IN TEXT,
-								OUT INT)
-RETURNS SETOF INT AS
-$$
-
-	SELECT appointment_id
-	FROM pc_appointment
-	WHERE (prof_id = $1 AND status = 'FALSE') OR (stud_id = $1 AND status = 'FALSE');
-
-$$
-LANGUAGE 'sql';
 
 ------------------------------- PC_USER_META TABLE SCRIPT
 
@@ -789,7 +773,7 @@ BEGIN
   WHERE timestamp < NOW() - INTERVAL '5 days';
 
   IF found THEN GET DIAGNOSTICS row_count = ROW_COUNT;
-  RAISE NOTICE 'DELETEd % row(s) FROM limiter', row_count;
+  RAISE NOTICE 'DELETED % row(s) FROM limiter', row_count;
   END IF;
 
   RETURN NEW;

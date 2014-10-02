@@ -26,6 +26,10 @@ CREATE TABLE pc_account_type(
 	account_type TEXT PRIMARY KEY
 );
 
+CREATE TABLE pc_status(
+  status TEXT PRIMARY KEY
+);
+
 -- @desc Creating USER Table
 
 CREATE TABLE pc_user(
@@ -46,10 +50,10 @@ CREATE TABLE pc_user(
 CREATE TABLE pc_appointment (
      appointment_id INT DEFAULT NEXTVAL('appt_id_gen'),
 	 state_viewed BOOLEAN,
-	 status BOOLEAN,
-	 prof_id TEXT REFERENCES pc_user(user_id) UNIQUE,
-	 stud_id TEXT REFERENCES pc_user(user_id) UNIQUE,
-	 sched_id INT REFERENCES pc_schedule(sched_id) UNIQUE,
+	 status TEXT REFERENCES pc_status(status),
+	 prof_id TEXT REFERENCES pc_user(user_id),
+	 stud_id TEXT REFERENCES pc_user(user_id),
+	 sched_id INT REFERENCES pc_schedule(sched_id),
 	 appointment_date DATE,
 	 message TEXT,
 	 PRIMARY KEY (appointment_id)
