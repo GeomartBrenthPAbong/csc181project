@@ -575,7 +575,7 @@ LANGUAGE 'plpgsql';
 
 CREATE OR REPLACE
 	FUNCTION changeStatus(p_appointment_id INT, p_status TEXT)
-RETURNS TEXT AS
+RETURNS INT AS
 $$
 
 	BEGIN
@@ -584,7 +584,7 @@ $$
 		SET status = p_status
 		WHERE appointment_id = p_appointment_id;
 
-		RETURN 'OK';
+		RETURN p_appointment_id;
 
 	END;
 
@@ -626,6 +626,10 @@ $$
 
  CREATE OR REPLACE FUNCTION getApptList(IN TEXT,
                         IN TEXT,
+                        IN INT,
+                        IN INT,
+                        OUT INT,
+												OUT TEXT,
 												OUT TEXT,
 												OUT TEXT,
 												OUT INT,
@@ -633,15 +637,17 @@ $$
 												OUT TEXT)
 RETURNS SETOF RECORD AS
 $$
-	SELECT status,
-			stud_id,
-			sched_id,
-			appointment_date,
-			message
+	SELECT appointment_id,
+	      status,
+	      prof_id,
+			  stud_id,
+			  sched_id,
+			  appointment_date,
+			  message
 	FROM pc_appointment
-	WHERE prof_id = $1
+	WHERE (prof_id = $1 OR stud_id = $1)
 	AND status = $2
-	AND state_viewed = 'TRUE';
+	LIMIT $3 OFFSET $4;
 $$
 LANGUAGE 'sql';
 
@@ -663,20 +669,34 @@ LANGUAGE 'sql';
  -- @desc Use this function to get appointment details using appointment id
 
 CREATE OR REPLACE
-	FUNCTION getApptDetails(IN INT,
-							OUT INT,
-							OUT BOOLEAN,
+	FUNCTION getApptDetailsProfView(IN INT,
 							OUT TEXT,
 							OUT TEXT,
 							OUT TEXT,
-							OUT INT,
+							OUT TEXT,
+							OUT TIME,
+							OUT TIME,
 							OUT DATE,
-							OUT TEXT)
+							OUT TEXT,
+              OUT TEXT)
 RETURNS setof RECORD AS
 $$
 
-	SELECT * FROM pc_appointment
-	WHERE appointment_id = $1;
+	SELECT pc_appointment.stud_id,
+          (fuser_name).first_name,
+          (fuser_name).last_name,
+          pc_user_meta.meta_value,
+          pc_schedule.sched_from_time,
+          pc_schedule.sched_to_time,
+          pc_appointment.appointment_date,
+          pc_appointment.message,
+          pc_appointment.status
+  FROM pc_appointment, pc_user, pc_schedule, pc_user_meta
+	WHERE pc_user.user_id = pc_appointment.stud_id
+        AND pc_user_meta.meta_key = 'Course'
+        AND pc_user_meta.user_id = pc_appointment.stud_id
+        AND pc_schedule.sched_id = pc_appointment.sched_id
+        AND appointment_id = $1;
 
 $$
 LANGUAGE 'sql';
@@ -801,3 +821,31 @@ CREATE TRIGGER del_sessions
 AFTER INSERT ON pc_session
 EXECUTE PROCEDURE deleteOldSessions();
 
+CREATE OR REPLACE FUNCTION apptDisplay(IN TEXT,
+                                        IN INT,
+                                        IN INT,
+                                        OUT TEXT,
+                                        OUT TEXT,
+                                        OUT DATE,
+                                        OUT TIME,
+                                        OUT INT)
+ RETURNS SETOF RECORD AS
+  $$
+
+SELECT (fuser_name).first_name,
+        (fuser_name).last_name,
+        pc_appointment.appointment_date,
+        pc_schedule.sched_from_time,
+        pc_appointment.appointment_id
+FROM pc_user,
+      pc_schedule,
+      pc_appointment
+WHERE pc_user.user_id = pc_appointment.stud_id
+      AND pc_schedule.sched_id = pc_appointment.sched_id
+      AND pc_appointment.prof_id = $1
+      AND pc_appointment.status = $4
+
+LIMIT $2 OFFSET $3;
+
+$$
+LANGUAGE 'sql';

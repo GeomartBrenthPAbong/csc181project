@@ -42,8 +42,8 @@ def page_additions():
 								<thead>
 									<tr>
 										<th>Name</th>
-										<th>College</th>
 										<th>Department</th>
+										<th>College</th>
 									</tr>
 						  		</thead>
 						  		<tbody id="proflist" data-link="row" class="rowlink"></tbody>

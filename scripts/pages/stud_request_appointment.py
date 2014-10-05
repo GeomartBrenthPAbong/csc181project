@@ -6,21 +6,7 @@ def get_title():
 
 def get_content():
 	html =	"""
-	    <!doctype html>
-        <html lang="en">
-        <head>
-        <meta charset="UTF-8">
-        <title>sim</title>
-        <link rel="stylesheet" href="../css/search_style.css">
-        </head>
-        <body>
-        <div id="gradient"></div>
-        <form class="searchbox" action="">
-        <input type="search" placeholder="Search Professor" />
-        <button type="submit" value="search">&nbsp;</button>
-        </form>
-        </body>
-        </html>
+	   <div id="sprofile"><h1 style="font-weight: bold;">STUDENT</h1></div>
 			"""
 
 	return html
@@ -29,4 +15,7 @@ def get_page_template():
 	return 'black_template'
 
 def page_additions():
-	pass
+	rc_statement = """<button id="btn-modal" type="button" class="btn btn-primary btn-large">Try!</button>"""
+	g.g_header.getScriptAdder().add('general')
+	g.g_header.getScriptAdder().add('stud_request_appointment')
+	g.g_locations.addToLocation('right_content', p.Printable(rc_statement))

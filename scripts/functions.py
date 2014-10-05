@@ -126,7 +126,7 @@ def page_validation(p_page_name):
 	else:
 		global_variables.g_page_name = 'notification'
 		global_variables.g_notification_title = '404 Not Found'
-		global_variables.g_notification_msg = 'This page does not exists.'
+		global_variables.g_notification_msg = 'This page does not exist.'
 
 def user_exists(p_user_id):
 	return global_variables.g_sql.execqry('checkUserExistence(' + p_user_id + ')') != 'None'
@@ -171,24 +171,84 @@ def generate_numbers(p_min, p_max):
 	return numbers
 
 def gen_prof_list(req):
-    import classes.class_dosql as sqlDriver
+	import classes.class_dosql as sqlDriver
 
-    offset = req.form.getfirst('offset')
-    name = req.form.getfirst('name')
+	offset = req.form.getfirst('offset')
+	name = req.form.getfirst('name')
 
-    if offset is None:
-        offset = '0'
+	if offset is None:
+		offset = '0'
 
-    if name is None:
-        query = "SELECT * FROM getUsersLimitOffset('Professor',"
-        query += "'" + req.form.getfirst('limit')
-        query += "','" + offset + "')"
-    else:
-        query = "SELECT * FROM getUsersLimitOffsetNameSearch('Professor',"
-        query += "'" + req.form.getfirst('name')
-        query += "','" + req.form.getfirst('limit')
-        query += "','" + offset + "')"
+	if name is None:
+		query = "SELECT * FROM getUsersLimitOffset('Professor',"
+		query += "'" + req.form.getfirst('limit')
+		query += "','" + offset + "')"
+	else:
+		query = "SELECT * FROM getUsersLimitOffsetNameSearch('Professor',"
+		query += "'" + req.form.getfirst('name')
+		query += "','" + req.form.getfirst('limit')
+		query += "','" + offset + "')"
 
 
-    f = sqlDriver.doSql()
-    return f.execqry(query, False)
+	f = sqlDriver.doSql()
+	return f.execqry(query, False)
+
+def gen_appt_list(req):
+	import scripts.classes.class_dosql as sqlDriver
+	import global_variables as g
+
+	offset = req.form.getfirst('offset')
+	limit = req.form.getfirst('limit')
+	stat = req.form.getfirst('stat')
+	user_id = g.g_user.getID()
+
+
+	if offset is None:
+		offset = '0'
+
+	query = "SELECT * FROM apptDisplay('"
+	query += user_id + "',"
+	query += "'" + limit
+	query += "','" + offset
+	query += "','" + stat + "')"
+	f = sqlDriver.doSql()
+	results = f.execqry(query, False)
+
+	list = []
+
+	for result in results:
+		data = []
+		for datum in result:
+			data.append(str(datum))
+		list.append(data)
+	return list
+
+def gen_appt_details(req):
+	import scripts.classes.class_dosql as sqlDriver
+
+	appt_id = req.form.getfirst('appt_id')
+
+	query = "SELECT * FROM getApptDetailsProfView('"
+	query += appt_id + "')"
+	f = sqlDriver.doSql()
+	results = f.execqry(query, False)
+
+	list = []
+
+	for result in results:
+		data = []
+		for datum in result:
+			data.append(str(datum))
+		list.append(data)
+	return list
+
+def change_status(req):
+	import scripts.classes.class_dosql as sqlDriver
+
+	appt_id = req.form.getfirst('appt_id')
+	status = req.form.getfirst('stat')
+	query = "SELECT * FROM changestatus("
+	query += appt_id + ",'" + status + "')"
+
+	f = sqlDriver.doSql()
+	return f.execqry(query,True)

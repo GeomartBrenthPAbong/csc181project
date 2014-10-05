@@ -40,6 +40,7 @@ class UserFactory():
 				college,
 				department,
 				email_address,
+				address,
 				phone_number,
 				account_type
 			),) = g.g_sql.execqry("SELECT * FROM extractUserDetailsPerId('" + str(p_user_id) + "')", False)
@@ -53,6 +54,7 @@ class UserFactory():
 			user.setFirstName(first_name)
 			user.setLastName(last_name)
 			user.setEmailAddress(email_address)
+			user.setAddress(address)
 			user.setPhoneNumber(phone_number)
 
 			return user

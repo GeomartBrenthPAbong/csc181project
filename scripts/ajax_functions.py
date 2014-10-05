@@ -102,3 +102,16 @@ def spam_in_gen_prof_list():
 	import functions as f
 
 	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_prof_list(g.g_req) })
+
+def spam_in_gen_appt_list():
+	import functions as f
+
+	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_list(g.g_req)})
+
+def spam_in_gen_appt_details():
+	import functions as f
+	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_details(g.g_req)})
+
+def spam_in_change_status():
+	import functions as f
+	return json.dumps({'status': 'SUCCESS', 'msg': f.change_status(g.g_req)})

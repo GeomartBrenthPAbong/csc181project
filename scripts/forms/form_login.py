@@ -26,7 +26,7 @@ def get_form():
 			'options': [
 				{
 					'value': 'remember-me',
-					'label': 'Remeber me'
+					'label': 'Remember me'
 				}
 			],
 			'after-field': '<br>',
