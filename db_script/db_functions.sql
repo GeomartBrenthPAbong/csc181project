@@ -666,7 +666,7 @@ $$
 $$
 LANGUAGE 'sql';
 
- -- @desc Use this function to get appointment details using appointment id
+ -- @desc Use this function to get appointment details using appointment id for professor profile
 
 CREATE OR REPLACE
 	FUNCTION getApptDetailsProfView(IN INT,
@@ -701,7 +701,98 @@ $$
 $$
 LANGUAGE 'sql';
 
+-- @desc Use this function to get appointment details using appointment id for student profile
 
+CREATE OR REPLACE
+	FUNCTION getApptDetailsStudView(IN INT,
+							OUT TEXT,
+							OUT TEXT,
+							OUT TEXT,
+							OUT TIME,
+							OUT TIME,
+							OUT DATE,
+							OUT TEXT,
+              OUT TEXT)
+RETURNS setof RECORD AS
+$$
+
+	SELECT pc_appointment.prof_id,
+          (fuser_name).first_name,
+          (fuser_name).last_name,
+          pc_schedule.sched_from_time,
+          pc_schedule.sched_to_time,
+          pc_appointment.appointment_date,
+          pc_appointment.message,
+          pc_appointment.status
+  FROM pc_appointment, pc_user, pc_schedule
+	WHERE pc_user.user_id = pc_appointment.prof_id
+        AND pc_schedule.sched_id = pc_appointment.sched_id
+        AND appointment_id = $1;
+
+$$
+LANGUAGE 'sql';
+
+-- @desc The following functions get list of appointments with details for student and professor profile view
+
+CREATE OR REPLACE FUNCTION apptDisplayProf(IN TEXT,
+                                        IN INT,
+                                        IN INT,
+										IN TEXT,
+                                        OUT TEXT,
+                                        OUT TEXT,
+                                        OUT DATE,
+                                        OUT TIME,
+                                        OUT INT)
+ RETURNS SETOF RECORD AS
+  $$
+
+SELECT (fuser_name).first_name,
+        (fuser_name).last_name,
+        pc_appointment.appointment_date,
+        pc_schedule.sched_from_time,
+        pc_appointment.appointment_id
+FROM pc_user,
+      pc_schedule,
+      pc_appointment
+WHERE pc_user.user_id = pc_appointment.stud_id
+      AND pc_schedule.sched_id = pc_appointment.sched_id
+      AND pc_appointment.prof_id = $1
+      AND pc_appointment.status = $4
+
+LIMIT $2 OFFSET $3;
+
+$$
+LANGUAGE 'sql';
+
+CREATE OR REPLACE FUNCTION apptDisplayStud(IN TEXT,
+                                        IN INT,
+                                        IN INT,
+										IN TEXT,
+                                        OUT TEXT,
+                                        OUT TEXT,
+                                        OUT DATE,
+                                        OUT TIME,
+                                        OUT INT)
+ RETURNS SETOF RECORD AS
+  $$
+
+SELECT (fuser_name).first_name,
+        (fuser_name).last_name,
+        pc_appointment.appointment_date,
+        pc_schedule.sched_from_time,
+        pc_appointment.appointment_id
+FROM pc_user,
+      pc_schedule,
+      pc_appointment
+WHERE pc_user.user_id = pc_appointment.prof_id
+      AND pc_schedule.sched_id = pc_appointment.sched_id
+      AND pc_appointment.stud_id = $1
+      AND pc_appointment.status = $4
+
+LIMIT $2 OFFSET $3;
+
+$$
+LANGUAGE 'sql';
 ------------------------------- PC_USER_META TABLE SCRIPT
 
 -- @desc Function to retrieve meta_value from table pc_user_meta using user_id and meta_key.
@@ -821,31 +912,3 @@ CREATE TRIGGER del_sessions
 AFTER INSERT ON pc_session
 EXECUTE PROCEDURE deleteOldSessions();
 
-CREATE OR REPLACE FUNCTION apptDisplay(IN TEXT,
-                                        IN INT,
-                                        IN INT,
-                                        OUT TEXT,
-                                        OUT TEXT,
-                                        OUT DATE,
-                                        OUT TIME,
-                                        OUT INT)
- RETURNS SETOF RECORD AS
-  $$
-
-SELECT (fuser_name).first_name,
-        (fuser_name).last_name,
-        pc_appointment.appointment_date,
-        pc_schedule.sched_from_time,
-        pc_appointment.appointment_id
-FROM pc_user,
-      pc_schedule,
-      pc_appointment
-WHERE pc_user.user_id = pc_appointment.stud_id
-      AND pc_schedule.sched_id = pc_appointment.sched_id
-      AND pc_appointment.prof_id = $1
-      AND pc_appointment.status = $4
-
-LIMIT $2 OFFSET $3;
-
-$$
-LANGUAGE 'sql';
