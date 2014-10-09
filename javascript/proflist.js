@@ -41,8 +41,9 @@ function gen_proflist_html(res){
 
     }else{
         $('#proflist').empty();
-        $('#proflist').append('<br><span style="color:black; font-weight:bold;">&nbsp;No results found.</span>');
+        $('#proflist').append('<br><span style="color:red; font-weight:bold;">&nbsp;No results found.</span>');
         $('#btn-next').hide();
+        if(page!=0)  $('#btn-prev').show();
         $('#page').hide();
     }
 }
