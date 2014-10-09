@@ -39,10 +39,9 @@ def page_additions():
 								<thead>
 									<tr>
 										<th>Professor</th>
-										<th>Schedule ID</th>
-										<th>Appointment Date</th>
-										<th>Concern</th>
-										<th>Options</th>
+										<th>Requested Time</th>
+										<th>Requested Date</th>
+										<th>Details</th>
 									</tr>
 					  		    </thead>
 					  		    <tbody id="apptlist" data-link="row" class="rowlink"></tbody>

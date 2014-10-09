@@ -17,7 +17,7 @@ def get_page_template():
 
 def page_additions():
 	import scripts.functions as f
-
+	#user_type = g.g_user.getType()
 
 	if not f.user_logged_in():
 		g.g_notification_title = 'Permission denied'

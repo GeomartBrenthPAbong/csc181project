@@ -5,7 +5,11 @@ def get_title():
 	return 'Professor Profile'
 
 def get_content():
-	return 'Hey'
+	sprofile = """
+				<div id="sprofile"><h1 style="font-weight: bold;">PROFESSOR PROFILE</h1></div>
+			"""
+
+	return sprofile
 
 def get_page_template():
 	return 'black_template'

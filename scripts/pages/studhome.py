@@ -65,6 +65,6 @@ def page_additions():
 
 	g.g_header.getScriptAdder().add('proflist')
 	g.g_header.getStyleAdder().add('profile')
-	g.g_locations.addToLocation('head_title', p.Printable("Home-" + g.g_user.getFirstName()))
+	g.g_locations.addToLocation('head_title', p.Printable("Home - " + g.g_user.getFirstName()))
 	g.g_locations.addToLocation('right_content', p.Printable(rc_statement))
 	g.g_locations.addToLocation('right_content', p.Printable(rc_content))

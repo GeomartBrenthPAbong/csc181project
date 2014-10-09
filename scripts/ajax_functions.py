@@ -103,14 +103,23 @@ def spam_in_gen_prof_list():
 
 	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_prof_list(g.g_req) })
 
-def spam_in_gen_appt_list():
+def spam_in_gen_appt_list_prof():
 	import functions as f
 
-	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_list(g.g_req)})
+	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_list_prof(g.g_req)})
 
-def spam_in_gen_appt_details():
+def spam_in_gen_appt_list_stud():
 	import functions as f
-	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_details(g.g_req)})
+
+	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_list_stud(g.g_req)})
+
+def spam_in_gen_appt_details_prof():
+	import functions as f
+	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_details_prof(g.g_req)})
+
+def spam_in_gen_appt_details_stud():
+	import functions as f
+	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_details_stud(g.g_req)})
 
 def spam_in_change_status():
 	import functions as f

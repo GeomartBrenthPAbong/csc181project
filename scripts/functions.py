@@ -193,7 +193,7 @@ def gen_prof_list(req):
 	f = sqlDriver.doSql()
 	return f.execqry(query, False)
 
-def gen_appt_list(req):
+def gen_appt_list_prof(req):
 	import scripts.classes.class_dosql as sqlDriver
 	import global_variables as g
 
@@ -206,7 +206,7 @@ def gen_appt_list(req):
 	if offset is None:
 		offset = '0'
 
-	query = "SELECT * FROM apptDisplay('"
+	query = "SELECT * FROM apptDisplayProf('"
 	query += user_id + "',"
 	query += "'" + limit
 	query += "','" + offset
@@ -223,12 +223,61 @@ def gen_appt_list(req):
 		list.append(data)
 	return list
 
-def gen_appt_details(req):
+def gen_appt_list_stud(req):
+	import scripts.classes.class_dosql as sqlDriver
+	import global_variables as g
+
+	offset = req.form.getfirst('offset')
+	limit = req.form.getfirst('limit')
+	stat = req.form.getfirst('stat')
+	user_id = g.g_user.getID()
+
+
+	if offset is None:
+		offset = '0'
+
+	query = "SELECT * FROM apptDisplayStud('"
+	query += user_id + "',"
+	query += "'" + limit
+	query += "','" + offset
+	query += "','" + stat + "')"
+	f = sqlDriver.doSql()
+	results = f.execqry(query, False)
+
+	list = []
+
+	for result in results:
+		data = []
+		for datum in result:
+			data.append(str(datum))
+		list.append(data)
+	return list
+
+def gen_appt_details_prof(req):
 	import scripts.classes.class_dosql as sqlDriver
 
 	appt_id = req.form.getfirst('appt_id')
 
 	query = "SELECT * FROM getApptDetailsProfView('"
+	query += appt_id + "')"
+	f = sqlDriver.doSql()
+	results = f.execqry(query, False)
+
+	list = []
+
+	for result in results:
+		data = []
+		for datum in result:
+			data.append(str(datum))
+		list.append(data)
+	return list
+
+def gen_appt_details_stud(req):
+	import scripts.classes.class_dosql as sqlDriver
+
+	appt_id = req.form.getfirst('appt_id')
+
+	query = "SELECT * FROM getApptDetailsStudView('"
 	query += appt_id + "')"
 	f = sqlDriver.doSql()
 	results = f.execqry(query, False)

@@ -71,6 +71,7 @@ def include_in_pages():
 	user_id = g.g_user.getID()
 	user_email = g.g_user.getEmailAddress()
 	user_phone = g.g_user.getPhoneNumber()
+	user_type = g.g_user.getType()
 	#user_address = g.g_user.getAddress()
 	user_course_html = ""
 	#
@@ -88,7 +89,7 @@ def include_in_pages():
 	details_html += '<div class="clearfix"></div>'
 	#
 	user_pic_html = '<div id="picture">'
-	user_pic_html += '<img src="../spam/picture/user/student/'
+	user_pic_html += '<img src="../spam/picture/user/' + user_type + '/'
 	user_pic_html += user_id + '.png"'
 	user_pic_html += 'alt="No picture found." style="width:300px;height:300px">'
 	user_pic_html += '</div>'
