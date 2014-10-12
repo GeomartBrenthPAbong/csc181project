@@ -98,29 +98,31 @@ def spam_in_get_page_content():
 
 
 def spam_in_gen_prof_list():
-	import third_party_modules.simplejson.simplejson as json
 	import functions as f
 
 	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_prof_list(g.g_req) })
 
-def spam_in_gen_appt_list_prof():
+def spam_in_gen_appt_list():
 	import functions as f
+	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_list(g.g_req)})
 
-	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_list_prof(g.g_req)})
-
-def spam_in_gen_appt_list_stud():
+def spam_in_gen_appt_details():
 	import functions as f
+	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_details(g.g_req)})
 
-	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_list_stud(g.g_req)})
-
-def spam_in_gen_appt_details_prof():
-	import functions as f
-	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_details_prof(g.g_req)})
-
-def spam_in_gen_appt_details_stud():
-	import functions as f
-	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_details_stud(g.g_req)})
 
 def spam_in_change_status():
 	import functions as f
 	return json.dumps({'status': 'SUCCESS', 'msg': f.change_status(g.g_req)})
+
+def spam_in_gen_prof_details():
+	import functions as f
+	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_prof_details(g.g_req)})
+
+def spam_in_cancel_appt():
+	import functions as f
+	return json.dumps({'status': 'SUCCESS', 'msg': f.cancel_appt(g.g_req)})
+
+def spam_in_gen_prof_sched():
+	import functions as f
+	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_prof_sched(g.g_req)})

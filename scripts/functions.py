@@ -193,111 +193,111 @@ def gen_prof_list(req):
 	f = sqlDriver.doSql()
 	return f.execqry(query, False)
 
-def gen_appt_list_prof(req):
-	import scripts.classes.class_dosql as sqlDriver
-	import global_variables as g
-
-	offset = req.form.getfirst('offset')
-	limit = req.form.getfirst('limit')
-	stat = req.form.getfirst('stat')
-	user_id = g.g_user.getID()
 
 
-	if offset is None:
-		offset = '0'
+def gen_appt_list(req):
+	import scripts.classes.class_dosql as sql
+	import scripts.classes.class_appointment as appt
+	import scripts.exceptions.e_notregistered as en
 
-	query = "SELECT * FROM apptDisplayProf('"
-	query += user_id + "',"
-	query += "'" + limit
-	query += "','" + offset
-	query += "','" + stat + "')"
-	f = sqlDriver.doSql()
-	results = f.execqry(query, False)
+	global_variables.g_sql = sql.doSql()
+	status = req.form.getfirst('stat')
+	result = global_variables.g_user.getAppointments(status)
 
-	list = []
+	import logging
+	logging.basicConfig(filename='cdo.karne', level=logging.DEBUG)
+	appointments = []
+	for (res,) in result:
+		try:
+			details = {}
+			app = appt.Appointment().dbExtract(res)
+			prof = app.getProfessor()
+			stud = app.getStudent()
+			sched = app.getProfSchedule()
+			details['appt_id'] = res
+			details['prof_name'] = prof.getFirstName() + ' ' + prof.getLastName()
+			details['stud_name'] = stud.getFirstName() + ' ' + stud.getLastName()
+			details['sched_from_time'] = str(sched.getFromTime())
+			details['sched_to_time'] = str(sched.getToTime())
+			details['app_date'] = str(app.getAppointmentDate())
+			details['app_msg'] = app.getAppointmentMsg()
+			appointments.append(details)
+		except en.ENotRegistered:
+			continue
 
-	for result in results:
-		data = []
-		for datum in result:
-			data.append(str(datum))
-		list.append(data)
-	return list
+	return appointments
 
-def gen_appt_list_stud(req):
-	import scripts.classes.class_dosql as sqlDriver
-	import global_variables as g
+def gen_appt_details(req):
+	import scripts.classes.class_dosql as sql
+	import scripts.classes.class_appointment as appt
+	import scripts.exceptions.e_notregistered as en
 
-	offset = req.form.getfirst('offset')
-	limit = req.form.getfirst('limit')
-	stat = req.form.getfirst('stat')
-	user_id = g.g_user.getID()
+	import logging
+	logging.basicConfig(filename='mkay.txt', level=logging.DEBUG)
+	global_variables.g_sql = sql.doSql()
 
-
-	if offset is None:
-		offset = '0'
-
-	query = "SELECT * FROM apptDisplayStud('"
-	query += user_id + "',"
-	query += "'" + limit
-	query += "','" + offset
-	query += "','" + stat + "')"
-	f = sqlDriver.doSql()
-	results = f.execqry(query, False)
-
-	list = []
-
-	for result in results:
-		data = []
-		for datum in result:
-			data.append(str(datum))
-		list.append(data)
-	return list
-
-def gen_appt_details_prof(req):
-	import scripts.classes.class_dosql as sqlDriver
-
-	appt_id = req.form.getfirst('appt_id')
-
-	query = "SELECT * FROM getApptDetailsProfView('"
-	query += appt_id + "')"
-	f = sqlDriver.doSql()
-	results = f.execqry(query, False)
-
-	list = []
-
-	for result in results:
-		data = []
-		for datum in result:
-			data.append(str(datum))
-		list.append(data)
-	return list
-
-def gen_appt_details_stud(req):
-	import scripts.classes.class_dosql as sqlDriver
-
-	appt_id = req.form.getfirst('appt_id')
-
-	query = "SELECT * FROM getApptDetailsStudView('"
-	query += appt_id + "')"
-	f = sqlDriver.doSql()
-	results = f.execqry(query, False)
-
-	list = []
-
-	for result in results:
-		data = []
-		for datum in result:
-			data.append(str(datum))
-		list.append(data)
-	return list
+	id = req.form.getfirst('appt_id')
+	app = appt.Appointment().dbExtract(id)
+	prof_name = app.getProfessor().getFirstName() + ' ' + app.getProfessor().getLastName()
+	stud_name = app.getStudent().getFirstName() + ' ' + app.getStudent().getLastName()
+	stud_id = app.getStudent().getID()
+	stud_course = app.getStudent().getCourse()
+	sched_from_time = str(app.getProfSchedule().getFromTime())
+	sched_to_time = str(app.getProfSchedule().getToTime)
+	app_date = str(app.getAppointmentDate())
+	app_msg = app.getAppointmentMsg()
+	app_stat = app.getStatus()
+	logging.debug('Yes')
+	return [(prof_name,stud_name,stud_id, stud_course,sched_from_time,sched_to_time,app_date,app_msg,app_stat)]
 
 def change_status(req):
+	import scripts.classes.class_appointment as app
+	id = req.form.getfirst('appt_id')
+	stat = req.form.getfirst('stat')
+	details = app.Appointment().dbExtract(id)
+
+
+def gen_prof_details(req):
+	import scripts.classes.class_user_factory as uf
+
+	id = req.form.getfirst('data')
+	users = uf.UserFactory.createUserFromID(id)
+	prof_id = users.getID()
+	college = users.getCollege()
+	department = users.getDepartment()
+	email = users.getEmailAddress()
+	address = users.getAddress()
+	phone_number = users.getPhoneNumber()
+	first_name = users.getFirstName()
+	last_name = users.getLastName()
+	return [(prof_id,college,department,email,address,phone_number,first_name,last_name)]
+
+def cancel_appt(req):
 	import scripts.classes.class_dosql as sqlDriver
 
 	appt_id = req.form.getfirst('appt_id')
-	status = req.form.getfirst('stat')
-	query = "SELECT * FROM changestatus("
-	query += appt_id + ",'" + status + "')"
+	query = "SELECT * FROM deleteAppt("
+	query += appt_id + ")"
 
 	f = sqlDriver.doSql()
 	return f.execqry(query,True)
+
+def gen_prof_sched(req):
+	import scripts.classes.class_dosql as sqlDriver
+
+	id = req.form.getfirst('id')
+	query = "SELECT * FROM getSchedDetailsFromProfSched('"
+	query += id + "')"
+
+
+	f = sqlDriver.doSql()
+	results = f.execqry(query, False)
+
+	list = []
+
+	for result in results:
+		data = []
+		for datum in result:
+			data.append(str(datum))
+		list.append(data)
+	return list
