@@ -27,7 +27,7 @@ def page_additions():
 		return
 
 	rc_statement = '<span style="font-weight:bold;">&nbsp;&nbsp;&nbsp;Manage your appointments here!<br></br></span>'
-	rc_content = """<div style="margin-left:15px; margin-top:10px;">
+	rc_content = """<div class = "btn-gen" style="margin-left:15px; margin-top:10px;">
 						<button id="btn-approved" type="button" class="btn btn-primary btn-large">Approved</button>
 						<button id="btn-pending" type="button" class="btn btn-primary btn-large">Pending</button>
 						<button id="btn-declined" type="button" class="btn btn-primary btn-large">Declined</button>
@@ -48,7 +48,7 @@ def page_additions():
 							</table>
 						</div>
 					</div>
-					<div style="margin-left:15px; margin-top:10px;">
+					<div class = "btn-page" style="margin-left:15px; margin-top:10px;">
 						<button id="btn-prev" type="button" class="btn btn-primary btn-large">Previous</button>
 						<button id="btn-next" type="button" class="btn btn-primary btn-large">Next</button>
 						<span id="page" style="color:black; font-weight:bold;">Page 1</span>

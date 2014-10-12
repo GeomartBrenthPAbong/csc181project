@@ -1,34 +1,33 @@
 page = 0;
-list_limit = 3;
-count = 0;
-var status;
+list_limit = 5;
 cur_appt_id = "";
-onload_stat = "Pending";
+onload_stat = "";
 btn_id = "";
 stud_name = "";
+id = "";
+footer = "";
 
 function gen_appointment_list_html(res){
-
-    if (res.msg[0][0] != "None"){
+    if (res.msg.length > 0){
 
         $('#page').show();
         $('#apptlist').empty();
 
         for(var i = 0; i < res.msg.length; i++)
         {
-            appt_rows = '<tr id=' + res.msg[i][4] + ' data-toggle="modal">';
+            appt_rows = '<tr id=' + res.msg[i].appt_id + 'data-toggle="modal">';
             appt_rows += '<td>';
-            appt_rows += '<b>' + res.msg[i][0] + ' ' + res.msg[i][1] + '</b>';
+            appt_rows += '<b>' + res.msg[i].stud_name + '</b>';
             appt_rows += '</td>';
             appt_rows += '<td>';
-            appt_rows += '<b>' + res.msg[i][3] + '</b>';
+            appt_rows += '<b>' + res.msg[i].sched_from_time + '</b>';
             appt_rows += '</td>';
             appt_rows += '<td>';
-            appt_rows += '<b>'+res.msg[i][2]+'</b>';
+            appt_rows += '<b>'+res.msg[i].app_date+'</b>';
             appt_rows += '</td>';
             appt_rows += '<td>';
             appt_rows += '<a href="#rowlinkModal" data-toggle="modal" class="noline"><b> More...';
-            appt_rows +=  '</b></a>';
+            appt_rows +=  '</b></a>'
             appt_rows += '</td>';
             appt_rows += '</tr>';
             $('#apptlist').append(appt_rows);
@@ -64,9 +63,9 @@ function gen_appt_details_html(res){
     if (res.msg[0][0]!="None"){
 
         id = 'Student: ';
-        id += res.msg[0][1] + ' ' + res.msg[0][2] + '<br/>';
+        id += res.msg[0][1] + '<br/>';
         id += 'ID No.:';
-        id += res.msg[0][0] + '<br/>';
+        id += res.msg[0][2] + '<br/>';
         id += 'Course: ';
         id += res.msg[0][3] + '<br/>';
         id += 'Schedule Range: ';
@@ -78,7 +77,6 @@ function gen_appt_details_html(res){
         id += 'Status: ';
         id += res.msg[0][8];
 
-        stud_name = res.msg[0][1] + ' ' + res.msg[0][2];
 
         if (res.msg[0][8]=='Pending'){
 
@@ -99,22 +97,23 @@ function gen_appt_details_html(res){
     }
 }
 
-function changeStat(res){
+function changeStat(){
 
     if (btn_id == 'Confirmed')
         alert("You've successfully confirmed your appointment with "+stud_name);
     else if (btn_id == 'Declined')
         alert("You've declined this appointment with " + stud_name);
     else if (btn_id == 'Cancel')
-        alert ("You've cancelled your appointment with" + stud_name);
+        alert ("You've cancelled your appointment with " + stud_name);
 
     close_modal();
     onload(onload_stat);
 }
+
 function onload(onload_stat){
 
     var data = {
-        action: 'gen_appt_list_prof',
+        action: 'gen_appt_list',
         limit: list_limit,
         stat: onload_stat
     };
@@ -143,10 +142,10 @@ jQuery(document).ready(function($) {
         cur_appt_id = id;
 
         var data = {
-            action: 'gen_appt_details_prof',
-            appt_id: id
-        }
-        ajaxify(data, gen_appt_details_html)
+            action: 'gen_appt_details',
+            appt_id: cur_appt_id
+        };
+        ajaxify(data, gen_appt_details_html);
 
         e.preventDefault();
 
@@ -156,117 +155,77 @@ jQuery(document).ready(function($) {
 
        btn_id = $(this).attr('id');
 
-       if (btn_id == 'Confirmed'){
-           var data = {
+       if(btn_id == "Cancel") bton_id = "Declined";
+       else bton_id = btn_id;
+
+        var data = {
 
                action: 'change_status',
                appt_id: cur_appt_id,
-               stat: 'Confirmed'
+               stat: bton_id
 
            }
-       }
-       else{
-            var data = {
 
-                action: 'change_status',
-                appt_id: cur_appt_id,
-                stat: 'Declined'
-
-            }
-
-        }
 
         ajaxify(data, changeStat);
     });
 
-    $('#btn-next').click( function (e){
+    $('.btn-page').on('click','button', function (e){
+        buttonid = $(this).attr('id');
 
-        page++;
-
-        if (count=0) status = 'Confirmed';
-        else status = 'Pending';
+        if (buttonid == 'btn-next')
+            page++;
+        else if(buttonid == 'btn-prev')
+            page--;
 
         var data = {
 
-            action: 'gen_appt_list_prof',
+            action: 'gen_appt_list',
             limit: list_limit,
             offset: page * list_limit,
-            stat: status
+            stat: onload_stat
 
         };
 
         ajaxify(data, gen_appointment_list_html);
         e.preventDefault();
-    });
-
-    $('#btn-prev').click( function (e){
-
-        page--;
-
-        if (count=0) status = 'Confirmed';
-        else status = 'Pending';
-
-        var data = {
-
-            action: 'gen_appt_list_prof',
-            limit: list_limit,
-            offset: page * list_limit,
-            stat: status
-
-        }
-
-        ajaxify(data, gen_appointment_list_html);
-        e.preventDefault();
 
     });
 
-    $('#btn-approved').click( function (e){
+    $('.btn-gen').on('click','button', function (e){
+        button_id = $(this).attr('id');
+        if (button_id == 'btn-approved'){
 
-        page = 0;
-        count=1;
-        onload_stat = 'Confirmed';
+            page = 0;
+            onload_stat = 'Confirmed';
 
+            document.getElementById('btn-approved').disabled = true;
+            document.getElementById('btn-pending').disabled = false;
+
+        }
+        else if (button_id == 'btn-pending'){
+
+            page = 0;
+            onload_stat = 'Pending';
+
+            document.getElementById('btn-approved').disabled = false;
+            document.getElementById('btn-pending').disabled = true;
+
+        }
         var data = {
 
-            action: 'gen_appt_list_prof',
-            limit: list_limit,
-            stat: onload_stat
+                action: 'gen_appt_list',
+                limit: list_limit,
+                stat: onload_stat
 
 
         }
-
-        document.getElementById('btn-approved').disabled = true;
-        document.getElementById('btn-pending').disabled = false;
-        document.getElementById('appt-stat').textContent = "Confirmed Appointments List";
-
-        ajaxify(data, gen_appointment_list_html);
-        e.preventDefault();
-    });
-
-    $('#btn-pending').click( function (e){
-
-        page = 0;
-        count=0;
-        onload_stat = 'Pending';
-
-        var data = {
-
-
-            action: 'gen_appt_list_prof',
-            limit: list_limit,
-            stat: onload_stat
-
-        }
-
-        document.getElementById('btn-approved').disabled = false;
-        document.getElementById('btn-pending').disabled = true;
-        document.getElementById('appt-stat').textContent = "Pending Appointments List";
-
+        document.getElementById('appt-stat').textContent = onload_stat + " Appointments List";
         ajaxify(data, gen_appointment_list_html);
         e.preventDefault();
     });
 
     //appointment search on load
-    onload(onload_stat);
+    onload('Pending');
 
 });

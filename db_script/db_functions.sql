@@ -336,59 +336,55 @@ LANGUAGE 'sql';
 
 -- @desc Function to add schedule to professor. Returns generated professor-schedule id.
 
-CREATE OR REPLACE
-	FUNCTION addScheduleToProfessor(p_prof_id TEXT,
-									p_sched_id INT,
-									p_sched_day TEXT)
-	RETURNS INT AS
-$$
+CREATE OR REPLACE FUNCTION addscheduletoprofessor(p_prof_id text, p_sched_id integer, p_sched_day text)
+RETURNS integer AS
+$BODY$
 
-		DECLARE
+DECLARE
 
-			v_prof_sched_id INT;
-			v_account_type TEXT;
-			v_prof_id TEXT;
-			v_sched_id INT;
-			v_sched_day TEXT;
+v_prof_sched_id INT;
+v_account_type TEXT;
+v_prof_id TEXT;
+v_sched_id INT;
+v_sched_day TEXT;
 
-		BEGIN
+BEGIN
 
-			SELECT INTO v_account_type account_type FROM pc_user WHERE user_id = p_prof_id;
+SELECT INTO v_account_type account_type FROM pc_user WHERE user_id = p_prof_id;
 
-			IF v_account_type = 'Professor' THEN
+IF v_account_type = 'Professor' THEN
 
-				SELECT INTO v_prof_id, v_sched_id, v_sched_day
-						prof_id, sched_id, sched_day
-				FROM pc_professor_schedule
-				WHERE ((prof_id = p_prof_id AND sched_id = p_sched_id) AND sched_day = p_sched_day);
+SELECT INTO v_prof_id, v_sched_id, v_sched_day
+prof_id, sched_id, sched_day
+FROM pc_professor_schedule
+WHERE ((prof_id = p_prof_id AND sched_id = p_sched_id) AND sched_day = p_sched_day);
 
-				IF v_prof_id ISNULL AND v_sched_id ISNULL AND v_sched_day ISNULL THEN
+IF v_prof_id ISNULL AND v_sched_id ISNULL AND v_sched_day ISNULL THEN
 
-					INSERT INTO pc_professor_schedule (prof_id,
-														sched_id,
-														sched_day)
-					VALUES(p_prof_id,
-						p_sched_id,
-						p_sched_day);
+INSERT INTO pc_professor_schedule (prof_id,
+sched_id,
+sched_day)
+VALUES(p_prof_id,
+p_sched_id,
+p_sched_day);
 
-				
+SELECT INTO v_prof_sched_id prof_sched_id
+FROM pc_professor_schedule
+WHERE prof_id = p_prof_id
+AND sched_id = p_sched_id
+AND sched_day = p_sched_day;
 
-				SELECT INTO v_prof_sched_id prof_sched_id
-				FROM pc_professor_schedule
-				WHERE prof_id = p_prof_id
-					AND sched_id = p_sched_id
-					AND sched_day = p_sched_day;
+RETURN v_prof_sched_id;
+ELSE RETURN -2;
+END IF;
+ELSE RETURN -1;
 
-				RETURN v_prof_sched_id;
-				
-				ELSE RETURN -1;
-				END IF;
-			END IF;
+END IF;
 
-		END;
+END;
 
-$$
-LANGUAGE 'plpgsql';
+$BODY$
+LANGUAGE plpgsql;
 
 -- @desc Function to get schedule id using professor id
 
