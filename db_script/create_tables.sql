@@ -53,9 +53,10 @@ CREATE TABLE pc_appointment (
 	 status TEXT REFERENCES pc_status(status),
 	 prof_id TEXT REFERENCES pc_user(user_id),
 	 stud_id TEXT REFERENCES pc_user(user_id),
-	 sched_id INT REFERENCES pc_schedule(sched_id),
+	 prof_sched_id INT REFERENCES pc_professor_schedule(prof_sched_id),
 	 appointment_date DATE,
 	 message TEXT,
+	 SMS BOOLEAN,
 	 PRIMARY KEY (appointment_id)
 );
 -- @desc Creating a table matching setting schedules for professors
