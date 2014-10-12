@@ -53,6 +53,8 @@ class UserFactory():
 			user.setID(p_user_id)
 			user.setFirstName(first_name)
 			user.setLastName(last_name)
+			user.setCollege(college)
+			user.setDepartment(department)
 			user.setEmailAddress(email_address)
 			user.setAddress(address)
 			user.setPhoneNumber(phone_number)

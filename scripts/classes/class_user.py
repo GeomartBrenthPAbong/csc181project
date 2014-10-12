@@ -6,6 +6,8 @@ class User(object):
 		self._m_id = None
 		self._m_first_name = None
 		self._m_last_name = None
+		self._m_college = None
+		self._m_department = None
 		self._m_email_address = None
 		self._m_phone_number = None
 		self._m_address = None
@@ -19,6 +21,12 @@ class User(object):
 
 	def setFirstName(self, p_first_name):
 		self._m_first_name = p_first_name
+
+	def setCollege(self, p_college):
+		self._m_college = p_college
+
+	def setDepartment(self, p_department):
+		self._m_department = p_department
 
 	def setLastName(self, p_last_name):
 		self._m_last_name = p_last_name
@@ -44,17 +52,23 @@ class User(object):
 	def getLastName(self):
 		return self._m_last_name
 
+	def getCollege(self):
+		return self._m_college
+
+	def getDepartment(self):
+		return self._m_department
+
 	def getEmailAddress(self):
 		return self._m_email_address
 
 	def getPhoneNumber(self):
 		return self._m_phone_number
 
-	def getAppointments(self):
-		return g.g_sql.execqry("SELECT * FROM getApptPerUserId('" + self._m_id + "')")
+	def getAppointments(self, p_status):
+		return g.g_sql.execqry("SELECT * FROM getApptIDsPerUserId('" + self._m_id + "','"+p_status+"')", False)
 
 	def getPendingAppointments(self):
-		return g.g_sql.execqry("SELECT * FROM getPendingApptPerUserId('" + self._m_id + "')")
+		return g.g_sql.execqry("SELECT * FROM getPendingApptPerUserId('" + self._m_id + "')", False)
 
 	def getAddress(self):
 		return self._m_address

@@ -8,11 +8,11 @@ class Professor(user.User):
 
 	def getScheduleDay(self, p_schedule):
 		((sched_day,),) = g.g_sql.execqry("SELECT * FROM getSchedDay('" + self._m_id + "', " +
-										str(p_schedule.getID()) + ")")
+										str(p_schedule.getID()) + ")", False)
 		return sched_day
 
 	def getSchedules(self):
-		return g.g_sql.execqry("SELECT * FROM getSchedIDPerProfID('" + self._m_id + "')")
+		return g.g_sql.execqry("SELECT * FROM getSchedIDPerProfID('" + self._m_id + "')", False)
 
 	def addSchedule(self, p_schedule, p_day):
 		((sched_id,),) = g.g_sql.execqry("SELECT * FROM addScheduleToProfessor('" +
@@ -37,15 +37,27 @@ class Professor(user.User):
 		g.g_sql.execqry("SELECT * FROM editProfessorSchedule(" +
 						str(p_old_schedule.getID()) + ", " +
 						str(p_new_schedule.getID()) + ", '" +
-						self._m_id + "')")
+						self._m_id + "')", False)
 		return True
 
 	def declineAppointment(self, p_appointment):
 		if p_appointment is None:
 			return False
 
-		g.g_sql.execqry("SELECT * FROM deleteAppt(" + str(p_appointment.getID()) + ")")
+		g.g_sql.execqry("SELECT * FROM deleteAppt(" + str(p_appointment.getID()) + ")", False)
 		return True
 
+	def getSchedule(self, p_prof_sched_id):
+		try:
+			((
+				_,
+				sched_id,
+				_
+			),) = g.g_sql.execqry("SELECT * FROM getProfSchedDetails(" + str(p_prof_sched_id) + ")",False)
 
-
+			import scripts.classes.class_schedule as cs
+			schedule = cs.Schedule().dbExtract(sched_id)
+			return schedule
+		except:
+			import scripts.exceptions.e_notregistered as en
+			raise en.ENotRegistered('Schedule does not exist!')

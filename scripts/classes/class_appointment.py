@@ -1,3 +1,4 @@
+import scripts.global_variables as g
 class Appointment(object):
 	def __init__(self):
 		self.__m_id = None
@@ -8,6 +9,7 @@ class Appointment(object):
 		self.__m_schedule = None
 		self.__m_appointment_date = None
 		self.__m_appointment_msg = None
+		self.__m_sms = None
 
 	##==============================
 	## Getters and Setters
@@ -27,14 +29,17 @@ class Appointment(object):
 	def setStudent(self, p_student):
 		self.__m_student = p_student
 
-	def setSchedule(self, p_schedule):
-		self.__m_schedule = p_schedule
+	def setProfSchedule(self, p_prof_schedule):
+		self.__m_prof_schedule = p_prof_schedule
 
 	def setAppointmentDate(self, p_appointment_date):
 		self.__m_appointment_date = p_appointment_date
 
 	def setAppointmentMsg(self, p_appointment_msg):
 		self.__m_appointment_msg = p_appointment_msg
+
+	def setSMS(self, p_sms):
+		self.__m_sms = p_sms
 
 	def getID(self):
 		return self.__m_id
@@ -51,8 +56,8 @@ class Appointment(object):
 	def getStudent(self):
 		return self.__m_student
 
-	def getSchedule(self):
-		return self.__m_schedule
+	def getProfSchedule(self):
+		return self.__m_prof_schedule
 
 	def getAppointmentDate(self):
 		return self.__m_appointment_date
@@ -60,11 +65,14 @@ class Appointment(object):
 	def getAppointmentMsg(self):
 		return self.__m_appointment_msg
 
+	def getSMS(self):
+		return self.__m_sms
+
 	##==============================
 	## Other functions
 
-	def changeStatus(self):
-		g.g_sql.execqry("SELECT* FROM changeStatus(" + str(self.__m_id) + ", " + self.__m_status + ")", True)
+	def changeStatus(self,p_status):
+		g.g_sql.execqry("SELECT* FROM changeStatus(" + str(self.__m_id) + ", " + p_status + ")", True)
 
 	def changeStateViewed(self):
 		g.g_sql.execqry("SELECT * FROM changeState(" + str(self.__m_id) + ", " + self.__m_status + ")", True)
@@ -82,7 +90,7 @@ class Appointment(object):
 	@staticmethod
 	def createObject((p_professor,
 						p_student,
-						p_schedule,
+						p_prof_schedule,
 						p_appointment_date,
 						p_appointment_msg)):
 
@@ -90,7 +98,7 @@ class Appointment(object):
 
 		if p_professor is None or \
 			p_student is None or \
-			p_schedule is None or \
+			p_prof_schedule is None or \
 			p_appointment_date is None or \
 			p_appointment_msg is None:
 				raise e_notenoughdetails.ENotEnoughDetails('All appointment details are required')
@@ -104,7 +112,7 @@ class Appointment(object):
 		appointment = Appointment()
 		appointment.setProfessor(p_professor)
 		appointment.setStudent(p_student)
-		appointment.setSchedule(p_schedule)
+		appointment.setProfSchedule(p_prof_schedule)
 		appointment.setAppointmentDate(p_appointment_date)
 		appointment.setAppointmentMsg(p_appointment_msg)
 
@@ -120,6 +128,7 @@ class Appointment(object):
 		import scripts.global_variables as g
 		import scripts.exceptions.e_notregistered as e_notregistered
 
+
 		try:
 			[(
 				_,
@@ -127,26 +136,29 @@ class Appointment(object):
 				status,
 				professor_id,
 				student_id,
-				schedule_id,
+				prof_sched_id,
 				appointment_date,
-				appointment_msg
-			)] = g.g_sql.execqry("SELECT * FROM getApptDetails('" + p_appointment_id + "')")
+				appointment_msg,
+			    sms
+			)] = g.g_sql.execqry("SELECT * FROM getApptDetails(" + str(p_appointment_id) + ")", False)
+
+			import scripts.classes.class_user_factory as user_factory
+
+			appointment = Appointment()
+			appointment.setID(p_appointment_id)
+			appointment.setStateViewed(state_viewed)
+			appointment.setStatus(status)
+			appointment.setProfessor(user_factory.UserFactory().createUserFromID(professor_id))
+			appointment.setStudent(user_factory.UserFactory().createUserFromID(student_id))
+
+			prof = appointment.getProfessor()
+			appointment.setProfSchedule(prof.getSchedule(prof_sched_id))
+			appointment.setAppointmentDate(appointment_date)
+			appointment.setAppointmentMsg(appointment_msg)
+
+			return appointment
 		except:
 			raise e_notregistered.ENotRegistered('Appointment does not exists.')
-
-		import scripts.classes.class_user_factory as user_factory
-		import scripts.classes.class_schedule as schedule
-
-		appointment = Appointment()
-		appointment.setID(p_appointment_id)
-		appointment.setStateViewed(state_viewed)
-		appointment.setProfessor(user_factory.UserFactory().createUser(professor_id))
-		appointment.setStudent(user_factory.UserFactory().createUser(student_id))
-		appointment.setSchedule(schedule.Schedule().dbExtract(schedule_id))
-		appointment.setAppointmentDate(appointment_date)
-		appointment.setAppointmentMsg(appointment_msg)
-
-		return appointment
 
 	### Stores the appointment to the appointment table
 	###

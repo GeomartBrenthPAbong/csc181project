@@ -68,11 +68,11 @@ class Schedule(object):
 		import scripts.exceptions.e_notregistered as e_notregistered
 
 		try:
-			[(
+			((
 				_,
 				from_time,
 				to_time
-			)] = g.g_sql.execqry('extractSchedInfoFromSchedID(' + p_schedule_id + ')')
+			),) = g.g_sql.execqry("SELECT * FROM extractSchedInfoFromSchedID(" + str(p_schedule_id) + ")", False)
 
 			schedule = Schedule()
 			schedule.setID(p_schedule_id)
