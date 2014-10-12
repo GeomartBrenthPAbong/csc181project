@@ -23,7 +23,11 @@ h2.sub-title{
     font-weight: 100;
     color: #237389;
 }
-
+body {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-image: url("../picture/background7.jpg");
+}
 
 /*********************************/
 /* Form styles */
@@ -70,7 +74,7 @@ h2.sub-title{
 .form-signin .btn{
     width: 250px;
     height: 55px;
-    background-color: #28CEC8 !important;
+    background-color: #383838 !important;
     border: medium none;
     color: white;
     font-size: 16px;

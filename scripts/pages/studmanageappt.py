@@ -27,10 +27,10 @@ def page_additions():
 		return
 
 	rc_statement = '<span style="font-weight:bold;">&nbsp;&nbsp;&nbsp;Manage your appointments here!<br></br></span>'
-	rc_content = """<div class = "btn-gen" style="margin-left:15px; margin-top:10px;">
-						<button id="btn-approved" type="button" class="btn btn-primary btn-large">Approved</button>
-						<button id="btn-pending" type="button" class="btn btn-primary btn-large">Pending</button>
-						<button id="btn-declined" type="button" class="btn btn-primary btn-large">Declined</button>
+	rc_content = """<div style="margin-left:15px; margin-top:10px;">
+						<button id="btn-approved" type="button" class='button'>Approved</button>
+						<button id="btn-pending" type="button" class='button'>Pending</button>
+						<button id="btn-declined" type="button" class='button'>Declined</button>
 					</div>
 					<div style="margin-left:8px; margin-top:20px;" class="panel panel-default">
 						<div class="panel-heading" id = "appt-stat" style = "font-weight: bold;"></div>
@@ -48,7 +48,7 @@ def page_additions():
 							</table>
 						</div>
 					</div>
-					<div class = "btn-page" style="margin-left:15px; margin-top:10px;">
+					<div style="margin-left:15px; margin-top:10px;">
 						<button id="btn-prev" type="button" class="btn btn-primary btn-large">Previous</button>
 						<button id="btn-next" type="button" class="btn btn-primary btn-large">Next</button>
 						<span id="page" style="color:black; font-weight:bold;">Page 1</span>
@@ -57,6 +57,7 @@ def page_additions():
 
 	g.g_header.getScriptAdder().add('studmanageappt')
 	g.g_header.getStyleAdder().add('profile')
+	g.g_header.getStyleAdder().add('button')
 	g.g_locations.addToLocation('head_title', p.Printable("Appointments - " + g.g_user.getFirstName()))
 	g.g_locations.addToLocation('right_content', p.Printable(rc_statement))
 	g.g_locations.addToLocation('right_content', p.Printable(rc_content))

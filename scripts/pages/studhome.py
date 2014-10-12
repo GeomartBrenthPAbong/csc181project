@@ -32,7 +32,7 @@ def page_additions():
 					<div style="width:50%; margin-left:8px; margin-top:30px;" class="input-group">
 						<input id="input-search" style="font-weight:bold;" type="text" class="form-control" placeholder="Professor Name">
   						<div class="input-group-btn">
-    						<button id="btn-search" type="button" class="btn btn-primary btn-large">Search</button>
+    						<button id="btn-search" type="button" class='button'>Search</button>
   						</div>
 					</div>
 					<div style="margin-left:8px; margin-top:20px;" class="panel panel-default">
@@ -51,8 +51,8 @@ def page_additions():
 						</div>
 					</div>
 					<div style="margin-left:15px; margin-top:10px;">
-						<button id="btn-prev" type="button" class="btn btn-primary btn-large">Previous</button>
-						<button id="btn-next" type="button" class="btn btn-primary btn-large">Next</button>
+						<button id="btn-prev" type="button" class='button'>Previous</button>
+						<button id="btn-next" type="button" class='button'>Next</button>
 						<span id="page" style="color:black; font-weight:bold;">Page 1</span>
 					</div>
 				"""
@@ -65,6 +65,7 @@ def page_additions():
 
 	g.g_header.getScriptAdder().add('proflist')
 	g.g_header.getStyleAdder().add('profile')
+	g.g_header.getStyleAdder().add('button')
 	g.g_locations.addToLocation('head_title', p.Printable("Home - " + g.g_user.getFirstName()))
 	g.g_locations.addToLocation('right_content', p.Printable(rc_statement))
 	g.g_locations.addToLocation('right_content', p.Printable(rc_content))
