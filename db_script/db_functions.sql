@@ -517,7 +517,19 @@ $$
  $$
   LANGUAGE 'sql';
 
-
+CREATE OR REPLACE FUNCTION getProfSchedDetails(IN INT,
+                                                OUT TEXT,
+                                                OUT INT,
+                                                OUT TEXT)
+  RETURNS SETOF RECORD AS
+$$
+	SELECT prof_id,
+		    sched_id,
+	      sched_day
+	FROM pc_professor_schedule
+	WHERE prof_sched_id = $1;
+$$
+LANGUAGE 'sql';
 
 
 -----------------------------------APPOINTMENT TABLE SCRIPT
@@ -583,14 +595,15 @@ LANGUAGE 'plpgsql';
 -- @desc Function to change state_viewed from to TRUE indicating appointment has been viewed by user.
 
 CREATE OR REPLACE FUNCTION
-	changeState(p_appointment_id INT)
+	changeState(p_appointment_id INT,
+	            p_new_state BOOLEAN)
 RETURNS TEXT AS
 $$
 	
 	BEGIN
 		
 		UPDATE pc_appointment
-		SET state_viewed = TRUE
+		SET state_viewed = p_new_state
 		WHERE appointment_id = p_appointment_id;
 
 		RETURN 'OK';
@@ -761,6 +774,90 @@ $$
 	LIMIT $3 OFFSET $4;
 $$
 LANGUAGE 'sql';
+
+CREATE OR REPLACE FUNCTION checkProfStudApptExists(IN TEXT,
+                                                   IN TEXT,
+                                                   OUT TEXT)
+  RETURNS TEXT AS
+$$
+	SELECT status
+	FROM pc_appointment
+	WHERE prof_id = $1
+	AND stud_id = $2
+	AND (status = 'Confirmed' OR status = 'Pending');
+$$
+  LANGUAGE 'sql';
+
+
+  CREATE OR REPLACE FUNCTION isProfAvailable(IN TEXT,
+                                              IN INT,
+                                              IN DATE,
+                                              OUT INT)
+  RETURNS INT AS
+$$
+	SELECT appointment_id
+	FROM pc_appointment
+	WHERE prof_id = $1
+	AND prof_sched_id = $2
+	AND appointment_date = $3
+	AND (status = 'Confirmed' OR status = 'Pending');
+$$
+LANGUAGE 'sql';
+
+
+CREATE OR REPLACE FUNCTION isStudAvailable(IN TEXT,
+                                            IN INT,
+                                            IN DATE,
+                                            OUT INT)
+  RETURNS INT AS
+$$
+
+	SELECT appointment_id
+	FROM pc_appointment, pc_professor_schedule
+	WHERE stud_id = $1
+	AND appointment_date = $3
+	AND pc_professor_schedule.sched_id = (SELECT sched_id
+							                          FROM pc_professor_schedule
+								                        WHERE prof_sched_id = $2)
+	AND (status = 'Confirmed' OR status = 'Pending');
+
+
+$$
+LANGUAGE 'sql';
+
+
+CREATE OR REPLACE FUNCTION getApptPerDateRange(IN TEXT,
+                                               IN DATE,
+                                               IN DATE,
+                                               OUT INT,
+                                               OUT DATE)
+  RETURNS SETOF RECORD AS
+$$
+
+	SELECT appointment_id,
+	        appointment_date
+	FROM pc_appointment
+	WHERE (stud_id = $1 OR prof_id = $1)
+	AND appointment_date >= $2
+	AND appointment_date <= $3
+	AND (status = 'Confirmed' OR status = 'Pending');
+
+$$
+LANGUAGE 'sql';
+
+CREATE OR REPLACE FUNCTION getUnviewedByID(IN TEXT,
+                                            OUT BIGINT)
+RETURNS BIGINT AS
+$$
+  SELECT COUNT(state_viewed)
+  FROM pc_appointment
+  WHERE (prof_id = $1
+  AND state_viewed = 'False' AND status = 'Pending')
+  OR (stud_id = $1 AND state_viewed = 'True' AND status = 'Declined') ;
+$$
+LANGUAGE 'sql';
+
+
 
 ------------------------------- PC_USER_META TABLE SCRIPT
 
