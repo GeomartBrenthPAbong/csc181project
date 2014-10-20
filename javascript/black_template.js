@@ -146,7 +146,7 @@ jQuery(document).ready(function($){
 
             spam.finish();
             spam_container.css('position', 'fixed');
-            spam_container.css('margin-top', '-90px');
+            spam_container.css('margin-top', '-20px');
 
             spam.css('position', 'fixed');
             spam.css('bottom', '100%');
