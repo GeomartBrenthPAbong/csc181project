@@ -157,3 +157,62 @@ def spam_in_cancel_appt():
 def spam_in_gen_prof_sched():
 	import functions as f
 	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_prof_sched(g.g_req)})
+
+def spam_in_gen_app_list_per_time():
+	import scripts.classes.class_dosql as sql
+	import scripts.functions as f
+
+	g.g_sql = sql.doSql()
+
+	from_date = g.g_req.form.getfirst('from_date')
+	to_date = g.g_req.form.getfirst('to_date')
+
+	try:
+		appointment_date = g.g_user.getAppointmentsPerDate(from_date, to_date)
+
+		grouped_app = {}
+		for (app_id, app_date) in appointment_date:
+			try:
+				grouped_app[app_date].append(app_id)
+			except Exception:
+				grouped_app[app_date] = []
+				grouped_app[app_date].append(app_id)
+				continue
+
+		zabuto_json = []
+
+		for app_date, appointment_ids in grouped_app.iteritems():
+			try:
+				body = '<table><tr>'
+				for appointment_id in appointment_ids:
+					try:
+						appt_details = f.gen_appt_details(appointment_id)
+
+
+						if g.g_user.getType() == 'Professor':
+							body += '<td>Student name: ' + appt_details[0][1] + ' </td>'
+						else:
+							body += '<td>Student name: ' + appt_details[0][0] + ' </td>'
+
+						body += '<td>Schedule range: ' + appt_details[0][4] + ' - ' + appt_details[0][5] + '</td>'
+						body += '<td><a href="#" id="' +appointment_id+ '">More...</a></td>'
+
+					except Exception:
+						continue
+
+				body += '</tr></table>'
+
+				zabuto_datum = {
+					'date': app_date.strftime('%Y-%m-%d'),
+					'title': 'Appointments',
+					'body': body,
+					'classname': 'appointments'
+				}
+
+				zabuto_json.append(zabuto_datum)
+			except Exception:
+				continue
+
+		return json.dumps(zabuto_json)
+	except Exception, e:
+		return json.dumps({'status': 'FAILED', 'msg': str(e)})
