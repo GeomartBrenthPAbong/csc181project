@@ -1,4 +1,3 @@
-import scripts.global_variables as g
 class Appointment(object):
 	def __init__(self):
 		self.__m_id = None
@@ -6,7 +5,7 @@ class Appointment(object):
 		self.__m_status = False
 		self.__m_professor = None
 		self.__m_student = None
-		self.__m_schedule = None
+		self.__m_prof_sched_id = None
 		self.__m_appointment_date = None
 		self.__m_appointment_msg = None
 		self.__m_sms = None
@@ -29,8 +28,8 @@ class Appointment(object):
 	def setStudent(self, p_student):
 		self.__m_student = p_student
 
-	def setProfSchedule(self, p_prof_schedule):
-		self.__m_prof_schedule = p_prof_schedule
+	def setProfSchedule(self, p_schedule):
+		self.__m_prof_sched_id = p_schedule
 
 	def setAppointmentDate(self, p_appointment_date):
 		self.__m_appointment_date = p_appointment_date
@@ -57,7 +56,7 @@ class Appointment(object):
 		return self.__m_student
 
 	def getProfSchedule(self):
-		return self.__m_prof_schedule
+		return self.__m_prof_sched_id
 
 	def getAppointmentDate(self):
 		return self.__m_appointment_date
@@ -71,11 +70,15 @@ class Appointment(object):
 	##==============================
 	## Other functions
 
-	def changeStatus(self,p_status):
-		g.g_sql.execqry("SELECT* FROM changeStatus(" + str(self.__m_id) + ", " + p_status + ")", True)
+	def changeStatus(self):
+		import scripts.global_variables as g
+
+		g.g_sql.execqry("SELECT* FROM changeStatus(" + str(self.__m_id) + ", '" + self.__m_status + "')", True)
 
 	def changeStateViewed(self):
-		g.g_sql.execqry("SELECT * FROM changeState(" + str(self.__m_id) + ", " + self.__m_status + ")", True)
+		import scripts.global_variables as g
+
+		g.g_sql.execqry("SELECT * FROM changeState(" + str(self.__m_id) + ", '" + str(self.__m_state_viewed) + "')", True)
 
 	### Creates an object using the tuples passed
 	###
@@ -140,7 +143,7 @@ class Appointment(object):
 				appointment_date,
 				appointment_msg,
 			    sms
-			)] = g.g_sql.execqry("SELECT * FROM getApptDetails(" + str(p_appointment_id) + ")", False)
+			)] = g.g_sql.execqry("SELECT * FROM getapptdetails(" + str(p_appointment_id) + ")", False)
 
 			import scripts.classes.class_user_factory as user_factory
 
@@ -153,7 +156,7 @@ class Appointment(object):
 
 			prof = appointment.getProfessor()
 			appointment.setProfSchedule(prof.getSchedule(prof_sched_id))
-			appointment.setAppointmentDate(appointment_date)
+			appointment.setAppointmentDate(str(appointment_date))
 			appointment.setAppointmentMsg(appointment_msg)
 
 			return appointment
@@ -192,7 +195,7 @@ class Appointment(object):
 											self.__m_status + ", '" +
 											self.__m_professor.getID() + "', '" +
 											self.__m_student.getID() + "', " +
-											str(self.__m_schedule.getID()) + ", " +
+											str(self.__m_prof_sched_id) + ", " +
 											self.__m_appointment_date + ", '" +
 											self.__m_appointment_msg + "')", True)
 
