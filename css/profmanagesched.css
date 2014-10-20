@@ -6,3 +6,36 @@
 form#add-sched-form table td{
     padding: 0 5px;
 }
+
+#schedules table tr th, #schedules table tr td.day{
+    width: 25%;
+}
+
+#schedules table tr table{
+    width: 100%;
+}
+
+td.from-time, td.to-time{
+    width: 33%;
+}
+
+.action-edit, .action-del{
+    width: 17%;
+}
+
+#modal-body #editor table{
+    margin: 0 auto;
+}
+
+#modal-body #editor table td{
+    padding: 0 10px;
+}
+
+#modal-footer{
+    text-align: center;
+}
+
+#modal-footer input[name="save-sched"],
+#modal-footer input[name="cancel-action"]{
+    margin: 0 10px;
+}

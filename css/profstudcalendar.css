@@ -1,0 +1,9 @@
+.zabuto_calendar .appointments{
+    background-color: rgba(180, 234, 177, 1);
+    cursor: pointer;
+}
+
+.zabuto_calendar tr td,
+.zabuto_calendar tr td div{
+    text-align: center;
+}
