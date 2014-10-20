@@ -32,6 +32,7 @@ def generate_page():
 					</div>
 					"""
 
+	# Header area
 	generated_page = '<div class="page-wrap">' + blocker + modal_container + '<div id="header">' +\
 						'<div class="container">' +\
 						'<div class="navbar-container">' +\

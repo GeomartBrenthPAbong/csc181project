@@ -12,13 +12,40 @@ class Professor(user.User):
 		return sched_day
 
 	def getSchedules(self):
-		return g.g_sql.execqry("SELECT * FROM getSchedIDPerProfID('" + self._m_id + "')", False)
+		list = g.g_sql.execqry("SELECT * FROM getscheddetailsperprofid('" + self._m_id + "')", False)
+
+		if len(list) is 1 and len(list[0]) is 1 and list[0][0] is 'None':
+			return []
+		else:
+			return list
+
+	def getArrangedSchedules(self):
+		import class_schedule as s
+		import scripts.exceptions.e_notregistered as en
+		schedules = self.getSchedules()
+
+		arranged_sched = {'mon': [], 'tue': [], 'wed': [], 'thu': [], 'fri': [], 'sat': [], 'sun': []}
+
+		if len(schedules) is 0:
+			return arranged_sched
+
+		for (prof_sched, sched_id,day) in schedules:
+			try:
+				schedule = s.Schedule().dbExtract(sched_id)
+			except en.ENotRegistered:
+				continue
+			arranged_sched[day].append([prof_sched, schedule])
 
 	def addSchedule(self, p_schedule, p_day):
 		((sched_id,),) = g.g_sql.execqry("SELECT * FROM addScheduleToProfessor('" +
 										 self._m_id + "', " +
 										 str(p_schedule.getID()) + ", '" +
 										 p_day + "')", True)
+
+		if sched_id == -1:
+			import scripts.exceptions.e_nopermission as en
+			raise en.ENoPermission('Students are not allowed to add schedules.')
+
 		return sched_id
 
 	def deleteSchedule(self, p_schedule):
@@ -30,15 +57,16 @@ class Professor(user.User):
 						str(p_schedule.getID()) + ")", True)
 		return True
 
-	def editSchedule(self, p_old_schedule, p_new_schedule):
-		if p_old_schedule is None or p_new_schedule is None:
+	def editSchedule(self, p_prof_sched_id, p_new_schedule, p_new_day):
+		if p_prof_sched_id is None or p_new_schedule is None or p_new_day is None:
 			return False
 
-		g.g_sql.execqry("SELECT * FROM editProfessorSchedule(" +
-						str(p_old_schedule.getID()) + ", " +
+		((state),) = g.g_sql.execqry("SELECT * FROM editProfessorSchedule(" +
+						str(p_prof_sched_id) + ", " +
 						str(p_new_schedule.getID()) + ", '" +
-						self._m_id + "')", False)
-		return True
+						p_new_day + "', '" +
+						self._m_id + "')", True)
+		return state
 
 	def declineAppointment(self, p_appointment):
 		if p_appointment is None:
@@ -61,3 +89,9 @@ class Professor(user.User):
 		except:
 			import scripts.exceptions.e_notregistered as en
 			raise en.ENotRegistered('Schedule does not exist!')
+
+	def scheduleInUse(self, p_prof_sched_id):
+		import scripts.functions as f
+
+		return not f.is_none_list(g.g_sql.execqry("SELECT * FROM checkScheduleUsage('" + self._m_id + "'," + str(p_prof_sched_id) +")", False))
+
