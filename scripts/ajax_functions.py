@@ -104,16 +104,47 @@ def spam_in_gen_prof_list():
 
 def spam_in_gen_appt_list():
 	import functions as f
-	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_list(g.g_req)})
+
+	offset = g.g_req.form.getfirst('offset')
+	stat = g.g_req.form.getfirst('stat')
+	limit = g.g_req.form.getfirst('limit')
+
+	if offset is None:
+		offset = 0
+	if limit is None:
+		limit = 'ALL'
+
+	try:
+		return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_list(offset, stat, limit)})
+	except Exception, e:
+		return json.dumps({'status': 'FAILED', 'msg': str(e)})
 
 def spam_in_gen_appt_details():
 	import functions as f
-	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_details(g.g_req)})
+	import scripts.exceptions.e_notregistered as en
 
+	appointment_id = g.g_req.form.getfirst('appt_id')
+
+	try:
+		return json.dumps({'status': 'SUCCESS', 'msg': f.gen_appt_details(appointment_id)})
+	except en.ENotRegistered:
+		return json.dumps({'status': 'FAILED', 'msg': 'Appointment does not exist.'})
+	except Exception, e:
+		return json.dumps({'status': 'FAILED', 'msg': str(e)})
 
 def spam_in_change_status():
 	import functions as f
-	return json.dumps({'status': 'SUCCESS', 'msg': f.change_status(g.g_req)})
+	import scripts.exceptions.e_notregistered as en
+
+	appointment_id = g.g_req.form.getfirst('appt_id')
+	new_status = g.g_req.form.getfirst('stat')
+
+	try:
+		return json.dumps({'status': 'SUCCESS', 'msg': f.change_status(appointment_id, new_status)})
+	except en.ENotRegistered:
+		return json.dumps({'status': 'FAILED', 'msg': 'Appointment does not exists'})
+	except Exception, e:
+		return json.dumps({'status': 'FAILED', 'msg': str(e)})
 
 def spam_in_gen_prof_details():
 	import functions as f
