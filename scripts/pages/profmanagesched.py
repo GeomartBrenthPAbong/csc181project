@@ -3,6 +3,7 @@ import scripts.classes.class_printable as p
 import scripts.forms.form_add_sched as form
 import scripts.classes.class_schedule as sched
 import scripts.classes.class_professor as prof
+import scripts.functions as f
 
 def get_title():
 	return 'Manage Schedules'
@@ -14,6 +15,17 @@ def get_page_template():
 	return 'black_template'
 
 def page_additions():
+	if not f.user_logged_in() or g.g_user.getType() != 'Professor':
+		if g.g_ajax_req:
+			return
+
+		g.g_notification_title = 'Permission denied'
+		g.g_notification_msg = 'You have no permission to access this page. ' \
+							   'Please <a href="' +g.g_root_path + '/index.py' + '">sign in</a> first.'
+
+		f.redirect(g.g_root_path + '/index.py?page=notification')
+		return
+
 	# Styles and Scripts additions here
 	g.g_header.getStyleAdder().add('profmanagesched')
 	g.g_header.getScriptAdder().add('sprintf')
@@ -39,35 +51,27 @@ def page_additions():
 	g.g_locations.addToLocation('right_content', form.get_form(), 2)
 	g.g_locations.addToLocation('right_content', p.Printable('</div>'), 3)
 
-	schedule_div = '<div id="schedules"><h4>Schedules</h4>'
-	if not g.g_user is None and isinstance(g.g_user, prof.Professor):
-		schedules = g.g_user.getSchedules()
+	schedule_div = """<div style="margin-left:8px; margin-top:20px;" id="schedules" class="panel panel-default">
+							<div class="panel-heading"><b>Schedules</b></div>
+							<div class="panel-body">
+					"""
 
-		if len(schedules) > 0:
-			schedule_div += """<table>
+	schedule_div += """<table class="table table-hover">
+								<thead>
 									<tr>
-										<td>From Time</td>
-										<td>To Time</td>
-										<td>Day</td>
-										<td colspan="2">Action</td>
+										<th class="day">Day</th>
+										<th class="from-time">From Time</th>
+										<th class="to-time">To Time</th>
+										<th>Action</th>
 									</tr>
-									<tr>"""
-			for sched_id in schedules:
-				schedule = sched.Schedule().dbExtract(sched_id)
+								</thead>
+							<tbody id="sched-list" data-link="row" class="rowlink">
+					"""
 
-				schedule_div += '<td class="from-time">' + schedule.getFromTime() + '</td>'
-				schedule_div += '<td class="to-time">' + schedule.getToTime() + '</td>'
 
-				schedule_div += '<td class="day">' + schedule.getScheduleDay(schedule) + '</td>'
-				schedule_div += '<td class="actions"><a href="#" class="edit">Edit</a></td>'
-				schedule_div += '<td class="actions"><a href="#" class="delete">Delete</a></td>'
+	schedule_div += '</tbody></table>'
 
-			schedule_div += '</tr></table>'
-		else:
-			schedule_div += '<p class="warn">No schedules.</p>'
-	else:
-		schedule_div += '<p class="warn">No schedules.</p>'
-	schedule_div += '</div>'
+	schedule_div += '</div></div>'
 	g.g_locations.addToLocation('right_content', p.Printable(schedule_div))
 
 
