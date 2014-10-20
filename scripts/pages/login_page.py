@@ -15,10 +15,10 @@ def page_additions():
 	import scripts.functions as f
 
 	if f.user_logged_in():
-		if g.g_user.getType() == 'student':
+		if g.g_user.getType() == 'Student':
 			f.redirect(g.g_root_path + '/index.py?page=studhome')
 		else:
-			f.redirect(g.g_root_path + '/index.py?page=profhome')
+			f.redirect(g.g_root_path + '/index.py?page=profmanagesched')
 
 	#===== Styles and Javascripts
 	g.g_header.getStyleAdder().add('signin')
