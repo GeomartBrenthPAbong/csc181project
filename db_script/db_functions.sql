@@ -13,42 +13,43 @@ CREATE OR REPLACE
 						p_account_type TEXT,
 						p_password TEXT)
 	RETURNS TEXT AS
-
+	
 	$$
-
+	
 		DECLARE
 
 			v_user_instance TEXT;
-
+		
 		BEGIN
 			SELECT INTO v_user_instance email_add FROM pc_user
 			WHERE email_add = p_email_add;
 
 			IF v_user_instance ISNULL THEN
-
-				INSERT INTO pc_user(user_id,
-								fuser_name,
+		
+				INSERT INTO pc_user(user_id, 
+								fuser_name, 
 								college,
 								department,
-								email_add,
+								email_add, 
 								address,
 								phone_number,
 								account_type,
-								password)
-				VALUES(p_user_id,
+								password) 
+				VALUES(p_user_id, 
 					p_fuser_name,
 					p_college,
 					p_department,
-					p_email_add,
+					p_email_add, 
 					p_address,
 					p_phone_number,
 					p_account_type,
 					p_password);
-
 				RETURN 'OK';
 			ELSE RETURN  'NOT OK';
 			END IF;
+		
 
+		
 		END;
 $$
 LANGUAGE 'plpgsql';
@@ -71,9 +72,9 @@ $$
 			address = p_address,
 			phone_number = p_phone_number
 		WHERE user_id = p_user_id;
-
+	
 		RETURN 'OK';
-
+	
 	END;
 
 $$
@@ -92,9 +93,9 @@ $$
 		UPDATE pc_user
 		SET password = p_new_password
 		WHERE user_id = p_user_id;
-
+		
 		RETURN 'OK';
-
+	
 	END;
 
 $$
@@ -124,7 +125,6 @@ CREATE OR REPLACE
 								OUT TEXT,
 								OUT TEXT,
 								OUT TEXT,
-								OUT TEXT,
 								OUT TEXT)
 	RETURNS SETOF RECORD AS
 $$
@@ -135,7 +135,6 @@ $$
 			college,
 			department,
 			email_add,
-			address,
 			phone_number,
 			account_type
 	FROM pc_user
@@ -154,9 +153,9 @@ CREATE OR REPLACE FUNCTION
 RETURNS SETOF RECORD AS
 $$
 
-	SELECT user_id, account_type
-	FROM pc_user
-	WHERE user_id = $1 AND
+	SELECT user_id, account_type 
+	FROM pc_user 
+	WHERE user_id = $1 AND 
 		  password = $2;
 
 $$
@@ -192,24 +191,24 @@ LANGUAGE 'sql';
 
 -- @desc use this function to get user list with details for pagination
 
-CREATE OR REPLACE FUNCTION getUsersLimitOffset(IN TEXT,
-												IN INT,
-												IN INT,
-												OUT TEXT,
+CREATE OR REPLACE FUNCTION getUsersLimitOffset(IN TEXT, 
+												IN INT, 
+												IN INT, 
+												OUT TEXT, 
 												out text,
 												out text,
 												out text,
-												out text)
-RETURNS SETOF RECORD AS
-$$
-	SELECT user_id,
-			(fuser_name).first_name,
+												out text) 
+RETURNS SETOF RECORD AS 
+$$ 
+	SELECT user_id, 
+			(fuser_name).first_name, 
 			(fuser_name).last_name,
 			department,
 			college
-	FROM pc_user
-	WHERE account_type = $1 LIMIT $2 OFFSET $3;
-$$
+	FROM pc_user 
+	WHERE account_type = $1 LIMIT $2 OFFSET $3; 
+$$ 
 LANGUAGE 'sql';
 
 -- @desc function returns true if password matches user id, false, otherwise
@@ -237,7 +236,7 @@ LANGUAGE 'plpgsql';
 -- @desc Function to create schedule ranges
 
 CREATE OR REPLACE
-	FUNCTION setSchedule(p_from_time TIME,
+	FUNCTION setSchedule(p_from_time TIME, 
 						p_to_time TIME)
 RETURNS INT AS
 $$
@@ -250,21 +249,21 @@ $$
 
 	BEGIN
 
-			SELECT INTO v_sched_from_time, v_sched_to_time
+			SELECT INTO v_sched_from_time, v_sched_to_time 
 						sched_from_time, sched_to_time
 			FROM pc_schedule
 			WHERE sched_from_time = p_from_time
 			AND sched_to_time = p_to_time;
 
 			IF v_sched_from_time ISNULL AND v_sched_to_time ISNULL THEN
-				INSERT INTO pc_schedule(sched_from_time,
+				INSERT INTO pc_schedule(sched_from_time, 
 									sched_to_time)
-				VALUES (p_from_time,
+				VALUES (p_from_time, 
 						p_to_time);
 
 			END IF;
 
-			SELECT
+			SELECT 
 			INTO v_sched_id sched_id
 			FROM pc_schedule
 			WHERE sched_from_time = p_from_time
@@ -273,7 +272,7 @@ $$
 			RETURN v_sched_id;
 
 	END;
-
+	
 	$$
 LANGUAGE 'plpgsql';
 
@@ -336,152 +335,105 @@ LANGUAGE 'sql';
 
 -- @desc Function to add schedule to professor. Returns generated professor-schedule id.
 
-CREATE OR REPLACE FUNCTION addscheduletoprofessor(p_prof_id text, p_sched_id integer, p_sched_day text)
-RETURNS integer AS
-$BODY$
+CREATE OR REPLACE
+	FUNCTION addScheduleToProfessor(p_prof_id TEXT,
+									p_sched_id INT,
+									p_sched_day TEXT)
+	RETURNS INT AS
+$$
 
-DECLARE
+		DECLARE
 
-v_prof_sched_id INT;
-v_account_type TEXT;
-v_prof_id TEXT;
-v_sched_id INT;
-v_sched_day TEXT;
+			v_prof_sched_id INT;
+			v_account_type TEXT;
+			v_prof_id TEXT;
+			v_sched_id INT;
+			v_sched_day TEXT;
 
-BEGIN
+		BEGIN
 
-SELECT INTO v_account_type account_type FROM pc_user WHERE user_id = p_prof_id;
+			SELECT INTO v_account_type account_type FROM pc_user WHERE user_id = p_prof_id;
+			
+			IF v_account_type = 'Professor' THEN
+			
+				SELECT INTO v_prof_id, v_sched_id, v_sched_day
+						prof_id, sched_id, sched_day
+				FROM pc_professor_schedule
+				WHERE ((prof_id = p_prof_id AND sched_id = p_sched_id) AND sched_day = p_sched_day);
+				
+				IF v_prof_id ISNULL AND v_sched_id ISNULL AND v_sched_day ISNULL THEN
+				
+					INSERT INTO pc_professor_schedule (prof_id, 
+														sched_id,
+														sched_day) 
+					VALUES(p_prof_id, 
+						p_sched_id,
+						p_sched_day);
 
-IF v_account_type = 'Professor' THEN
+				SELECT INTO v_prof_sched_id prof_sched_id 
+				FROM pc_professor_schedule 
+				WHERE prof_id = p_prof_id 
+					AND sched_id = p_sched_id
+					AND sched_day = p_sched_day;
 
-SELECT INTO v_prof_id, v_sched_id, v_sched_day
-prof_id, sched_id, sched_day
-FROM pc_professor_schedule
-WHERE ((prof_id = p_prof_id AND sched_id = p_sched_id) AND sched_day = p_sched_day);
+				RETURN v_prof_sched_id;
 
-IF v_prof_id ISNULL AND v_sched_id ISNULL AND v_sched_day ISNULL THEN
+			ELSE RETURN -1;
 
-INSERT INTO pc_professor_schedule (prof_id,
-sched_id,
-sched_day)
-VALUES(p_prof_id,
-p_sched_id,
-p_sched_day);
+			END IF;
+			END IF;
+		
+		END;
 
-SELECT INTO v_prof_sched_id prof_sched_id
-FROM pc_professor_schedule
-WHERE prof_id = p_prof_id
-AND sched_id = p_sched_id
-AND sched_day = p_sched_day;
-
-RETURN v_prof_sched_id;
-ELSE RETURN -2;
-END IF;
-ELSE RETURN -1;
-
-END IF;
-
-END;
-
-$BODY$
-LANGUAGE plpgsql;
+$$
+LANGUAGE 'plpgsql';
 
 -- @desc Function to get schedule id using professor id
 
 CREATE OR REPLACE
-FUNCTION getSchedIDsPerProfID(IN TEXT,
+FUNCTION getProfSchedIDsPerProfID(IN TEXT,
 								OUT INT)
 RETURNS SETOF INT AS
 $$
 
-	SELECT pc_professor_schedule.sched_id
-	FROM pc_professor_schedule,pc_schedule
-	WHERE prof_id = $1 AND pc_schedule.sched_id = pc_professor_schedule.sched_id
-	ORDER BY pc_schedule.sched_from_time;
-
-$$
-LANGUAGE 'sql';
-
-CREATE OR REPLACE
-FUNCTION getSchedDetailsFromProfSched(IN TEXT,
-								OUT TEXT,
-								OUT TEXT,
-								OUT TIME,
-								OUT TIME,
-								OUT TEXT,
-								OUT INT)
-RETURNS SETOF RECORD AS
-$$
-
-	SELECT (fuser_name).first_name, 
-			(fuser_name).last_name,
-			sched_from_time, 
-			sched_to_time, 
-			sched_day,
-			prof_sched_id
-	FROM pc_schedule, 
-			pc_professor_schedule, 
-			pc_user 
-	WHERE pc_schedule.sched_id = pc_professor_schedule.sched_id 
-	AND pc_user.user_id = pc_professor_schedule.prof_id 
-	AND pc_professor_schedule.prof_id = $1;
-
-$$
-LANGUAGE 'sql';
-
-CREATE OR REPLACE FUNCTION getProfSchedDetails(IN INT,
-												OUT TEXT,
-												OUT INT,
-												OUT TEXT)
-RETURNS SETOF RECORD AS
-$$
-	SELECT prof_id,
-			sched_id,
-			sched_day
+	SELECT sched_id
 	FROM pc_professor_schedule
-	WHERE prof_sched_id = $1;
+	WHERE prof_id = $1;
+
 $$
 LANGUAGE 'sql';
 
 -- @desc Function to edit schedule of professors.
 
-CREATE OR REPLACE
-	FUNCTION editProfessorSchedule (p_old_sched_id INT,
-									p_new_sched_id INT,
-									p_sched_day TEXT,
-									p_prof_id TEXT)
+CREATE OR REPLACE FUNCTION editProfessorSchedule(p_prof_sched_id INT,
+                                                  p_new_sched_id INT,
+                                                  p_sched_day TEXT,
+                                                  p_prof_id TEXT)
 RETURNS TEXT AS
 $$
 
-	DECLARE
+  DECLARE
 
-		v_prof_sched_id INT;
+    v_prof_sched_id INT;
 
-	BEGIN
+  BEGIN
 
-		SELECT INTO v_prof_sched_id prof_sched_id
-		FROM pc_professor_schedule
-		WHERE prof_id = p_prof_id AND sched_id = p_old_sched_id AND sched_day = p_sched_day;
-		
-		IF v_prof_sched_id ISNULL THEN
-			INSERT INTO pc_professor_schedule(prof_id,sched_id,sched_day)
-			VALUES (p_prof_id, p_new_sched_id,p_sched_day);
+    SELECT INTO v_prof_sched_id prof_sched_id
+    FROM pc_professor_schedule
+    WHERE prof_sched_id = p_prof_sched_id;
 
-			RETURN 'INSERTED';
+    UPDATE pc_professor_schedule
+    SET sched_id = p_new_sched_id,
+        sched_day = p_sched_day
+    WHERE prof_sched_id = v_prof_sched_id;
 
-		ELSE	UPDATE pc_professor_schedule
-			SET sched_id = p_new_sched_id,
-			sched_day = p_sched_day
-			WHERE prof_sched_id = v_prof_sched_id;
+    RETURN 'EDITED';
 
-			RETURN 'EDITED';
-
-		END IF;
-
-	END;
+  END;
 
 $$
 LANGUAGE 'plpgsql';
+
 -- @desc Function to get professor schedule id given sched_to_time, sched_from_time and sched_day.
 
 CREATE OR REPLACE
@@ -492,28 +444,26 @@ CREATE OR REPLACE
 RETURNS SETOF INT AS
 $$
 
-	SELECT prof_sched_id
-	FROM pc_professor_schedule
-	WHERE sched_id = (SELECT sched_id
-						FROM pc_schedule
-						WHERE sched_from_time = $1
-							AND sched_to_time = $2)
-		AND sched_day = $3;
+	SELECT prof_sched_id 
+	FROM pc_professor_schedule 
+	WHERE sched_id = (SELECT sched_id 
+						FROM pc_schedule 
+						WHERE sched_from_time = $1 
+							AND sched_to_time = $2) 
+		AND sched_day = $3; 
 
 $$
 LANGUAGE 'sql';
 
 -- @desc This function deletes entries from the professor schedule table
 
-CREATE OR REPLACE FUNCTION deleteProfSched(p_prof_id TEXT,
-											p_sched_id INT)
-RETURNS TEXT AS
+ CREATE OR REPLACE FUNCTION deleteProfSched(p_prof_sched_id INT)
+  RETURNS text AS
 $$
 	BEGIN
 
 		DELETE FROM pc_professor_schedule
-		WHERE prof_id = p_prof_id
-			AND sched_id = p_sched_id;
+		WHERE prof_sched_id = p_prof_sched_id
 
 		RETURN 'OK';
 
@@ -535,21 +485,57 @@ $$
 $$
 LANGUAGE 'sql';
 
+CREATE OR REPLACE FUNCTION getscheddetailsperprofid(IN TEXT,
+                                                    OUT INT,
+                                                    OUT INT,
+                                                    OUT TEXT)
+  RETURNS SETOF RECORD AS
+$$
+	SELECT pc_professor_schedule.prof_sched_id,
+	        pc_professor_schedule.sched_id,
+	        pc_professor_schedule.sched_day
+  FROM pc_professor_schedule,pc_schedule
+  WHERE prof_id = $1
+  AND pc_professor_schedule.sched_id = pc_schedule.sched_id
+  ORDER BY pc_schedule.sched_from_time;
+
+$$
+  LANGUAGE 'sql';
+
+ CREATE OR REPLACE FUNCTION checkScheduleUsage(IN TEXT,
+                                                IN INT,
+                                                OUT INT)
+  RETURNS INT AS
+ $$
+
+	SELECT appointment_id
+	FROM pc_appointment
+	WHERE prof_id = $1
+	AND prof_sched_id = $2
+	LIMIT 1;
+
+ $$
+  LANGUAGE 'sql';
 
 
------------------------------------ PC_APPOINTMENT TABLE SCRIPT
+
+
+-----------------------------------APPOINTMENT TABLE SCRIPT
 
 -- @desc Function to create new appointment. Returns generated appointment id.
 
-CREATE OR REPLACE
-	FUNCTION setAppointment(p_prof_id TEXT,
-							p_stud_id TEXT,
-							p_prof_sched_id INT,
-							p_appointment_date DATE,
-							p_message TEXT)
+CREATE OR REPLACE 
+	FUNCTION setAppointment(p_appointment_id INT, 
+							p_state_viewed BOOLEAN, 
+							p_status BOOLEAN,
+							p_prof_id TEXT, 
+							p_stud_id TEXT, 
+							p_sched_id INT, 
+							p_appointment_date DATE, 
+							p_message TEXT) 
 RETURNS INT AS
 $$
-
+	
 	DECLARE
 
 		v_appointment_id INT;
@@ -564,37 +550,35 @@ $$
 
 		IF v_prof_id ISNULL AND v_stud_id ISNULL THEN
 
-			INSERT INTO pc_appointment(state_viewed,
+			INSERT INTO pc_appointment(appointment_id, 
+										state_viewed, 
 										status,
-										prof_id,
-										stud_id,
-										prof_sched_id,
-										appointment_date,
-										message,
-										SMS)
-			VALUES ('FALSE',
-					'Pending',
-					p_prof_id,
-					p_stud_id,
-					p_prof_sched_id,
-					p_appointment_date,
-					p_message,
-					'FALSE');
+										prof_id, 
+										stud_id, 
+										sched_id, 
+										appointment_date, 
+										message) 
+			VALUES (p_appointment_id, 
+					p_state_viewed, 
+					p_status,
+					p_prof_id, 
+					p_stud_id, 
+					p_sched_id, 
+					p_appointment_date, 
+					p_message);
 
 		END IF;
-
+	
 		SELECT INTO v_appointment_id appointment_id
 		FROM pc_appointment
 		WHERE prof_id = p_prof_id AND stud_id = p_stud_id;
 
 		RETURN v_appointment_id;
-
+		
 	END;
 
 $$
 LANGUAGE 'plpgsql';
-
-
 
 -- @desc Function to change state_viewed from to TRUE indicating appointment has been viewed by user.
 
@@ -602,9 +586,9 @@ CREATE OR REPLACE FUNCTION
 	changeState(p_appointment_id INT)
 RETURNS TEXT AS
 $$
-
+	
 	BEGIN
-
+		
 		UPDATE pc_appointment
 		SET state_viewed = TRUE
 		WHERE appointment_id = p_appointment_id;
@@ -614,38 +598,31 @@ $$
 	END;
 
 $$
-LANGUAGE 'plpgsql';
+LANGUAGE 'plpgsql'; 
 
 -- @desc Function to change status to TRUE indicating appointment is not pending anymore.
 
-CREATE OR REPLACE
-	FUNCTION changeStatus(p_appointment_id INT, p_status TEXT)
-RETURNS INT AS
+CREATE OR REPLACE 
+	FUNCTION changeStatus(p_appointment_id INT)
+RETURNS TEXT AS
 $$
-  DECLARE
-    v_appointment_id INT;
+
 	BEGIN
-    SELECT INTO v_appointment_id appointment_id FROM pc_appointment
-      WHERE appointment_id = p_appointment_id;
 
-    IF v_appointment_id ISNULL THEN
-      RETURN -1;
-    ELSE
-		  UPDATE pc_appointment
-		  SET status = p_status,
-				SMS = 'false'
-		  WHERE appointment_id = p_appointment_id;
+		UPDATE pc_appointment
+		SET status = TRUE
+		WHERE appointment_id = p_appointment_id;
 
-		  RETURN p_appointment_id;
-    END IF;
+		RETURN 'OK';
+
 	END;
 
 $$
-LANGUAGE 'plpgsql';
+LANGUAGE 'plpgsql'; 
 
 -- @desc Function to delete appointments.
 
-CREATE OR REPLACE
+CREATE OR REPLACE 
 	FUNCTION deleteAppt(p_appointment_id INT)
 RETURNS TEXT AS
 $$
@@ -660,56 +637,49 @@ $$
 	END;
 
 $$
-LANGUAGE 'plpgsql';
+LANGUAGE 'plpgsql'; 
 
 -- @desc Function to retrieve set of appointment id's approved by professor.
 
 CREATE OR REPLACE
-	FUNCTION getApptIDsPerUserId(IN TEXT,IN TEXT, OUT INT)
+	FUNCTION getApprovedApptIDsPerUserId(IN TEXT,OUT INT)
 RETURNS SETOF INT AS
 $$
 
 	SELECT appointment_id
 	FROM pc_appointment
-	WHERE (prof_id = $1 AND status = $2) OR (stud_id = $1 AND status = $2);
-
+	WHERE (prof_id = $1 AND status = 'TRUE') OR (stud_id = $1 AND status = 'TRUE');
+	
 $$
  LANGUAGE 'sql';
-
- CREATE OR REPLACE FUNCTION getApptList(IN TEXT,
-                        IN TEXT,
-                        IN INT,
-                        IN INT,
-                        OUT INT,
-												OUT TEXT,
-												OUT TEXT,
+ 
+ CREATE OR REPLACE FUNCTION getApprovedApptList(IN TEXT,
+												OUT BOOLEAN,
 												OUT TEXT,
 												OUT INT,
 												OUT DATE,
 												OUT TEXT)
 RETURNS SETOF RECORD AS
 $$
-	SELECT appointment_id,
-	      status,
-	      prof_id,
-			  stud_id,
-			  prof_sched_id,
-			  appointment_date,
-			  message
+	SELECT status,
+			stud_id,
+			sched_id,
+			appointment_date,
+			message
 	FROM pc_appointment
-	WHERE (prof_id = $1 OR stud_id = $1)
-	AND status = $2
-	LIMIT $3 OFFSET $4;
+	WHERE prof_id = $1
+	AND status = 'TRUE'
+	AND state_viewed = 'TRUE';
 $$
 LANGUAGE 'sql';
 
 -- @desc Use this function to get list of appointment ids between specified professor id and student id
 
 CREATE OR REPLACE
-	FUNCTION getApptIDPerStudProfId(IN prof_id TEXT,
-									IN stud_id TEXT)
+	FUNCTION getApptIDPerStudProfId(IN prof_id TEXT, 
+									IN stud_id TEXT) 
 RETURNS SETOF INT AS
-$$
+$$ 
 
 	SELECT appointment_id
 	FROM pc_appointment
@@ -717,90 +687,81 @@ $$
 
 $$
 LANGUAGE 'sql';
-
-CREATE OR REPLACE FUNCTION getApptDetails (IN INT,
-											OUT INT,
-											OUT BOOLEAN,
-											OUT TEXT,
-											OUT TEXT,
-											OUT TEXT,
-											OUT INT,
-											OUT DATE,
-											OUT TEXT,
-											OUT BOOLEAN)
-RETURNS SETOF RECORD AS
+ 
+ -- @desc Use this function to get appointment details using appointment id
+ 
+CREATE OR REPLACE FUNCTION getApptDetails(IN INT,
+                                          OUT INT,
+                                          OUT BOOLEAN,
+                                          OUT TEXT,
+                                          OUT TEXT,
+                                          OUT TEXT,
+                                          OUT INT,
+                                          OUT DATE,
+                                          OUT TEXT,
+                                          OUT BOOLEAN)
+  RETURNS SETOF RECORD AS
 $$
-	SELECT * FROM pc_appointment WHERE appointment_id = $1;
+	SELECT appointment_id,
+  		  state_viewed,
+	      status,
+	      prof_id,
+			  stud_id,
+			  prof_sched_id,
+			  appointment_date,
+			  message,
+			  sms
+	FROM pc_appointment
+	WHERE appointment_id = $1;
+$$
+  LANGUAGE 'sql';
+
+-- @desc Function to retrieve pending appointment id's per user id.
+
+CREATE OR REPLACE
+FUNCTION getPendingApptPerUserId(IN TEXT,
+								OUT INT)
+RETURNS SETOF INT AS
+$$
+
+	SELECT appointment_id
+	FROM pc_appointment
+	WHERE (prof_id = $1 AND status = 'FALSE') OR (stud_id = $1 AND status = 'FALSE');
+
 $$
 LANGUAGE 'sql';
 
-
----------------------------------------------- SMS HANDLER SCRIPT
-CREATE OR REPLACE FUNCTION pendingList(OUT INT,
-										OUT TEXT,
-										OUT TEXT,
-										OUT TEXT,
-										OUT TEXT,
-										OUT TIME,
-										OUT DATE)
-RETURNS SETOF RECORD AS
+CREATE OR REPLACE FUNCTION getApptList(IN TEXT,
+                                        IN TEXT,
+                                        IN INT,
+                                        IN INT,
+                                        OUT INT,
+                                        OUT BOOLEAN,
+                                        OUT TEXT,
+                                        OUT TEXT,
+                                        OUT TEXT,
+                                        OUT INT,
+                                        OUT DATE,
+                                        OUT TEXT,
+                                        OUT BOOLEAN)
+  RETURNS SETOF RECORD AS
 $$
-SELECT app.appointment_id, 
-		user1.phone_number, 
-		message, 
-		(user2.fuser_name).first_name, 
-		(user2.fuser_name).last_name, 
-		sched_from_time, 
-		appointment_date
-FROM pc_appointment app,
-		pc_schedule sched, 
-		pc_professor_schedule prof_sched,
-		pc_user user1, pc_user user2
-WHERE user1.user_id = app.prof_id AND
-		user2.user_id = app.stud_id AND
-		sched.sched_id = prof_sched.sched_id AND
-		prof_sched.prof_sched_id = app.prof_sched_id AND
-		app.status = 'Pending' AND
-		app.SMS = 'False';
-$$
-LANGUAGE 'sql';
-
-CREATE OR REPLACE FUNCTION responseList(OUT INT,
-										OUT TEXT,
-										OUT TEXT,
-										OUT TEXT,
-										OUT TEXT)
-RETURNS SETOF RECORD AS
-$$
-SELECT app.appointment_id, 
-		user2.phone_number, 
-		(user1.fuser_name).first_name, 
-		(user1.fuser_name).last_name, 
-		app.status
-FROM pc_appointment app, 
-		pc_user user1, 
-		pc_user user2
-WHERE user1.user_id = app.prof_id AND
-		user2.user_id = app.stud_id AND
-		app.status != 'Pending' AND
-		app.SMS = 'False';
+	SELECT appointment_id,
+		    state_viewed,
+	      status,
+	      prof_id,
+			  stud_id,
+			  prof_sched_id,
+			  appointment_date,
+			  message,
+			  sms
+	FROM pc_appointment
+	WHERE (prof_id = $1 OR stud_id = $1)
+	AND status = $2
+	LIMIT $3 OFFSET $4;
 $$
 LANGUAGE 'sql';
 
-CREATE OR REPLACE FUNCTION smsNotified(p_status TEXT,
-										p_appt_id INT)
-returns TEXT AS
-$$
-	DECLARE
-	BEGIN
-		UPDATE pc_appointment
-		SET SMS = 'True'
-		WHERE status = p_status
-		AND appointment_id = p_appt_id;
-		return 'OK';
-	END;
-$$
-LANGUAGE 'plpgsql';
 ------------------------------- PC_USER_META TABLE SCRIPT
 
 -- @desc Function to retrieve meta_value from table pc_user_meta using user_id and meta_key.
@@ -819,31 +780,6 @@ $$
 $$
 LANGUAGE 'sql';
 
-
-------name search (firstname OR lastname)
-------case-insensitive
-------pattern matching
-------with limit offset
-
-CREATE OR REPLACE FUNCTION getUsersLimitOffsetNameSearch(IN TEXT, IN TEXT,
-IN INT,
-IN INT,
-OUT TEXT,
-out text,
-out text,
-out text,
-out text)
-RETURNS SETOF RECORD AS
-$$
-SELECT user_id,
-(fuser_name).first_name,
-(fuser_name).last_name,
-department,
-college
-FROM pc_user
-WHERE account_type = $1 AND LOWER((fuser_name).first_name) like LOWER($2 || '%') or LOWER((fuser_name).last_name) like LOWER($2 || '%') LIMIT $3 OFFSET $4;
-$$
-LANGUAGE 'sql';
 ------------------------------- PC_SESSION TABLE SCRIPTS
 
 -- @desc Function to insert a session into the table
@@ -892,7 +828,7 @@ BEGIN
   WHERE timestamp < NOW() - INTERVAL '5 days';
 
   IF found THEN GET DIAGNOSTICS row_count = ROW_COUNT;
-  RAISE NOTICE 'DELETED % row(s) FROM limiter', row_count;
+  RAISE NOTICE 'DELETEd % row(s) FROM limiter', row_count;
   END IF;
 
   RETURN NEW;
@@ -916,9 +852,6 @@ LANGUAGE 'plpgsql';
 
 -- @desc setting the trigger to execute every insertion
 
-
-
 CREATE TRIGGER del_sessions
 AFTER INSERT ON pc_session
 EXECUTE PROCEDURE deleteOldSessions();
-
