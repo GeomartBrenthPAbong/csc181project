@@ -195,18 +195,20 @@ def gen_prof_list(req):
 
 
 
-def gen_appt_list(req):
+def gen_appt_list(p_offset, p_status, p_limit):
 	import scripts.classes.class_dosql as sql
 	import scripts.classes.class_appointment as appt
 	import scripts.exceptions.e_notregistered as en
 
 	global_variables.g_sql = sql.doSql()
-	status = req.form.getfirst('stat')
-	result = global_variables.g_user.getAppointments(status)
 
-	import logging
-	logging.basicConfig(filename='cdo.karne', level=logging.DEBUG)
+	result = global_variables.g_user.getAppointments(p_status, p_limit, p_offset)
+
+	if is_none_list(result):
+		raise Exception('No results found.')
+
 	appointments = []
+
 	for (res,) in result:
 		try:
 			details = {}
@@ -214,47 +216,61 @@ def gen_appt_list(req):
 			prof = app.getProfessor()
 			stud = app.getStudent()
 			sched = app.getProfSchedule()
+
+			details['curr_user_type'] = global_variables.g_user.getType()
 			details['appt_id'] = res
 			details['prof_name'] = prof.getFirstName() + ' ' + prof.getLastName()
 			details['stud_name'] = stud.getFirstName() + ' ' + stud.getLastName()
-			details['sched_from_time'] = str(sched.getFromTime())
-			details['sched_to_time'] = str(sched.getToTime())
+			details['sched_from_time'] = h24_to_h12(sched.getFromTime().strftime('%H:%M'))
+			details['sched_to_time'] = h24_to_h12(sched.getToTime().strftime('%H:%M'))
 			details['app_date'] = str(app.getAppointmentDate())
 			details['app_msg'] = app.getAppointmentMsg()
 			appointments.append(details)
 		except en.ENotRegistered:
 			continue
+		except Exception:
+			continue
 
 	return appointments
 
-def gen_appt_details(req):
-	import scripts.classes.class_dosql as sql
+def gen_appt_details(p_appointment_id):
 	import scripts.classes.class_appointment as appt
-	import scripts.exceptions.e_notregistered as en
 
-	import logging
-	logging.basicConfig(filename='mkay.txt', level=logging.DEBUG)
-	global_variables.g_sql = sql.doSql()
+	app = appt.Appointment().dbExtract(p_appointment_id)
 
-	id = req.form.getfirst('appt_id')
-	app = appt.Appointment().dbExtract(id)
 	prof_name = app.getProfessor().getFirstName() + ' ' + app.getProfessor().getLastName()
+	prof_id = app.getProfessor().getID()
 	stud_name = app.getStudent().getFirstName() + ' ' + app.getStudent().getLastName()
 	stud_id = app.getStudent().getID()
 	stud_course = app.getStudent().getCourse()
-	sched_from_time = str(app.getProfSchedule().getFromTime())
-	sched_to_time = str(app.getProfSchedule().getToTime)
+	sched_from_time = h24_to_h12(app.getProfSchedule().getFromTime().strftime('%H:%M'))
+	sched_to_time = h24_to_h12(app.getProfSchedule().getToTime().strftime('%H:%M'))
 	app_date = str(app.getAppointmentDate())
 	app_msg = app.getAppointmentMsg()
 	app_stat = app.getStatus()
-	logging.debug('Yes')
-	return [(prof_name,stud_name,stud_id, stud_course,sched_from_time,sched_to_time,app_date,app_msg,app_stat)]
 
-def change_status(req):
+	app.setStateViewed(True)
+	app.changeStateViewed()
+
+	return [(prof_name, stud_name,
+			 stud_id, stud_course,
+			 sched_from_time,
+			 sched_to_time, app_date,
+			 app_msg, app_stat,
+			 global_variables.g_user.getType(), prof_id)]
+
+def change_status(p_appointment_id, p_new_status):
 	import scripts.classes.class_appointment as app
-	id = req.form.getfirst('appt_id')
-	stat = req.form.getfirst('stat')
-	details = app.Appointment().dbExtract(id)
+
+	appointment = app.Appointment().dbExtract(p_appointment_id)
+	appointment.setStatus(p_new_status)
+	appointment.changeStatus()
+	appointment.setStateViewed(True)
+	appointment.changeStateViewed()
+
+	stud = appointment.getStudent()
+
+	return {'stud_name': stud.getFirstName() + ' ' + stud.getLastName()}
 
 
 def gen_prof_details(req):
