@@ -1,0 +1,50 @@
+String inputString = "";
+boolean stringComplete = false;
+
+void setup()
+{
+  Serial.begin(9600);  //Baud rate of the GSM/GPRS Module 
+  Serial1.begin(9600);
+  inputString.reserve(200);
+}
+
+void loop()
+{
+  if(stringComplete)
+  {
+    sendMessage(inputString);
+    inputString = "";
+    stringComplete = false;
+  }
+}
+
+void serialEvent(){ 
+  while(Serial.available())
+  {
+    char inChar = (char)Serial.read();
+    inputString += inChar;
+  
+    if (inChar == '\n') 
+    {
+      stringComplete = true;
+    } 
+  }
+}
+
+void sendMessage(String message)
+{
+  Serial1.print("\r");
+  delay(1000);                  
+  Serial1.print("AT+CMGF=1\r");    
+  delay(1000);
+  Serial1.print("AT+CMGS=\"");
+  Serial1.print(message.substring(0,11));
+  Serial1.print("\"\r");
+  delay(1000);
+  Serial1.print(message.substring(12, message.length()-1));
+  Serial1.print("\r");
+  delay(1000);
+  Serial1.write(0x1A);
+  delay(1000);
+  Serial.println("Ok");
+}
