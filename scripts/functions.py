@@ -362,6 +362,17 @@ def gen_prof_sched(p_prof_id):
 		raise Exception('Professor ' + prof.getFirstName() + ' ' + prof.getLastName() + ' has no available schedule as of the moment.')
 	return schedules
 
+def get_notif_no():
+	import scripts.classes.class_dosql as sqlDriver
+
+	user_id = global_variables.g_user.getID()
+	query = "SELECT * FROM getUnviewedByID("
+	query += "'" + user_id + "')"
+	f = sqlDriver.doSql()
+	results = f.execqry(query, False)
+
+	return results[0][0]
+
 def get_schedule_table():
 	schedules = global_variables.g_user.getArrangedSchedules()
 
