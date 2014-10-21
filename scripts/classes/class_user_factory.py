@@ -31,6 +31,7 @@ class UserFactory():
 		import class_student as student
 		import scripts.exceptions.e_notregistered as error
 		import scripts.global_variables as g
+		import scripts.functions as f
 
 		try:
 			((
@@ -49,6 +50,10 @@ class UserFactory():
 				user = professor.Professor()
 			else:
 				user = student.Student()
+				list = g.g_sql.execqry("SELECT * FROM getUserMeta('"+str(p_user_id)+"', 'Course')", False)
+
+				if not f.is_none_list(list):
+					user.setCourse(list[0][0])
 
 			user.setID(p_user_id)
 			user.setFirstName(first_name)
@@ -58,6 +63,7 @@ class UserFactory():
 			user.setEmailAddress(email_address)
 			user.setAddress(address)
 			user.setPhoneNumber(phone_number)
+			user.setType(account_type)
 
 			return user
 		except:
