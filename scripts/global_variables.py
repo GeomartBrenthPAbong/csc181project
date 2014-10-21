@@ -20,4 +20,5 @@ g_notification_msg = None
 g_right_content = None
 
 g_req = None
+g_ajax_req = False
 
