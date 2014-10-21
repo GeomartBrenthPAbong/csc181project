@@ -15,6 +15,7 @@ def index(req):
 	function_name = req.form.getfirst('action')
 
 	g.g_req = req
+	g.f_ajax_req = True
 	g.g_user = functions.create_user()
 
 	try:
@@ -27,4 +28,6 @@ def index(req):
 		except AttributeError:
 				return getattr(ajax_functions, 'spam_out_' + function_name)()
 	except Exception, e:
-		return json.dumps({'status': 'FAILED', 'msg': 'Invalid action.' + str(e)})
+		return json.dumps({'status': 'FAILED',
+						   'type': 'function_existence',
+						   'msg': 'Either your have no permission to execute this action or there is no handler for this action.'})
