@@ -247,6 +247,11 @@ def spam_in_gen_app_list_per_time():
 	except Exception, e:
 		return json.dumps({'status': 'FAILED', 'msg': str(e)})
 
+def spam_in_get_notif_no():
+	import functions as f
+
+	return json.dumps({'status': 'SUCCESS', 'msg': f.get_notif_no()})
+
 def spam_in_get_schedule_table():
 	import scripts.functions as f
 	import scripts.classes.class_dosql as sql
