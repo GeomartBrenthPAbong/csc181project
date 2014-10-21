@@ -28,3 +28,7 @@ Development Conventions:
 SQL Keywords: ALL CAPS (CREATE)
 
 DB Table Prefix: "pc"  (pc_tablename)
+
+
+Note:
+Please change database credentials in class_dosql.
