@@ -148,6 +148,9 @@ def spam_in_change_status():
 
 def spam_in_gen_prof_details():
 	import functions as f
+	import scripts.classes.class_dosql as sql
+
+	g.g_sql = sql.doSql()
 	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_prof_details(g.g_req)})
 
 def spam_in_cancel_appt():
@@ -156,7 +159,16 @@ def spam_in_cancel_appt():
 
 def spam_in_gen_prof_sched():
 	import functions as f
-	return json.dumps({'status': 'SUCCESS', 'msg': f.gen_prof_sched(g.g_req)})
+	import scripts.exceptions.e_notregistered as en
+
+	prof_id = g.g_req.form.getfirst('id')
+
+	try:
+		return json.dumps({'status': 'SUCCESS', 'msg': f.gen_prof_sched(prof_id)})
+	except en.ENotRegistered:
+		return json.dumps({'status': 'FAILED', 'msg': 'Professor does not exists'})
+	except Exception, e:
+		return json.dumps({'status': 'FAILED', 'msg': str(e)})
 
 def spam_in_gen_app_list_per_time():
 	import scripts.classes.class_dosql as sql
@@ -214,5 +226,16 @@ def spam_in_gen_app_list_per_time():
 				continue
 
 		return json.dumps(zabuto_json)
+	except Exception, e:
+		return json.dumps({'status': 'FAILED', 'msg': str(e)})
+
+def spam_in_get_schedule_table():
+	import scripts.functions as f
+	import scripts.classes.class_dosql as sql
+
+	g.g_sql = sql.doSql()
+
+	try:
+		return json.dumps({'status': 'SUCCESS', 'msg': f.get_schedule_table()})
 	except Exception, e:
 		return json.dumps({'status': 'FAILED', 'msg': str(e)})
