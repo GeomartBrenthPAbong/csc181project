@@ -298,22 +298,88 @@ def cancel_appt(req):
 	f = sqlDriver.doSql()
 	return f.execqry(query,True)
 
-def gen_prof_sched(req):
+def gen_prof_sched(p_prof_id):
 	import scripts.classes.class_dosql as sqlDriver
+	import scripts.classes.class_user_factory as uf
 
-	id = req.form.getfirst('id')
-	query = "SELECT * FROM getSchedDetailsFromProfSched('"
-	query += id + "')"
+	global_variables.g_sql = sqlDriver.doSql()
+
+	prof = uf.UserFactory.createUserFromID(p_prof_id)
+
+	#Check if an appointment between the two exists
+	status = global_variables.g_sql.execqry("SELECT * FROM checkProfStudApptExists('" + str(p_prof_id) + "', '" +
+																						str(global_variables.g_user.getID()) + "')", False)
+	if not is_none_list(status):
+		raise Exception('You and professor ' + prof.getFirstName() + ' ' +
+											prof.getLastName() + ' has a ' +
+											status[0][0].lower() + ' appointment already.')
+
+	arr_sched = prof.getArrangedSchedules()
+
+	schedules = {}
+	for day, time_ranges in arr_sched.iteritems():
+		ranges = []
+		for time_range in time_ranges:
+			ranges.append([h24_to_h12(time_range[1].getFromTime().strftime('%H:%M')),
+							h24_to_h12(time_range[1].getToTime().strftime('%H:%M')),
+							time_range[0]])
+		if ranges:
+			schedules[day] = ranges
+
+	if not schedules:
+		raise Exception('Professor ' + prof.getFirstName() + ' ' + prof.getLastName() + ' has no available schedule as of the moment.')
+	return schedules
+
+def get_schedule_table():
+	schedules = global_variables.g_user.getArrangedSchedules()
+
+	schedule_div = ''
+
+	# monday schedules
+	schedule_div += '<tr id="mon">'
+
+	schedule_div += '<td class="day"><p>Monday</p></td>'
+	schedule_div += '<td colspan="3">' + manage_sched_table_data(schedules['mon']) + '</td>'
+	schedule_div += '</tr>'
+
+	# tuesday schedules
+	schedule_div += '<tr id="tue">'
+	schedule_div += '<td class="day"><p>Tuesday</p></td>'
+	schedule_div += '<td colspan="3">' + manage_sched_table_data(schedules['tue']) + '</td>'
+	schedule_div += '</tr>'
+
+	# wednesday schedules
+	schedule_div += '<tr id="wed">'
+	schedule_div += '<td class="day"><p>Wednesday</p></td>'
+	schedule_div += '<td colspan="3">' + manage_sched_table_data(schedules['wed']) + '</td>'
+	schedule_div += '</tr>'
+
+	# thursday schedules
+	schedule_div += '<tr id="thu">'
+	schedule_div += '<td class="day"><p>Thursday</p></td>'
+	schedule_div += '<td colspan="3">' + manage_sched_table_data(schedules['thu']) + '</td>'
+	schedule_div += '</tr>'
+
+	# friday schedules
+	schedule_div += '<tr id="fri">'
+	schedule_div += '<td class="day"><p>Friday</p></td>'
+	schedule_div += '<td colspan="3">' + manage_sched_table_data(schedules['fri']) + '</td>'
+	schedule_div += '</tr>'
+
+	# saturday schedules
+	schedule_div += '<tr id="sat">'
+	schedule_div += '<td class="day"><p>Saturday</p></td>'
+	schedule_div += '<td colspan="3">' + manage_sched_table_data(schedules['sat']) + '</td>'
+	schedule_div += '</tr>'
+
+	# sunday schedules
+	schedule_div += '<tr id="sun">'
+	schedule_div += '<td class="day"><p>Sunday</p></td>'
+	schedule_div += '<td colspan="3">' + manage_sched_table_data(schedules['sun']) + '</td>'
+	schedule_div += '</tr>'
+
+	return schedule_div
 
 
-	f = sqlDriver.doSql()
-	results = f.execqry(query, False)
-
-	list = []
-
-	for result in results:
-		data = []
-		for datum in result:
-			data.append(str(datum))
-		list.append(data)
-	return list
+def is_none_list(p_list):
+	return len(p_list) is 1 and len(p_list[0]) is 1 and (p_list[0][0] is 'None' or p_list[0][0] is None)
