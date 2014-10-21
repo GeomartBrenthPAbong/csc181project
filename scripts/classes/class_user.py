@@ -64,11 +64,11 @@ class User(object):
 	def getPhoneNumber(self):
 		return self._m_phone_number
 
-	def getAppointments(self, p_status):
-		return g.g_sql.execqry("SELECT * FROM getApptIDsPerUserId('" + self._m_id + "','"+p_status+"')", False)
+	def getAppointments(self, p_status, p_list_limit, p_offset):
+		return g.g_sql.execqry("SELECT * FROM getApptIDsPerUserId('" + self._m_id + "','"+p_status+"',"+str(p_list_limit)+","+str(p_offset)+")", False)
 
-	def getPendingAppointments(self):
-		return g.g_sql.execqry("SELECT * FROM getPendingApptPerUserId('" + self._m_id + "')", False)
+	def getAppointmentsPerDate(self, p_from_date, p_to_date):
+		return g.g_sql.execqry("SELECT * FROM getApptPerDateRange('" + str(self._m_id) + "', '" + p_from_date + "', '" + p_to_date + "')", False)
 
 	def getAddress(self):
 		return self._m_address
