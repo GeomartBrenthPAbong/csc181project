@@ -45,6 +45,15 @@ CREATE TABLE pc_user(
 	PRIMARY KEY (user_id)
 );
 
+-- @desc Creating a table matching setting schedules for professors
+
+CREATE TABLE pc_professor_schedule(
+	prof_sched_id INT PRIMARY KEY DEFAULT NEXTVAL('prof_sched_id_gen'),
+	prof_id TEXT REFERENCES pc_user(user_id),
+	sched_id INT REFERENCES pc_schedule(sched_id),
+	sched_day TEXT
+);
+
 -- @desc Creating APPOINTMENT Table
 
 CREATE TABLE pc_appointment (
@@ -59,14 +68,7 @@ CREATE TABLE pc_appointment (
 	 SMS BOOLEAN,
 	 PRIMARY KEY (appointment_id)
 );
--- @desc Creating a table matching setting schedules for professors
 
-CREATE TABLE pc_professor_schedule(
-	prof_sched_id INT PRIMARY KEY DEFAULT NEXTVAL('prof_sched_id_gen'),
-	prof_id TEXT REFERENCES pc_user(user_id),
-	sched_id INT REFERENCES pc_schedule(sched_id),
-	sched_day TEXT
-);
 
 CREATE TABLE pc_user_meta(
 	user_id TEXT REFERENCES pc_user(user_id),

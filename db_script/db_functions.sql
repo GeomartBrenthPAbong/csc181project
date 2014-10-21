@@ -463,7 +463,7 @@ $$
 	BEGIN
 
 		DELETE FROM pc_professor_schedule
-		WHERE prof_sched_id = p_prof_sched_id
+		WHERE prof_sched_id = p_prof_sched_id;
 
 		RETURN 'OK';
 
@@ -667,7 +667,7 @@ $$
  LANGUAGE 'sql';
  
  CREATE OR REPLACE FUNCTION getApprovedApptList(IN TEXT,
-												OUT BOOLEAN,
+												OUT TEXT,
 												OUT TEXT,
 												OUT INT,
 												OUT DATE,
@@ -676,7 +676,7 @@ RETURNS SETOF RECORD AS
 $$
 	SELECT status,
 			stud_id,
-			sched_id,
+			prof_sched_id,
 			appointment_date,
 			message
 	FROM pc_appointment
