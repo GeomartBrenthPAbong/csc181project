@@ -6,20 +6,13 @@ def get_title():
 	return 'Search Professor'
 
 def get_content():
-
-	sprofile = """
-				<div id="sprofile"><h1 style="font-weight: bold;">STUDENT PROFILE</h1></div>
-			"""
-
-	return sprofile
-
+	return ''
 
 def get_page_template():
 	return 'black_template'
 
 def page_additions():
-	if not f.user_logged_in():
-
+	if not f.user_logged_in() or g.g_user.getType() != 'Student':
 		g.g_notification_title = 'Permission denied'
 		g.g_notification_msg = 'You have no permission to access this page. ' \
 		'Please <a href="' + g.g_root_path + '/index.py' + '">sign in</a> first.'
@@ -30,10 +23,8 @@ def page_additions():
 	rc_statement = '<span style="font-weight:bold;">&nbsp;&nbsp;&nbsp;Find your professor and make an appointment!</span>'
 	rc_content = """
 					<div style="width:50%; margin-left:8px; margin-top:30px;" class="input-group">
-						<input id="input-search" style="font-weight:bold;" type="text" class="form-control" placeholder="Professor Name">
-  						<div class="input-group-btn">
+						<input id="input-search" style="font-weight:bold;" type="text" class="" placeholder="Professor Name">
     						<button id="btn-search" type="button" class='button'>Search</button>
-  						</div>
 					</div>
 					<div style="margin-left:8px; margin-top:20px;" class="panel panel-default">
 						<div class="panel-heading"><b>Professors</b></div>
@@ -64,8 +55,12 @@ def page_additions():
 		main_nav.setAsActive('studhome')
 
 	g.g_header.getScriptAdder().add('proflist')
+	g.g_header.getScriptAdder().add('zabuto_calendar.min')
+
 	g.g_header.getStyleAdder().add('profile')
 	g.g_header.getStyleAdder().add('button')
+	g.g_header.getStyleAdder().add('zabuto_calendar.min')
+
 	g.g_locations.addToLocation('head_title', p.Printable("Home - " + g.g_user.getFirstName()))
 	g.g_locations.addToLocation('right_content', p.Printable(rc_statement))
 	g.g_locations.addToLocation('right_content', p.Printable(rc_content))

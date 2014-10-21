@@ -1,10 +1,15 @@
-page = 0;
-list_limit = 5;
-searchOn = false;
-modalOn = false;
-stud_name = "";
-body = "";
-footer = "";
+var page = 0;
+var list_limit = 5;
+var searchOn = false;
+var modalOn = false;
+var stud_name = "";
+var body = "";
+var footer = "";
+var g_curr_schedules;
+var g_selected_day;
+var g_selected_prof_sched;
+var g_selected_prof;
+var g_msg;
 
 function gen_proflist_html(res){
 
@@ -79,39 +84,167 @@ function gen_prof_profile(res){
 
 
 }
+
+function produce_time_ranges(p_ranges){
+    var content = 'Select Time Range:';
+
+    content += '<select required="required" name="range_selector">';
+    for(var i=0; i<p_ranges.length; i++)
+        content += '<option value="' +p_ranges[i][2]+ '">' +p_ranges[i][0] + ' - ' + p_ranges[i][1] + '</option>';
+    content += '</select>';
+
+    return content;
+}
 function sched_disp(res){
-
-    if (res.msg[0][0] != "None"){
+    if (res.status == 'SUCCESS'){
         head = 'You wish to make an appointment with ' + stud_name;
-        content = "<br/>Please choose among your professor's available schedules: <br/><br/>"
-        content += '<select required="required" name = "sched_selector">';
+        content = "<br/>Please choose among your professor's available schedules: <br/><br/>";
+        content += '<p id="day-options">Select Day:';
 
-        for (var i=0; i<res.msg.length; i++){
+        content += '<select required="required" name="day_selector">';
 
-           content += '<option value="' + res.msg[i][5] + '">';
-           content += res.msg[i][4] + ', ';
-           content += res.msg[i][2] + ' - ';
-           content += res.msg[i][3];
-           content += '</option>';
-           $('#schedlist').append(content);
+        g_curr_schedules = [];
+        g_curr_schedules[0] = null;
+        g_curr_schedules[1] = null;
+        g_curr_schedules[2] = null;
+        g_curr_schedules[3] = null;
+        g_curr_schedules[4] = null;
+        g_curr_schedules[5] = null;
+        g_curr_schedules[6] = null;
 
+        var first_day = null;
+
+        if(res.msg.mon && res.msg.mon.length > 0){
+            first_day = 1;
+            g_curr_schedules[1] = res.msg.mon;
+            content += '<option value="1">Monday</option>';
         }
-        content += '</select><br/><br/>';
+        if(res.msg.tue && res.msg.tue.length > 0){
+            if(first_day == null)
+                first_day = 2;
+            g_curr_schedules[2] = res.msg.tue;
+            content += '<option value="2">Tuesday</option>';
+        }
+        if(res.msg.wed && res.msg.wed.length > 0){
+            if(first_day == null)
+                first_day = 3;
+            g_curr_schedules[3] = res.msg.wed;
+            content += '<option value="3">Wednesday</option>';
+        }
+        if(res.msg.thu && res.msg.thu.length > 0){
+            if(first_day == null)
+                first_day = 4;
+            g_curr_schedules[4] = res.msg.thu;
+            content += '<option value="4">Thursday</option>';
+        }
+        if(res.msg.fri && res.msg.fri.length > 0){
+            if(first_day == null)
+                first_day = 5;
+            g_curr_schedules[5] = res.msg.fri;
+            content += '<option value="5">Friday</option>';
+        }
+        if(res.msg.sat && res.msg.sat.length > 0){
+            if(first_day == null)
+                first_day = 6;
+            g_curr_schedules[6] = res.msg.sat;
+            content += '<option value="6">Saturday</option>';
+        }
+        if(res.msg.sun && res.msg.sun.length > 0){
+            if(first_day == null)
+                first_day = 0;
+            g_curr_schedules[0] = res.msg.sun;
+            content += '<option value="0">Sunday</option>';
+        }
+
+        content += '</select></p><p id="time-ranges">' + produce_time_ranges(g_curr_schedules[first_day]) + '</p>';
+
+        content += '<br/><br/>';
         content += 'Message: <br/><br/>';
-        content += '<textarea placeholder="Leave a message for your professor..." rows="4" cols="60"></textarea><br/>';
-        footer = '<button id="submit-appt" type="button" class="btn btn-primary btn-large">Submit</button>';
+        content += '<textarea id="msg-for-prof" placeholder="Leave a message for your professor..." rows="4" cols="60"></textarea><br/>';
+        footer = '<button id="btn-back" type="button" class="btn btn-primary btn-large">Back</button>';
+        footer += '<button id="select-date-appt" type="button" class="btn btn-primary btn-large">Submit</button>';
         activate_modal(head,content,footer);
     }
-    else{
-        content = 'Professor ' + stud_name + ' has no available schedule as of the moment.';
-        alert(content);
+    else
+        activate_modal('Error!', res.msg);
+}
+
+function get_eq_day(p_num){
+        if(p_num == 0)
+            return 'sun';
+        else if(p_num == 1)
+            return 'mon';
+        else if(p_num == 2)
+            return 'tue';
+        else if(p_num == 3)
+            return 'wed';
+        else if(p_num == 4)
+            return 'thu';
+        else if(p_num == 5)
+            return 'fri';
+        else if(p_num == 6)
+            return 'sat';
     }
 
+function get_date_difference(p_date_1, p_date_2){
+    var time_1 = p_date_1.getTime();
+    var time_2 = p_date_2.getTime();
+
+    return parseInt((time_2 - time_1)/(24*3600*1000));
+}
+
+function setup_appointment_success_func(response){
+    if(response.status == 'SUCCESS')
+        activate_modal('Congratulations!', 'You have successfully sent an appointment request to professor ' + response.msg.prof_name);
+    else
+        activate_modal('Error!', response.msg);
+}
+
+function inspect_date_selected(p_date){
+    var date = new Date(p_date);
+    var clicked_day = date.getDay();
+
+    if(clicked_day != g_selected_day){
+        $('#modal-body #notif-area').html('<p style="color: red;">Oopss! You said you want ' + get_eq_day(g_selected_day).toUpperCase()+'</p>');
+        return false;
+    }
+    else if(get_date_difference(new Date(), new Date(p_date)) <= 0){
+        $('#modal-body #notif-area').html('<p style="color: red;">Date must be in the future</p>');
+        return false;
+    }
+    else{
+        var data = {
+           action: 'setup_appointment',
+           prof_id: g_selected_prof,
+           prof_sched: g_selected_prof_sched,
+           date: p_date,
+           msg: g_msg
+        };
+
+        ajaxify(data, setup_appointment_success_func);
+    }
+
+    return true;
+}
+
+function studhome_main(){
+    var data = {
+        action: 'gen_prof_list',
+        limit: list_limit
+    };
+
+    $('#btn-prev').hide();
+    ajaxify(data, gen_proflist_html);
 }
 
 jQuery(document).ready(function($) {
 
-    $('#proflist').on('click', 'td a', function (e){
+    $('#modal-body').on('change', 'select[name="day_selector"]', function(){
+        var day = $(this).val();
+        $('#modal-body #time-ranges').html(produce_time_ranges(g_curr_schedules[day]));
+    });
+
+    $('.right-content').on('click', '#proflist td a', function (e){
         id = $(this).closest('tr').attr('id');
         curr_prof_id = id;
         var data = {
@@ -122,26 +255,52 @@ jQuery(document).ready(function($) {
         ajaxify(data,gen_prof_profile);
         e.preventDefault();
     });
+
     $('#modal-footer').on('click','button', function (e){
         buttonid = $(this).attr('id');
 
         if (buttonid == 'make-appt'){
+            g_selected_prof = curr_prof_id;
             var data = {
                 action: 'gen_prof_sched',
                 id: curr_prof_id
             };
-        ajaxify(data,sched_disp);
+            ajaxify(data,sched_disp);
         }
-        else if (buttonid == 'submit-appt'){
+        else if (buttonid == 'select-date-appt'){
+            g_selected_day = $('select[name="day_selector"]').val();
+            g_selected_prof_sched = $('select[name="range_selector"]').val();
+            g_msg = $('textarea#msg-for-prof').val();
+
+            activate_modal('Select date', '<div id="notif-area"></div><div id="date-options"></div>');
+
+            $('#modal-body #date-options').zabuto_calendar({
+                cell_border: true,
+                today: true,
+                show_previous: false,
+                show_next: 2,
+                nav_icon: { prev: '<i class="fa fa-chevron-circle-left">&lt;&lt;</i>',
+                            next: '<i class="fa fa-chevron-circle-right">&gt;&gt;</i>' },
+                action: function () {
+                    return inspect_date_selected($("#" + this.id).data("date")); },
+              ajax: {
+                  url: "show_data.php?action=1",
+                  modal: false }
+             });
+        }
+        else if (buttonid == 'btn-back'){
+
             var data = {
-                action: create_appt,
-                value:id /* TO EDIT!!!!!!!!!!!!!!!!!!!!!!!!*/
-            }
+                action: 'gen_prof_details',
+                data: curr_prof_id
+            };
+
+            ajaxify(data,gen_prof_profile);
         }
         e.preventDefault();
     });
 
-    $('#btn-search').click(function (e){
+    $('.right-content').on('click', '#btn-search', function (e){
         if (!$('#input-search').val()){
             searchOn = false;
 
@@ -185,7 +344,7 @@ jQuery(document).ready(function($) {
         }
     });
 
-    $('#btn-next').click( function (e){
+    $('.right-content').on('click', '#btn-next', function (e){
         page++;
 
         if(searchOn){
@@ -209,7 +368,7 @@ jQuery(document).ready(function($) {
         e.preventDefault();
     });
 
-    $('#btn-prev').click( function (e){
+    $('.right-content').on('click', '#btn-prev',function (e){
         page--;
 
         if(searchOn){
@@ -231,13 +390,6 @@ jQuery(document).ready(function($) {
         e.preventDefault();
     });
 
-    //prof search on load
-    //
-    var data = {
-        action: 'gen_prof_list',
-        limit: list_limit
-    };
+    studhome_main();
 
-    $('#btn-prev').hide();
-    ajaxify(data, gen_proflist_html);
 });
