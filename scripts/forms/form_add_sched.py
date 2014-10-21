@@ -74,6 +74,7 @@ def get_form():
 					'label': 'pm'
 				}
 			],
+		    'value':'am',
 			'required': True,
 			'autofocus': True,
 		},
@@ -111,6 +112,7 @@ def get_form():
 					'label': 'Sunday'
 				}
 			],
+		    'value':'mon',
 			'before-field': '<td>',
 			'after-field': '</td>',
 		},
