@@ -170,6 +170,38 @@ def generate_numbers(p_min, p_max):
 		)
 	return numbers
 
+def h24_to_h12(p_h24_time):
+	h = p_h24_time.split(':')
+	hour = int(h[0])
+
+	if hour > 12:
+		return str('%02d' % (hour - 12)) + ':' + h[1] + ' pm'
+	elif hour == 12:
+		return '12:' + h[1] + ' pm'
+	elif hour == 0:
+		return '12:' + h[1] + ' am'
+	else:
+		return str('%02d' % hour) + ':' + h[1] + ' am'
+
+def manage_sched_table_data(p_schedules):
+	generated_content = '<table><tbody>'
+	if len(p_schedules) > 0:
+		for [prof_sched_id, schedule] in p_schedules:
+			generated_content += '<tr id="' + str(prof_sched_id) + '">'
+			generated_content += '<td class="from-time">' + h24_to_h12(schedule.getFromTime().strftime("%H:%M")) + '</td>'
+			generated_content += '<td class="to-time">' + h24_to_h12(schedule.getToTime().strftime("%H:%M")) + '</td>'
+			generated_content += '<td class="actions action-edit"><a href="#" class="edit-sched">Edit</a></td>'
+			generated_content += '<td class="actions action-del"><a href="#" class="delete-sched">Delete</a></td>'
+			generated_content += '</tr>'
+	else:
+			generated_content += '<tr>'
+			generated_content += '<td class="from-time"></td>'
+			generated_content += '<td class="to-time"></td>'
+			generated_content += '<td class="actions action-edit"><a href="#" class="edit-sched"></a></td>'
+			generated_content += '<td class="actions action-del"><a href="#" class="delete-sched"></a></td></tr>'
+	generated_content += '</tbody></table>'
+	return generated_content
+
 def gen_prof_list(req):
 	import classes.class_dosql as sqlDriver
 
