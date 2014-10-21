@@ -81,7 +81,7 @@ class Schedule(object):
 
 			return schedule
 		except:
-			raise e_notregistered.ENotRegistered('Schedule does not exists.')
+			raise e_notregistered.ENotRegistered('Schedule does not exist.')
 
 	### Stores the schedule to the schedule table
 	###
@@ -107,7 +107,9 @@ class Schedule(object):
 		import scripts.global_variables as g
 		import scripts.exceptions.e_alreadyexists as e_alreadyexists
 
-		if functions.schedule_time_exists(self.__m_from_time, self.__m_to_time):
+		stored_id = functions.schedule_time_exists(self.__m_from_time, self.__m_to_time)
+		if stored_id > -1:
+			self.__m_id = stored_id
 			raise e_alreadyexists.EAlreadyExists('Schedule already exists.')
 
 		((self.__m_id,),) = g.g_sql.execqry("SELECT * FROM setSchedule('" + self.__m_from_time + "', '" + self.__m_to_time + "')", True)
