@@ -170,6 +170,24 @@ def spam_in_gen_prof_sched():
 	except Exception, e:
 		return json.dumps({'status': 'FAILED', 'msg': str(e)})
 
+def spam_in_setup_appointment():
+	import scripts.exceptions.e_notregistered as en
+	import scripts.classes.class_dosql as sql
+
+	g.g_sql = sql.doSql()
+
+	prof_id = g.g_req.form.getfirst('prof_id')
+	prof_sched_id = g.g_req.form.getfirst('prof_sched')
+	date = g.g_req.form.getfirst('date')
+	msg = g.g_req.form.getfirst('msg')
+
+	try:
+		return json.dumps({'status': 'SUCCESS', 'msg': g.g_user.sendAppointmentRequest(prof_id, prof_sched_id, date, msg)})
+	except en.ENotRegistered:
+		return json.dumps({'status': 'FAILED', 'msg': 'Professor does not exists'})
+	except Exception, e:
+		return json.dumps({'status': 'FAILED', 'msg': str(e)})
+
 def spam_in_gen_app_list_per_time():
 	import scripts.classes.class_dosql as sql
 	import scripts.functions as f
