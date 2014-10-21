@@ -1,6 +1,11 @@
 from class_scriptstyle_adder import ScriptStyleAdder
 
 class ScriptAdder(ScriptStyleAdder):
+	def __init__(self):
+		super(ScriptAdder, self).__init__()
+		self._m_type = 'js'
+		self._m_folder = 'javascript'
+
 	def generateScript(self):
 		if not self._m_path_list:
 			return ''
